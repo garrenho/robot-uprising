@@ -1440,25 +1440,27 @@ function sendAdminGift(){
   if(!target){statusEl.style.color='var(--red)';statusEl.textContent='⚠ Enter a player username.';return;}
   if(!coins||coins<1){statusEl.style.color='var(--red)';statusEl.textContent='⚠ Enter a valid coin amount.';return;}
 
-  // Giving to yourself — skip PeerJS (can't self-connect) and apply directly
+  // Always show the gift popup on admin's screen immediately
+  document.getElementById('gift-amount-display').textContent=`+ ${coins.toLocaleString()} COINS`;
+  document.getElementById('gift-msg-display').textContent=fullMsg;
+  const notif=document.getElementById('gift-notification');
+  notif.classList.remove('show');void notif.offsetWidth;notif.classList.add('show');
+
+  // If giving to yourself — apply coins directly, no PeerJS needed
   if(target.toLowerCase()===G.username.toLowerCase()){
-    receiveAdminGift(coins,fullMsg);
+    G.money+=coins;saveState();
+    document.getElementById('hub-money-display').textContent=G.money.toLocaleString();
     statusEl.style.color='var(--green)';statusEl.textContent=`✓ Gave yourself ${coins.toLocaleString()} coins!`;
     return;
   }
 
-  statusEl.style.color='var(--yellow)';statusEl.textContent='Connecting to '+target+'…';
-  if(!peer||peer.destroyed){statusEl.style.color='var(--red)';statusEl.textContent='⚠ Not connected to network. Go to Online first.';return;}
-
+  // Send to another player via PeerJS
+  statusEl.style.color='var(--yellow)';statusEl.textContent='Sending to '+target+'…';
+  if(!peer||peer.destroyed){statusEl.style.color='var(--orange)';statusEl.textContent='⚠ Not connected — go to Online screen first, then retry.';return;}
   const conn=peer.connect(peerId(target),{reliable:true});
   conn.on('open',()=>{
     conn.send({type:'adminGift',coins,message:fullMsg});
-    statusEl.style.color='var(--green)';statusEl.textContent=`✓ Sent ${coins.toLocaleString()} coins to ${target}!`;
-    // Show confirmation popup on admin's screen too
-    document.getElementById('gift-amount-display').textContent=`SENT +${coins.toLocaleString()}`;
-    document.getElementById('gift-msg-display').textContent=`Delivered to ${target}: "${fullMsg}"`;
-    const notif=document.getElementById('gift-notification');
-    notif.classList.remove('show');void notif.offsetWidth;notif.classList.add('show');
+    statusEl.style.color='var(--green)';statusEl.textContent=`✓ Delivered to ${target}!`;
     setTimeout(()=>conn.close(),3000);
   });
   conn.on('error',()=>{statusEl.style.color='var(--red)';statusEl.textContent='⚠ Could not reach '+target+'. Are they online?';});
