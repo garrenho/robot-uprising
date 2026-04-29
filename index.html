@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Robot Uprising</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -1627,6 +1630,39 @@ function updateTouchAbilityButtons(){
 
 
 // ══════════════════════════════════════════════
+//  AUTO-UPDATE CHECKER
+// ══════════════════════════════════════════════
+
+const BUILD_TS = '20260428_v10';
+
+function startVersionChecker(){
+  setInterval(async ()=>{
+    try{
+      const r=await fetch(location.href+(location.search?'&':'?')+'_nocache='+Date.now());
+      const txt=await r.text();
+      if(!txt.includes(BUILD_TS)){
+        showUpdateBanner();
+      }
+    }catch(e){}
+  },45000);
+}
+
+function showUpdateBanner(){
+  if(document.getElementById('update-banner'))return;
+  const el=document.createElement('div');
+  el.id='update-banner';
+  el.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9999;background:linear-gradient(90deg,#00aa55,#00ff88);color:#001810;font-family:Orbitron,sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:0.1em;text-align:center;padding:13px;box-shadow:0 0 30px rgba(0,255,136,0.6);';
+  el.textContent='🔄 GAME UPDATED — Refreshing in 5…';
+  document.body.appendChild(el);
+  let n=5;
+  const t=setInterval(()=>{
+    n--;
+    if(n<=0){clearInterval(t);location.reload(true);}
+    else el.textContent=`🔄 GAME UPDATED — Refreshing in ${n}…`;
+  },1000);
+}
+
+// ══════════════════════════════════════════════
 //  BOOT
 // ══════════════════════════════════════════════
 
@@ -1635,6 +1671,7 @@ function updateTouchAbilityButtons(){
   if(saved&&G.robot&&G.username){if(!getTakenNames().includes(G.username.toLowerCase()))addName(G.username);goToHub();}
   else if(saved&&G.username)showRobotSelect();
   else showScreen('username');
+  startVersionChecker();
 })();
 </script>
 </body>
