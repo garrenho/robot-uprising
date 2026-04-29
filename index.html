@@ -1435,21 +1435,33 @@ function sendAdminGift(){
   const coins=parseInt(document.getElementById('admin-coins').value,10);
   const msg=document.getElementById('admin-message').value.trim();
   const statusEl=document.getElementById('admin-status');
+  const fullMsg=msg||`You have been given ${coins.toLocaleString()} coins by Admin!`;
 
   if(!target){statusEl.style.color='var(--red)';statusEl.textContent='⚠ Enter a player username.';return;}
   if(!coins||coins<1){statusEl.style.color='var(--red)';statusEl.textContent='⚠ Enter a valid coin amount.';return;}
 
-  statusEl.style.color='var(--yellow)';statusEl.textContent='Connecting to '+target+'…';
+  // Giving to yourself — skip PeerJS (can't self-connect) and apply directly
+  if(target.toLowerCase()===G.username.toLowerCase()){
+    receiveAdminGift(coins,fullMsg);
+    statusEl.style.color='var(--green)';statusEl.textContent=`✓ Gave yourself ${coins.toLocaleString()} coins!`;
+    return;
+  }
 
+  statusEl.style.color='var(--yellow)';statusEl.textContent='Connecting to '+target+'…';
   if(!peer||peer.destroyed){statusEl.style.color='var(--red)';statusEl.textContent='⚠ Not connected to network. Go to Online first.';return;}
 
   const conn=peer.connect(peerId(target),{reliable:true});
   conn.on('open',()=>{
-    conn.send({type:'adminGift',coins,message:msg||`You have been given ${coins.toLocaleString()} coins!`});
+    conn.send({type:'adminGift',coins,message:fullMsg});
     statusEl.style.color='var(--green)';statusEl.textContent=`✓ Sent ${coins.toLocaleString()} coins to ${target}!`;
+    // Show confirmation popup on admin's screen too
+    document.getElementById('gift-amount-display').textContent=`SENT +${coins.toLocaleString()}`;
+    document.getElementById('gift-msg-display').textContent=`Delivered to ${target}: "${fullMsg}"`;
+    const notif=document.getElementById('gift-notification');
+    notif.classList.remove('show');void notif.offsetWidth;notif.classList.add('show');
     setTimeout(()=>conn.close(),3000);
   });
-  conn.on('error',err=>{statusEl.style.color='var(--red)';statusEl.textContent='⚠ Could not reach '+target+'. Are they online?';});
+  conn.on('error',()=>{statusEl.style.color='var(--red)';statusEl.textContent='⚠ Could not reach '+target+'. Are they online?';});
 }
 
 function receiveAdminGift(coins,message){
