@@ -116,7 +116,7 @@ input[type="text"]::placeholder{color:rgba(0,245,255,0.3);}
 .t-separator{height:1px;background:linear-gradient(90deg,transparent,rgba(0,245,255,0.15),transparent);margin:7px 0;}
 
 /* BATTLE RESULT */
-#battle-result{display:none;position:fixed;inset:0;background:rgba(0,4,12,0.9);align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:30;backdrop-filter:blur(8px);pointer-events:none;}
+#battle-result{display:none;position:fixed;inset:0;background:rgba(0,4,12,0.9);align-items:center;justify-content:flex-start;padding-top:6vh;flex-direction:column;gap:14px;z-index:30;backdrop-filter:blur(8px);pointer-events:none;}
 #battle-result.show{display:flex;animation:resultIn 0.4s ease both;pointer-events:auto;}
 @keyframes resultIn{from{opacity:0;}to{opacity:1;}}
 .result-title{font-family:'Orbitron',sans-serif;font-size:2.5rem;font-weight:900;}
@@ -2079,6 +2079,7 @@ function spawnSparks(x,y,z,color,count=8){
   }
 }
 
+const RS=1.8; // base robot scale for battle scene
 function goToBattle(customBotDef){
   _randomSearchActive=false;
   clearTimeout(_randomTimeout);
@@ -2236,7 +2237,7 @@ function setupBattleArena(customBotDef){
     }
     const bp=botPositions[bi];
     const bMesh2=buildRobotMesh(bScene,bDef);
-    bMesh2.position.set(bp.x,0,bp.z);bMesh2.rotation.y=Math.PI*0.92;
+    bMesh2.position.set(bp.x,0,bp.z);bMesh2.rotation.y=Math.PI*0.92;bMesh2.scale.setScalar(RS);
     const bLight2=new THREE.PointLight(bDef.accentColor||0xff4400,3.5,6);bLight2.position.set(bp.x,2,bp.z);bScene.add(bLight2);
     // Platform + ring per bot
     const pr=new THREE.Mesh(new THREE.CylinderGeometry(1.1*platScale,1.1*platScale,0.08,32),platMat);pr.position.set(bp.x,-1.86,bp.z);bScene.add(pr);
@@ -2285,6 +2286,7 @@ function setupBattleArena(customBotDef){
   pPos={x:-2.2,z:0};
   pMesh.position.set(-2.2,0,0);
   pMesh.rotation.y=Math.PI*0.08;
+  pMesh.scale.setScalar(RS);
 
   // Sidekick squad (only in non-online battles)
   activeSidekicks=[];
@@ -2447,7 +2449,7 @@ function updateBattle(dt,time){
   if(lungeTimer>0){lungeTimer-=dt;const l=Math.sin((lungeTimer/0.18)*Math.PI)*0.6;pMesh.position.x=pPos.x+l;pMesh.position.z=pPos.z-l*0.3;}
   else{pMesh.position.x=pPos.x;pMesh.position.z=pPos.z;}
   pMesh.position.y=Math.sin(now*0.0025)*0.05;
-  pMesh.scale.setScalar(shieldActive?0.88+0.12*Math.sin(now*0.012):1);
+  pMesh.scale.setScalar(RS*(shieldActive?0.88+0.12*Math.sin(now*0.012):1));
 
   // Bot animation — all bots in squad
   botSquad.forEach((bot,bi)=>{
@@ -2457,7 +2459,7 @@ function updateBattle(dt,time){
     else if(bot.state!=='dodging'){bot.mesh.position.x=bot.pos.x;bot.mesh.position.z=bot.pos.z;}
     bot.mesh.position.y=Math.sin(now*0.0022+bi)*0.05;
     // Highlight targeted bot with a subtle scale pulse
-    if(bi===targetBotIdx)bot.mesh.scale.setScalar(1+Math.sin(now*0.005)*0.03);
+    if(bi===targetBotIdx)bot.mesh.scale.setScalar(RS*(1+Math.sin(now*0.005)*0.03));
   });
 
   // Player light pulse
@@ -2534,18 +2536,18 @@ function updateBotAI(dt,now){
     if(botState==='idle'){
       botStateTimer=Math.max(0,botStateTimer-dt);
       if(botStateTimer<=0)botDecideNextMove(tier);
-      bot.mesh.scale.setScalar(bi===targetBotIdx?1+Math.sin(now*0.005)*0.03:1);
+      bot.mesh.scale.setScalar(RS*(bi===targetBotIdx?1+Math.sin(now*0.005)*0.03:1));
       bot.light.intensity=2.8+Math.sin(now*0.0028+bi)*0.7;bot.light.color.setHex(bot.stats.accentColor);
     } else if(botState==='charging'){
       botStateTimer=Math.max(0,botStateTimer-dt);
       const prog=botChargeMaxTime>0?1-(botStateTimer/botChargeMaxTime):1;
-      bot.mesh.scale.setScalar(1+prog*0.22);bot.light.intensity=3+prog*7;
+      bot.mesh.scale.setScalar(RS*(1+prog*0.22));bot.light.intensity=3+prog*7;
       bot.light.color.setHex(botNextMoveType==='special'?0xffffff:bot.stats.accentColor);
       if(prog>0.65)bot.mesh.position.x+=( Math.random()-0.5)*0.07;
       if(botStateTimer<=0){executeBotAttack(botNextMoveType);botState='idle';botStateTimer=Math.max(0.2,1.0-tier*0.08);}
     } else if(botState==='dodging'){
       botStateTimer=Math.max(0,botStateTimer-dt);
-      bot.mesh.position.z=bot.pos.z+0.55;bot.mesh.scale.setScalar(0.9);
+      bot.mesh.position.z=bot.pos.z+0.55;bot.mesh.scale.setScalar(RS*0.9);
       bot.light.intensity=1.0;bot.light.color.setHex(0x8899ff);
       if(botStateTimer<=0){botDodging=false;botState='idle';botStateTimer=Math.max(0.3,0.7-tier*0.04);}
     }
