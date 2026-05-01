@@ -119,6 +119,9 @@ input[type="text"]::placeholder{color:rgba(0,245,255,0.3);}
 #battle-result{display:none;position:fixed;inset:0;background:rgba(0,4,12,0.9);align-items:center;justify-content:flex-start;padding-top:6vh;flex-direction:column;gap:14px;z-index:30;backdrop-filter:blur(8px);pointer-events:none;}
 #battle-result.show{display:flex;animation:resultIn 0.4s ease both;pointer-events:auto;}
 @keyframes resultIn{from{opacity:0;}to{opacity:1;}}
+@keyframes rewardPop{0%{opacity:0;transform:translateY(20px) scale(0.8);}30%{opacity:1;transform:translateY(-8px) scale(1.1);}70%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(-30px) scale(0.9);}}
+#battle-reward-pop{position:fixed;top:35%;left:50%;transform:translateX(-50%);z-index:35;font-family:'Orbitron',sans-serif;font-weight:900;font-size:1.6rem;color:var(--yellow);text-shadow:0 0 30px var(--yellow),0 0 60px rgba(255,224,0,0.4);pointer-events:none;display:none;text-align:center;white-space:nowrap;}
+#battle-reward-pop.show{display:block;animation:rewardPop 1.8s ease both;}
 .result-title{font-family:'Orbitron',sans-serif;font-size:2.5rem;font-weight:900;}
 .result-win{color:var(--cyan);text-shadow:0 0 30px var(--cyan);}
 .result-lose{color:var(--red);text-shadow:0 0 30px var(--red);}
@@ -734,6 +737,7 @@ h1.logo{animation:logoGlitch 7s infinite;}
       <div class="hub-streak" id="hub-streak"></div>
       <div style="font-size:0.75rem;color:rgba(200,232,255,0.5);margin-bottom:4px;" id="hub-robot-desc"></div>
       <div class="hub-stats" id="hub-stats-display"></div>
+      <div id="hub-match-dots" style="display:flex;gap:4px;flex-wrap:wrap;margin:6px 0;min-height:14px;"></div>
       <div class="hub-abilities" id="hub-abilities" style="display:none">
         <div class="hub-abilities-title">⚡ UNLOCKED ABILITIES</div>
         <div id="hub-abilities-list"></div>
@@ -751,7 +755,7 @@ h1.logo{animation:logoGlitch 7s infinite;}
         <button class="btn btn-orange" onclick="openDifficultyPicker()">⚔️ BATTLE BOT</button>
         <button class="btn btn-ghost" id="hub-quick-fight-btn" onclick="quickFightAgain()" style="display:none;border-color:rgba(255,106,0,0.5);color:var(--orange);font-size:0.75rem;padding:9px;">⚡ QUICK FIGHT (repeat last)</button>
         <button class="btn btn-ghost bounty-btn" id="hub-bounty-btn" onclick="startBountyBattle()" style="display:none;">🎯 BOUNTY BOARD</button>
-        <button class="btn btn-ghost btn-daily" onclick="startDailyChallenge()" style="border-color:rgba(255,224,0,0.45);color:var(--yellow);">📅 DAILY CHALLENGE<span id="daily-dot"></span></button>
+        <button class="btn btn-ghost btn-daily" onclick="startDailyChallenge()" style="border-color:rgba(255,224,0,0.45);color:var(--yellow);">📅 DAILY CHALLENGE <span style="font-size:0.6rem;opacity:0.7">+500💰</span><span id="daily-dot"></span></button>
         <button class="btn btn-ghost" onclick="goToTournament()" style="border-color:rgba(255,106,0,0.45);color:var(--orange);">🏆 TOURNAMENT</button>
         <button class="btn btn-ghost" onclick="startSurvivalMode()" style="border-color:rgba(255,34,85,0.5);color:var(--red);">💀 SURVIVAL MODE</button>
         <button class="btn btn-ghost" onclick="startTimeAttackMode()" style="border-color:rgba(0,245,255,0.5);color:var(--cyan);">⏱ TIME ATTACK</button>
@@ -778,7 +782,9 @@ h1.logo{animation:logoGlitch 7s infinite;}
       <span id="battle-diff-badge"></span>
     </div>
     <div style="display:flex;align-items:center;gap:8px;">
+      <span id="battle-level-badge" style="font-family:'Orbitron',sans-serif;font-size:0.58rem;color:rgba(170,100,255,0.8);"></span>
       <span id="battle-streak-badge" style="display:none;font-family:'Orbitron',sans-serif;font-size:0.58rem;color:var(--orange);text-shadow:0 0 8px var(--orange);"></span>
+      <span id="battle-dmg-counter" style="font-family:'Orbitron',sans-serif;font-size:0.55rem;color:rgba(255,80,80,0.7);" title="Damage dealt this battle">💥 <span id="battle-dmg-val">0</span></span>
       <span id="battle-timer">0:00</span>
       <button id="surrender-btn" onclick="surrenderBattle()">🏳 GIVE UP</button>
       <button id="battle-heal-btn" onclick="buyBattleHeal()">💊 HEAL (200💰)</button>
@@ -786,11 +792,13 @@ h1.logo{animation:logoGlitch 7s infinite;}
     </div>
   </div>
   <div class="battle-canvas-wrap">
+    <div id="battle-reward-pop"></div>
     <canvas id="battle-canvas"></canvas>
     <div id="battle-result">
       <div class="result-title" id="result-title"></div>
       <div id="result-perfect">✨ PERFECT — NO DAMAGE TAKEN!</div>
       <div class="result-earn" id="result-earn"></div>
+      <div id="result-xp-progress" style="font-family:'Orbitron',sans-serif;font-size:0.65rem;color:rgba(170,100,255,0.8);margin-top:4px;"></div>
       <div id="result-efficiency"></div>
       <div class="bs-card" id="bs-card" style="display:none;">
         <div class="bs-stat"><span class="bs-val" id="bs-dmg" style="color:var(--red)">0</span><span class="bs-label">DMG DEALT</span></div>
@@ -1367,15 +1375,15 @@ function generateUpgrades(){return SHOP_UPGRADES;} // alias for compatibility
 // ── Sidekick Roster ──
 const SIDEKICK_ROSTER = [
   {rosterId:'glitch',   id:'thunder', name:'GLITCH',   color:0x004d26, accentColor:0x00ff88, baseStats:{hp:40, atk:5, def:4, spd:8},  cost:0,          desc:'Free • Your clumsy default pal'},
-  {rosterId:'bolt',     id:'phantom', name:'BOLT',     color:0x000e33, accentColor:0x00f5ff, baseStats:{hp:30, atk:9, def:2, spd:16}, cost:1000000000, desc:'1B • Speed-freak assassin'},
-  {rosterId:'crusher2', id:'crusher', name:'JR CRUSH', color:0x330000, accentColor:0xff4400, baseStats:{hp:70, atk:8, def:10,spd:4},  cost:1000000000, desc:'1B • Mini tank bruiser'},
-  {rosterId:'sparky',   id:'thunder', name:'SPARKY',   color:0x332200, accentColor:0xffe000, baseStats:{hp:45, atk:7, def:5, spd:10}, cost:1000000000, desc:'1B • Balanced shock trooper'},
-  {rosterId:'specter',  id:'phantom', name:'SPECTER',  color:0x1a0033, accentColor:0xaa00ff, baseStats:{hp:25, atk:14,def:2, spd:20}, cost:1000000000, desc:'1B • Glass-cannon ghost'},
-  {rosterId:'buzzer',   id:'crusher', name:'BUZZER',   color:0x001a33, accentColor:0x00aaff, baseStats:{hp:55, atk:10,def:7, spd:9},  cost:1000000000, desc:'1B • Electric bruiser'},
-  {rosterId:'dagger',   id:'phantom', name:'DAGGER',   color:0x220000, accentColor:0xff2255, baseStats:{hp:28, atk:16,def:1, spd:22}, cost:1000000000, desc:'1B • Blade-fast assassin'},
-  {rosterId:'mammoth',  id:'crusher', name:'MAMMOTH',  color:0x1a1a1a, accentColor:0x999999, baseStats:{hp:95, atk:6, def:18,spd:3},  cost:1000000000, desc:'1B • Ironclad ultimate tank'},
-  {rosterId:'nova',     id:'thunder', name:'NOVA',     color:0x333300, accentColor:0xffee00, baseStats:{hp:50, atk:11,def:6, spd:13}, cost:1000000000, desc:'1B • Solar energy fighter'},
-  {rosterId:'wraith',   id:'phantom', name:'WRAITH',   color:0x0d0022, accentColor:0xcc00ff, baseStats:{hp:20, atk:18,def:1, spd:24}, cost:1000000000, desc:'1B • Void-speed phantom'},
+  {rosterId:'bolt',     id:'phantom', name:'BOLT',     color:0x000e33, accentColor:0x00f5ff, baseStats:{hp:30, atk:9, def:2, spd:16}, cost:1500,    desc:'1,500💰 • Speed-freak assassin'},
+  {rosterId:'crusher2', id:'crusher', name:'JR CRUSH', color:0x330000, accentColor:0xff4400, baseStats:{hp:70, atk:8, def:10,spd:4},  cost:2500,    desc:'2,500💰 • Mini tank bruiser'},
+  {rosterId:'sparky',   id:'thunder', name:'SPARKY',   color:0x332200, accentColor:0xffe000, baseStats:{hp:45, atk:7, def:5, spd:10}, cost:4000,    desc:'4,000💰 • Balanced shock trooper'},
+  {rosterId:'specter',  id:'phantom', name:'SPECTER',  color:0x1a0033, accentColor:0xaa00ff, baseStats:{hp:25, atk:14,def:2, spd:20}, cost:6500,    desc:'6,500💰 • Glass-cannon ghost'},
+  {rosterId:'buzzer',   id:'crusher', name:'BUZZER',   color:0x001a33, accentColor:0x00aaff, baseStats:{hp:55, atk:10,def:7, spd:9},  cost:10000,   desc:'10,000💰 • Electric bruiser'},
+  {rosterId:'dagger',   id:'phantom', name:'DAGGER',   color:0x220000, accentColor:0xff2255, baseStats:{hp:28, atk:16,def:1, spd:22}, cost:15000,   desc:'15,000💰 • Blade-fast assassin'},
+  {rosterId:'mammoth',  id:'crusher', name:'MAMMOTH',  color:0x1a1a1a, accentColor:0x999999, baseStats:{hp:95, atk:6, def:18,spd:3},  cost:22000,   desc:'22,000💰 • Ironclad ultimate tank'},
+  {rosterId:'nova',     id:'thunder', name:'NOVA',     color:0x333300, accentColor:0xffee00, baseStats:{hp:50, atk:11,def:6, spd:13}, cost:32000,   desc:'32,000💰 • Solar energy fighter'},
+  {rosterId:'wraith',   id:'phantom', name:'WRAITH',   color:0x0d0022, accentColor:0xcc00ff, baseStats:{hp:20, atk:18,def:1, spd:24}, cost:50000,   desc:'50,000💰 • Void-speed phantom'},
 ];
 // Squad positions for up to 10 sidekicks — spread in formation behind player
 const SQUAD_POSITIONS=[
@@ -1872,7 +1880,18 @@ function goToHub() {
     <div class="hub-stat-row"><span class="hub-stat-name">🎯 Win Rate</span><span class="hub-stat-val">${wr!=null?wr+'%':'--'} (${totalWins}W/${(G.botLosses||0)+(G.onlineLosses||0)}L)</span></div>
     <div class="hub-stat-row"><span class="hub-stat-name">⚔️ Battles</span><span class="hub-stat-val">${totalGm}</span></div>
     <div class="hub-stat-row"><span class="hub-stat-name">💥 Dmg Dealt</span><span class="hub-stat-val">${(G.totalDmgDealt||0).toLocaleString()}</span></div>
-    <div class="hub-stat-row"><span class="hub-stat-name">🤖 SK Kills</span><span class="hub-stat-val">${Object.values(G.sidekickKills||{}).reduce((s,v)=>s+v,0)}</span></div>`;
+    <div class="hub-stat-row"><span class="hub-stat-name">🤖 SK Kills</span><span class="hub-stat-val">${Object.values(G.sidekickKills||{}).reduce((s,v)=>s+v,0)}</span></div>
+    ${(G.prestigeLevel||0)>0?`<div class="hub-stat-row"><span class="hub-stat-name">⭐ Prestige Bonus</span><span class="hub-stat-val" style="color:#ff00ff">+${G.prestigeLevel*10}% ATK/DEF</span></div>`:''}
+    ${(G.survivalBest||0)>0?`<div class="hub-stat-row"><span class="hub-stat-name">💀 Survival Best</span><span class="hub-stat-val">Wave ${G.survivalBest}</span></div>`:''}
+    ${(G.timeAttackBest||0)>0?`<div class="hub-stat-row"><span class="hub-stat-name">⏱ Time Attack Best</span><span class="hub-stat-val">${G.timeAttackBest.toFixed(2)}s</span></div>`:''}
+    ${(G.bossRushBest||0)>0?`<div class="hub-stat-row"><span class="hub-stat-name">👹 Boss Rush Best</span><span class="hub-stat-val">Boss ${G.bossRushBest}/10</span></div>`:''}
+    `;
+  // Match history dots (last 10)
+  const dotsEl=document.getElementById('hub-match-dots');
+  if(dotsEl&&G.matchHistory&&G.matchHistory.length){
+    const modeIcon={online:'🌐',daily:'📅',tournament:'🏆',survival:'💀',timeattack:'⏱',bossrush:'👹',bounty:'🎯',bot:'⚔️'};
+    dotsEl.innerHTML=G.matchHistory.slice(0,10).map(m=>`<span title="${m.won?'WIN':'LOSS'} vs ${m.opp}${m.earn?'  +'+m.earn+'💰':''}" style="width:12px;height:12px;border-radius:50%;background:${m.won?'var(--green)':'var(--red)'};box-shadow:0 0 6px ${m.won?'rgba(0,255,136,0.6)':'rgba(255,34,85,0.6)'};flex-shrink:0;" title="${(modeIcon[m.mode]||'⚔️')} ${m.won?'WIN':'LOSS'}"></span>`).join('');
+  } else if(dotsEl)dotsEl.innerHTML='';
   const abs=getUnlockedAbilities();
   const abEl=document.getElementById('hub-abilities');
   if(abs.length>0){abEl.style.display='block';document.getElementById('hub-abilities-list').innerHTML=abs.map(ab=>`<span class="ability-badge">[${ab.key}] ${ab.name}</span>`).join('');}
@@ -1901,7 +1920,12 @@ function goToHub() {
   if(pBadge){if((G.prestigeLevel||0)>0){pBadge.textContent=`★ PRESTIGE ${G.prestigeLevel}`;pBadge.style.display='';}else pBadge.style.display='none';}
   // Prestige button
   const presBtn=document.getElementById('hub-prestige-btn');
-  if(presBtn)presBtn.style.display=(G.purchasedUpgrades||[]).length>=150?'':'none';
+  if(presBtn){
+    const nextPL=(G.prestigeLevel||0)+1;
+    presBtn.style.display=(G.level||1)>=15?'':'none';
+    presBtn.title=`Prestige ${nextPL}: Resets upgrades & level, grants permanent +${nextPL*10}% ATK/DEF & +5 Skill Points`;
+    presBtn.textContent=`⭐ PRESTIGE ${nextPL} (+${nextPL*10}% stats)`;
+  }
   // Title display
   const titleDisp=document.getElementById('hub-title-display');
   if(titleDisp)titleDisp.textContent=G.title||'None';
@@ -1918,7 +1942,7 @@ function goToHub() {
   const canvas=document.getElementById('hub-canvas');
   if(hubSD){hubSD.renderer.dispose();hubSD=null;}
   hubSD=makeScene(canvas,playerRobotDef());
-  (function loop(){if(!hubSD)return;requestAnimationFrame(loop);hubSD.robot.rotation.y+=0.008;hubSD.renderer.render(hubSD.scene,hubSD.cam);})();
+  (function loop(){const sd=hubSD;if(!sd)return;requestAnimationFrame(loop);sd.robot.rotation.y+=0.008;sd.renderer.render(sd.scene,sd.cam);})();
 }
 
 // ══════════════════════════════════════════════
@@ -2127,6 +2151,9 @@ function _goToBattleCore(customBotDef){
   document.getElementById('battle-chat-input').value='';
   // Reset combo
   comboCount=0;comboTimer=0;document.getElementById('combo-counter').classList.remove('show');
+  // Show level badge in topbar
+  const lvBadge=document.getElementById('battle-level-badge');
+  if(lvBadge)lvBadge.textContent=`LV${G.level||1}`;
   // Show win streak badge in topbar
   const strkBadge=document.getElementById('battle-streak-badge');
   if(strkBadge){
@@ -2139,7 +2166,7 @@ function _goToBattleCore(customBotDef){
     setTimeout(()=>{if(battleActive)logB(`🔥 WIN STREAK: ${G.winStreak} — ${streakMultiplier(G.winStreak)}x coin bonus active!`,'system');},400);
   }
   // Roll modifier for bot battles (not online, not tournament)
-  if(!isOnlineBattle&&!isTournamentBattle&&!isDailyBattle){rollModifier();}
+  if(!isOnlineBattle&&!isTournamentBattle&&!isDailyBattle&&!isSurvivalMode&&!isTimeAttackMode&&!isBossRushMode){rollModifier();}
   else{battleModifier=null;document.getElementById('modifier-banner').classList.remove('show');}
   modifierTimer=0;
   document.getElementById('btn-battle-again').textContent='⚔️ BATTLE AGAIN';
@@ -2433,9 +2460,11 @@ function updateBattle(dt,time){
   }
   // Combo decay
   if(comboCount>0&&(performance.now()/1000-comboTimer)>1.8)resetCombo();
-  // Battle timer display
+  // Battle timer display + live damage counter
   const btEl=document.getElementById('battle-timer');
   if(btEl&&bsStartTime>0){const sec=Math.floor((performance.now()-bsStartTime)/1000);btEl.textContent=`${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}`;}
+  const dmgValEl=document.getElementById('battle-dmg-val');
+  if(dmgValEl)dmgValEl.textContent=bsDmgDealt;
 
   // Camera shake
   if(camShakeTimer>0){
@@ -2443,7 +2472,7 @@ function updateBattle(dt,time){
     const s=camShakeAmt*(camShakeTimer/0.35);
     bCam.position.x+=(Math.random()-0.5)*s*0.12;
     bCam.position.y+=(Math.random()-0.5)*s*0.07;
-  } else {bCam.position.x=botSquad.length>1?-1:0;bCam.position.y=botSquad.length>1?18:16;}
+  } else {bCam.position.x=botSquad.length>1?-1:0;bCam.position.y=botSquad.length>1?18:16;bCam.lookAt(botSquad.length>1?2.2:0,botSquad.length>1?0.5:1,0);}
 
   // Player animation
   if(lungeTimer>0){lungeTimer-=dt;const l=Math.sin((lungeTimer/0.18)*Math.PI)*0.6;pMesh.position.x=pPos.x+l;pMesh.position.z=pPos.z-l*0.3;}
@@ -3383,8 +3412,11 @@ function endBattle(won){
     sfx('levelup');
     const levelsGained=G.level-oldLevel;
     G.skillPoints=(G.skillPoints||0)+levelsGained;
+    G.stats=calcStats();
     logToast('⬆️',`LEVEL UP! Now Level ${G.level}! +${levelsGained} Skill Point${levelsGained>1?'s':''}!`);
   }
+  // Show XP progress on result screen
+  {const lv=G.level||1;const xpPrev=Math.floor(Math.pow(lv-1,2)*80);const xpNext=Math.floor(Math.pow(lv,2)*80);const xpEl=document.getElementById('result-xp-progress');if(xpEl)xpEl.textContent=`+${xpGain} XP  ·  LV${lv}  [${G.xp-xpPrev}/${xpNext-xpPrev}]  ${G.level>oldLevel?'⬆️ LEVEL UP!':''}`;}
   // Record match history (keep last 20)
   const elapsed=Math.round((performance.now()-bsStartTime)/1000);
   if(!G.matchHistory)G.matchHistory=[];
@@ -3397,13 +3429,10 @@ function endBattle(won){
     if(ex){if(won)ex.wins=(ex.wins||0)+1;else ex.losses=(ex.losses||0)+1;ex.lastSeen=Date.now();ex.robotId=botStats.id;}
     else G.opponents.push({name:botStats.name,robotId:botStats.id,wins:won?1:0,losses:won?0:1,lastSeen:Date.now()});
   }
-  // Missions: play always counts; online wins also trigger win missions
-  if(won){
-    if(!isOnlineBattle&&!isTournamentBattle&&!isDailyBattle){checkMissions('play',1);}
-    if(isOnlineBattle){checkMissions('win',1);checkMissions('win_online',1);}
-  } else {
-    checkMissions('play',1);
-  }
+  // Missions: all battles count for play; online wins also trigger win_online
+  checkMissions('play',1);
+  if(won&&isOnlineBattle){checkMissions('win',1);checkMissions('win_online',1);}
+  checkMissions('dmg',bsDmgDealt);checkMissions('ability',bsAbilities);
   if(won&&bsAbilities>=10)checkAchievements({ability_master:true});
   saveState();
   const isWknd=[0,6].includes(new Date().getDay());
@@ -3419,6 +3448,11 @@ function endBattle(won){
     first_loss:!won&&(G.botLosses+G.onlineLosses)===1
   });
   if(isOnlineBattle&&onlineConn){try{onlineConn.send({type:won?'youLost':'iLost'});}catch(e){}}
+  // Victory reward pop
+  if(won){
+    const rp=document.getElementById('battle-reward-pop');
+    if(rp){rp.textContent=`VICTORY!  +${xpGain} XP`;rp.classList.remove('show');void rp.offsetWidth;rp.classList.add('show');rp.addEventListener('animationend',()=>rp.classList.remove('show'),{once:true});}
+  }
   const res=document.getElementById('battle-result');
   res.classList.remove('show');void res.offsetWidth;res.classList.add('show');
   showBattleStats(xpGain);
@@ -3436,6 +3470,7 @@ function endBattle(won){
       G.survivalBest=Math.max(G.survivalBest||0,survivalWave);
       saveState();
       document.getElementById('battle-money-display').textContent=G.money.toLocaleString();
+      if(G.matchHistory&&G.matchHistory[0])G.matchHistory[0].earn=waveCoins;
       document.getElementById('result-earn').textContent=`💀 WAVE ${survivalWave} COMPLETE! +${waveCoins} coins (total: ${survivalCoinsEarned})`;
       const btn=document.getElementById('btn-battle-again');btn.style.display='';
       btn.textContent=`→ WAVE ${survivalWave+1} (+15% stats)`;
@@ -3479,6 +3514,7 @@ function endBattle(won){
       G.lastBountyDate=new Date().toISOString().slice(0,10);
       saveState();
       document.getElementById('battle-money-display').textContent=G.money.toLocaleString();
+      if(G.matchHistory&&G.matchHistory[0])G.matchHistory[0].earn=bountyCoins;
       document.getElementById('result-earn').textContent=`🎯 BOUNTY DEFEATED! 5x reward: +${bountyCoins} coins!`;
       isBountyBattle=false;
       document.getElementById('btn-battle-again').style.display='none';
@@ -3506,6 +3542,7 @@ function endBattle(won){
       }
     } else if(isDailyBattle){
       const reward=500;G.money+=reward;G.lastDailyChallenge=new Date().toISOString().slice(0,10);saveState();
+      if(G.matchHistory&&G.matchHistory[0])G.matchHistory[0].earn=reward;
       document.getElementById('result-earn').textContent=`⭐ DAILY CHALLENGE COMPLETE! +${reward} coins!`;
       document.getElementById('battle-money-display').textContent=G.money.toLocaleString();
       isDailyBattle=false;updateDailyDot();checkAchievements({daily:true});
@@ -3522,7 +3559,7 @@ function endBattle(won){
       G.money+=earn;saveState();
       _gauntletEarned+=earn;
       if(G.matchHistory&&G.matchHistory[0])G.matchHistory[0].earn=earn;
-      checkMissions('win',1);checkMissions('dmg',bsDmgDealt);checkMissions('ability',bsAbilities);checkMissions('streak',1);
+      checkMissions('win',1);checkMissions('streak',1);
       const streakMsg=mult>1?` (🔥${mult}x streak!)`:'';
       const bonusMsgs=[];if(untouchable)bonusMsgs.push('✨ PERFECT!');if(isWeekend)bonusMsgs.push('📅 WEEKEND 1.5x');
       document.getElementById('battle-money-display').textContent=G.money.toLocaleString();
@@ -3550,7 +3587,10 @@ function endBattle(won){
       document.getElementById('result-earn').textContent=`You defeated ${botStats.name||'opponent'}!`;
     }
   } else {
-    title.textContent='DEFEATED';title.className='result-title result-lose';
+    const defeatMsgs=['DEFEATED','OBLITERATED','SHUT DOWN','DESTROYED','SYSTEM FAILURE'];
+    const dmgPct=pHpMax>0?(_lowestHpPct||0):0;
+    const defeatTitle=dmgPct<0.05?'OBLITERATED':bsDmgDealt>200?'NEARLY GOT THEM':defeatMsgs[Math.floor(Math.random()*defeatMsgs.length)];
+    title.textContent=defeatTitle;title.className='result-title result-lose';
     if(isSurvivalMode){
       G.survivalBest=Math.max(G.survivalBest||0,survivalWave);saveState();
       document.getElementById('result-earn').textContent=`💀 Survived ${survivalWave} wave${survivalWave!==1?'s':''}! Best: ${G.survivalBest}. Coins: +${survivalCoinsEarned}`;
@@ -3588,7 +3628,6 @@ function endBattle(won){
       isDailyBattle=false;
       document.getElementById('btn-battle-again').style.display='none'; // don't replay daily
     } else {
-      checkMissions('dmg',bsDmgDealt);checkMissions('ability',bsAbilities);
       document.getElementById('result-earn').textContent=isOnlineBattle?`${(botStats&&botStats.name)||'Opponent'} wins!`:'Better luck next time!';
       if(!isOnlineBattle){
         const btn=document.getElementById('btn-battle-again');
@@ -3743,7 +3782,7 @@ function renderShop(){
   if(isSidekick){
     const recruitDiv=document.createElement('div');
     recruitDiv.style.cssText='grid-column:1/-1;margin-bottom:8px;';
-    recruitDiv.innerHTML=`<div style="font-family:\'Orbitron\',sans-serif;font-size:0.6rem;color:rgba(0,255,136,0.5);letter-spacing:0.2em;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(0,255,136,0.12);">🤖 RECRUIT SIDEKICKS  —  COSTS 1,000,000,000 COINS EACH</div><div style="display:flex;flex-wrap:wrap;gap:8px;">${SIDEKICK_ROSTER.slice(1).map(r=>{const owned=(G.purchasedSidekicks||[]).includes(r.rosterId);const canAfford=G.money>=r.cost;return `<div style="background:rgba(0,0,0,0.5);border:1px solid rgba(0,255,136,${owned?'0.5':'0.18'});border-radius:6px;padding:10px 14px;min-width:150px;flex:1;max-width:220px;"><div style="font-family:\'Orbitron\',sans-serif;font-size:0.72rem;color:#${r.accentColor.toString(16).padStart(6,'0')};margin-bottom:3px;">${r.name}</div><div style="font-size:0.6rem;color:rgba(200,232,255,0.45);margin-bottom:6px;">${r.desc.split('•')[1]?.trim()||r.desc}</div><div style="font-size:0.58rem;color:rgba(200,232,255,0.4);margin-bottom:8px;">❤️${r.baseStats.hp} ⚔️${r.baseStats.atk} 🛡️${r.baseStats.def} ⚡${r.baseStats.spd}</div>${owned?`<div style="font-size:0.6rem;color:var(--green)">✓ IN YOUR SQUAD</div>`:`<button class="shop-buy-btn" style="width:100%;border-color:rgba(0,255,136,0.5);color:var(--green);" ${canAfford?'':'disabled'} onclick="recruitSidekick('${r.rosterId}')">💰 1,000,000,000</button>`}</div>`;}).join('')}</div>`;
+    recruitDiv.innerHTML=`<div style="font-family:\'Orbitron\',sans-serif;font-size:0.6rem;color:rgba(0,255,136,0.5);letter-spacing:0.2em;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(0,255,136,0.12);">🤖 RECRUIT SIDEKICKS</div><div style="display:flex;flex-wrap:wrap;gap:8px;">${SIDEKICK_ROSTER.slice(1).map(r=>{const owned=(G.purchasedSidekicks||[]).includes(r.rosterId);const canAfford=G.money>=r.cost;return `<div style="background:rgba(0,0,0,0.5);border:1px solid rgba(0,255,136,${owned?'0.5':'0.18'});border-radius:6px;padding:10px 14px;min-width:150px;flex:1;max-width:220px;"><div style="font-family:\'Orbitron\',sans-serif;font-size:0.72rem;color:#${r.accentColor.toString(16).padStart(6,'0')};margin-bottom:3px;">${r.name}</div><div style="font-size:0.6rem;color:rgba(200,232,255,0.45);margin-bottom:6px;">${r.desc.split('•')[1]?.trim()||r.desc}</div><div style="font-size:0.58rem;color:rgba(200,232,255,0.4);margin-bottom:8px;">❤️${r.baseStats.hp} ⚔️${r.baseStats.atk} 🛡️${r.baseStats.def} ⚡${r.baseStats.spd}</div>${owned?`<div style="font-size:0.6rem;color:var(--green)">✓ IN YOUR SQUAD</div>`:`<button class="shop-buy-btn" style="width:100%;border-color:rgba(0,255,136,0.5);color:var(--green);" ${canAfford?'':'disabled'} onclick="recruitSidekick('${r.rosterId}')">💰 ${r.cost.toLocaleString()}</button>`}</div>`;}).join('')}</div>`;
     grid.appendChild(recruitDiv);
     const divider=document.createElement('div');
     divider.style.cssText='grid-column:1/-1;font-family:\'Orbitron\',sans-serif;font-size:0.6rem;color:rgba(0,255,136,0.5);letter-spacing:0.2em;margin:4px 0 8px;padding-top:6px;border-top:1px solid rgba(0,255,136,0.12);';
@@ -4957,11 +4996,13 @@ function isBountyAvailableToday(){
 function updateBountyButton(){
   const btn=document.getElementById('hub-bounty-btn');
   if(!btn)return;
+  btn.style.display='';
   if(isBountyAvailableToday()){
-    btn.style.display='';
     btn.innerHTML='🎯 BOUNTY BOARD <span class="bounty-badge">!</span>';
+    btn.style.opacity='1';btn.title='Special 5x reward battle available!';
   } else {
-    btn.style.display='none';
+    btn.innerHTML='🎯 BOUNTY BOARD <span style="font-size:0.55rem;opacity:0.5"> — DONE TODAY</span>';
+    btn.style.opacity='0.45';btn.title='Come back tomorrow for a new bounty.';
   }
 }
 
@@ -5194,7 +5235,7 @@ function saveColors(){
   if(hubSD){hubSD.renderer.dispose();hubSD=null;}
   const canvas=document.getElementById('hub-canvas');
   hubSD=makeScene(canvas,playerRobotDef());
-  (function loop(){if(!hubSD)return;requestAnimationFrame(loop);hubSD.robot.rotation.y+=0.008;hubSD.renderer.render(hubSD.scene,hubSD.cam);})();
+  (function loop(){const sd=hubSD;if(!sd)return;requestAnimationFrame(loop);sd.robot.rotation.y+=0.008;sd.renderer.render(sd.scene,sd.cam);})();
 }
 
 function closeColorPanel(){
@@ -5207,7 +5248,7 @@ function closeColorPanel(){
 //  AUTO-UPDATE CHECKER
 // ══════════════════════════════════════════════
 
-const BUILD_TS = '20260501_v36';
+const BUILD_TS = '20260501_v37';
 
 function startVersionChecker(){
   setInterval(async ()=>{
