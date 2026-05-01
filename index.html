@@ -614,6 +614,76 @@ h1.logo{animation:logoGlitch 7s infinite;}
 /* ── LEGEND RANK ── */
 .hub-rank[data-rank="LEGEND"]{animation:legendGlow 2s ease-in-out infinite;}
 @keyframes legendGlow{0%,100%{box-shadow:0 0 8px #ff00ff;}50%{box-shadow:0 0 24px #ff00ff,0 0 48px rgba(255,0,255,0.3);}}
+
+/* ── ELEMENT BADGES ── */
+.elem-badge{display:inline-block;font-size:0.55rem;padding:1px 6px;border-radius:3px;font-family:'Orbitron',sans-serif;letter-spacing:0.08em;margin-left:4px;vertical-align:middle;}
+.elem-fire{background:rgba(255,60,0,0.2);border:1px solid rgba(255,60,0,0.6);color:#ff6030;}
+.elem-ice{background:rgba(0,200,255,0.15);border:1px solid rgba(0,200,255,0.5);color:#00ccff;}
+.elem-lightning{background:rgba(255,220,0,0.15);border:1px solid rgba(255,220,0,0.5);color:#ffdd00;}
+.elem-neutral{background:rgba(150,150,150,0.12);border:1px solid rgba(150,150,150,0.35);color:#aaaaaa;}
+#elem-weak-flash{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:130;pointer-events:none;display:none;font-family:'Orbitron',sans-serif;font-weight:900;font-size:1.4rem;color:var(--orange);text-shadow:0 0 30px var(--orange);white-space:nowrap;}
+#elem-weak-flash.pop{display:block;animation:surgePop 1.2s ease forwards;}
+
+/* ── PARRY SYSTEM ── */
+#parry-flash{position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);z-index:130;pointer-events:none;display:none;font-family:'Orbitron',sans-serif;font-weight:900;font-size:2rem;color:var(--cyan);text-shadow:0 0 50px var(--cyan),0 0 90px rgba(0,245,255,0.4);white-space:nowrap;letter-spacing:0.12em;}
+#parry-flash.pop{display:block;animation:critPop 0.9s ease forwards;}
+.parry-window{box-shadow:0 0 0 3px rgba(0,245,255,0.7) inset!important;}
+
+/* ── RAGE MODE MESSAGE ── */
+#rage-mode-msg{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:130;pointer-events:none;display:none;font-family:'Orbitron',sans-serif;font-weight:900;font-size:2.2rem;color:#ff2255;text-shadow:0 0 60px #ff2255,0 0 120px rgba(255,34,85,0.5);white-space:nowrap;letter-spacing:0.15em;}
+#rage-mode-msg.pop{display:block;animation:critPop 1.2s ease forwards;}
+
+/* ── VS SCREEN OVERLAY ── */
+#vs-overlay{position:fixed;inset:0;z-index:220;background:rgba(0,4,12,0.97);display:none;align-items:center;justify-content:center;gap:28px;backdrop-filter:blur(16px);}
+#vs-overlay.show{display:flex;animation:fadeInSimple 0.3s ease;}
+.vs-name{font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(1.4rem,4vw,2.4rem);color:#fff;text-shadow:0 0 30px var(--cyan);}
+.vs-label{font-family:'Orbitron',sans-serif;font-size:3rem;font-weight:900;color:var(--orange);text-shadow:0 0 60px var(--orange);animation:winPulse 0.6s ease-in-out infinite;}
+
+/* ── PRESTIGE BADGE ── */
+.prestige-badge{display:inline-block;font-family:'Orbitron',sans-serif;font-size:0.55rem;padding:2px 7px;border-radius:3px;background:rgba(255,0,255,0.15);border:1px solid rgba(255,0,255,0.5);color:#ff00ff;letter-spacing:0.1em;margin-left:4px;vertical-align:middle;}
+
+/* ── SKILL TREE SCREEN ── */
+#screen-skills{flex-direction:column;justify-content:flex-start;padding:20px;overflow-y:auto;}
+.skill-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;width:100%;max-width:900px;margin-top:12px;}
+.skill-card{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:6px;transition:all 0.2s;position:relative;}
+.skill-card.unlocked{border-color:var(--cyan);background:rgba(0,245,255,0.06);}
+.skill-card.unlocked::after{content:'✓';position:absolute;top:8px;right:10px;color:var(--cyan);font-size:0.8rem;}
+.skill-card:hover:not(.unlocked){border-color:rgba(0,245,255,0.4);}
+.skill-icon{font-size:1.5rem;}
+.skill-name{font-family:'Orbitron',sans-serif;font-size:0.75rem;color:#fff;font-weight:700;}
+.skill-desc{font-size:0.65rem;color:rgba(200,232,255,0.55);line-height:1.5;}
+.skill-cost{font-family:'Orbitron',sans-serif;font-size:0.65rem;color:#cc00ff;margin-top:auto;}
+
+/* ── TITLE SYSTEM ── */
+.player-title{font-family:'Orbitron',sans-serif;font-size:0.65rem;color:var(--orange);letter-spacing:0.1em;font-style:italic;}
+
+/* ── SURVIVAL MODE ── */
+#survival-wave-badge{position:fixed;top:58px;right:120px;z-index:22;font-family:'Orbitron',sans-serif;font-size:0.68rem;padding:4px 12px;background:rgba(255,106,0,0.15);border:1px solid rgba(255,106,0,0.5);border-radius:4px;color:var(--orange);pointer-events:none;display:none;}
+#survival-wave-badge.show{display:block;animation:ragePulse 1s ease-in-out infinite;}
+
+/* ── TIME ATTACK ── */
+#time-attack-display{position:fixed;top:58px;right:200px;z-index:22;font-family:'Orbitron',sans-serif;font-size:0.7rem;padding:4px 10px;background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.4);border-radius:4px;color:var(--cyan);pointer-events:none;display:none;}
+
+/* ── MVP RESULT CARD ── */
+#mvp-result-card{background:rgba(0,6,20,0.97);border:2px solid var(--cyan);border-radius:12px;padding:20px 28px;min-width:340px;max-width:420px;display:none;flex-direction:column;gap:10px;box-shadow:0 0 60px rgba(0,245,255,0.2);margin-top:8px;position:relative;}
+#mvp-result-card.show{display:flex;}
+#mvp-result-card::before{content:'';position:absolute;top:0;left:20px;right:20px;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);}
+.mvp-header{font-family:'Orbitron',sans-serif;font-size:0.55rem;color:rgba(0,245,255,0.5);letter-spacing:0.28em;text-align:center;}
+.mvp-robot-name{font-family:'Orbitron',sans-serif;font-size:1.1rem;font-weight:900;color:var(--cyan);text-align:center;text-shadow:0 0 20px var(--cyan);}
+.mvp-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:4px 0;}
+.mvp-stat{background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.06);border-radius:4px;padding:6px 8px;}
+.mvp-stat-val{font-family:'Orbitron',sans-serif;font-size:0.95rem;font-weight:700;}
+.mvp-stat-lbl{font-size:0.52rem;color:rgba(200,232,255,0.4);letter-spacing:0.12em;}
+.mvp-grade{font-family:'Orbitron',sans-serif;font-size:2rem;font-weight:900;text-align:center;}
+.mvp-copy-btn{font-family:'Orbitron',sans-serif;font-size:0.6rem;padding:7px;border-radius:4px;border:1px solid rgba(0,245,255,0.4);background:rgba(0,245,255,0.08);color:var(--cyan);cursor:pointer;transition:all 0.15s;margin-top:4px;}
+.mvp-copy-btn:hover{background:rgba(0,245,255,0.2);}
+.mvp-stat-row{display:flex;justify-content:space-between;font-size:0.7rem;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
+.mvp-stat-row span:first-child{color:rgba(0,245,255,0.6);font-size:0.62rem;letter-spacing:0.1em;}
+.mvp-stat-row span:last-child{color:#fff;font-weight:bold;font-family:'Orbitron',sans-serif;font-size:0.68rem;}
+
+/* ── BOUNTY BOARD ── */
+.bounty-btn{border-color:rgba(255,224,0,0.6)!important;color:var(--yellow)!important;position:relative;}
+.bounty-badge{display:inline-block;background:rgba(255,34,85,0.8);color:#fff;font-size:0.5rem;font-family:'Orbitron',sans-serif;padding:1px 5px;border-radius:10px;margin-left:5px;vertical-align:middle;animation:ragePulse 0.8s ease-in-out infinite;}
 </style>
 </head>
 <body>
@@ -646,6 +716,8 @@ h1.logo{animation:logoGlitch 7s infinite;}
         <span class="hub-username" id="hub-username-display"></span>
         <span class="hub-rank" id="hub-rank-badge"></span>
         <span id="hub-level-badge" style="font-family:'Orbitron',sans-serif;font-size:0.55rem;color:rgba(170,100,255,0.8);letter-spacing:0.1em;"></span>
+        <span id="hub-prestige-badge" style="display:none;" class="prestige-badge"></span>
+        <span id="hub-title-badge" style="display:none;" class="player-title"></span>
       </div>
       <div class="hub-xp-row"><span id="hub-xp-label">XP 0/100</span><div class="hub-xp-bar-bg"><div class="hub-xp-bar-fill" id="hub-xp-bar" style="width:0%"></div></div></div>
       <div id="hub-next-rank" style="font-size:0.54rem;color:rgba(200,232,255,0.35);font-family:'Orbitron',sans-serif;margin-top:1px;"></div>
@@ -678,10 +750,17 @@ h1.logo{animation:logoGlitch 7s infinite;}
       <div class="hub-buttons">
         <button class="btn btn-orange" onclick="openDifficultyPicker()">⚔️ BATTLE BOT</button>
         <button class="btn btn-ghost" id="hub-quick-fight-btn" onclick="quickFightAgain()" style="display:none;border-color:rgba(255,106,0,0.5);color:var(--orange);font-size:0.75rem;padding:9px;">⚡ QUICK FIGHT (repeat last)</button>
+        <button class="btn btn-ghost bounty-btn" id="hub-bounty-btn" onclick="startBountyBattle()" style="display:none;">🎯 BOUNTY BOARD</button>
         <button class="btn btn-ghost btn-daily" onclick="startDailyChallenge()" style="border-color:rgba(255,224,0,0.45);color:var(--yellow);">📅 DAILY CHALLENGE<span id="daily-dot"></span></button>
         <button class="btn btn-ghost" onclick="goToTournament()" style="border-color:rgba(255,106,0,0.45);color:var(--orange);">🏆 TOURNAMENT</button>
+        <button class="btn btn-ghost" onclick="startSurvivalMode()" style="border-color:rgba(255,34,85,0.5);color:var(--red);">💀 SURVIVAL MODE</button>
+        <button class="btn btn-ghost" onclick="startTimeAttackMode()" style="border-color:rgba(0,245,255,0.5);color:var(--cyan);">⏱ TIME ATTACK</button>
+        <button class="btn btn-ghost" onclick="startBossRush()" style="border-color:rgba(255,106,0,0.6);color:var(--orange);">👹 BOSS RUSH</button>
         <button class="btn btn-green" onclick="goToOnlineMode()">🌐 ONLINE BATTLE</button>
         <button class="btn btn-cyan" onclick="goToShop()">🛒 UPGRADE SHOP</button>
+        <button class="btn btn-ghost" onclick="goToSkillTree()" style="border-color:rgba(170,0,255,0.5);color:#cc00ff;">🧠 SKILL TREE <span id="skill-points-hub-badge" style="display:none;" class="bounty-badge"></span></button>
+        <button class="btn btn-ghost" onclick="openTitlePanel()" style="border-color:rgba(255,106,0,0.4);color:var(--orange);" id="hub-title-btn">🏅 TITLE: <span id="hub-title-display">None</span></button>
+        <button class="btn btn-ghost" id="hub-prestige-btn" onclick="doPrestige()" style="display:none;border-color:rgba(255,0,255,0.6);color:#ff00ff;">⭐ PRESTIGE</button>
         <button class="btn btn-ghost" onclick="goToLeaderboard()" style="border-color:rgba(255,224,0,0.4);color:var(--yellow);">📊 LEADERBOARD</button>
         <button class="btn btn-ghost" onclick="openColorPanel()" style="border-color:rgba(255,34,85,0.45);color:var(--red);">🎨 CUSTOMIZE ROBOT</button>
         <button class="btn btn-ghost" id="admin-btn" onclick="goToAdmin()" style="border-color:rgba(255,106,0,0.5);color:var(--orange);">👑 ADMIN</button>
@@ -721,6 +800,13 @@ h1.logo{animation:logoGlitch 7s infinite;}
         <div class="bs-stat"><span class="bs-val" id="bs-time" style="color:var(--yellow)">0s</span><span class="bs-label">DURATION</span></div>
         <div class="bs-stat"><span class="bs-val" id="bs-xp" style="color:#cc00ff">+0</span><span class="bs-label">XP GAINED</span></div>
         <div class="bs-stat"><span class="bs-val" id="bs-sk" style="color:var(--green)">0</span><span class="bs-label">SK KILLS</span></div>
+      </div>
+      <div id="mvp-result-card">
+        <div class="mvp-header">⭐ RESULT CARD ⭐</div>
+        <div class="mvp-robot-name" id="mvp-robot-name"></div>
+        <div class="mvp-stats" id="mvp-stats-grid"></div>
+        <div class="mvp-grade" id="mvp-grade"></div>
+        <button class="mvp-copy-btn" onclick="copyMvpStats()">📋 COPY STATS</button>
       </div>
       <div class="result-btns">
         <button class="btn btn-orange" id="btn-battle-again" onclick="restartBattle()">⚔️ BATTLE AGAIN</button>
@@ -1038,6 +1124,26 @@ h1.logo{animation:logoGlitch 7s infinite;}
   </div>
 </div>
 
+<!-- SKILL TREE SCREEN -->
+<div id="screen-skills" class="screen">
+  <button class="btn btn-ghost" onclick="goToHub()" style="align-self:flex-start;margin-bottom:12px;font-size:0.75rem;padding:8px 16px;">← HUB</button>
+  <div style="font-family:'Orbitron',sans-serif;font-size:1.3rem;font-weight:700;color:#cc00ff;text-shadow:0 0 20px #cc00ff;">🧠 SKILL TREE</div>
+  <div style="font-size:0.7rem;color:rgba(200,232,255,0.4);margin-top:4px;">Spend skill points to unlock permanent passive perks</div>
+  <div style="font-family:'Orbitron',sans-serif;font-size:0.75rem;color:#cc00ff;margin-top:10px;" id="skill-points-display">🔮 0 SKILL POINTS AVAILABLE</div>
+  <div class="skill-grid" id="skill-grid"></div>
+</div>
+
+<!-- SURVIVAL SCREEN (launched directly from hub) -->
+<!-- No separate screen needed — uses battle screen with isSurvivalMode flag -->
+
+<!-- TITLE SELECTOR PANEL -->
+<div id="title-panel" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,4,12,0.97);align-items:center;justify-content:center;flex-direction:column;gap:16px;backdrop-filter:blur(18px);">
+  <div style="font-family:'Orbitron',sans-serif;font-size:1.1rem;font-weight:700;color:var(--orange);">🏅 SELECT TITLE</div>
+  <div style="font-size:0.7rem;color:rgba(200,232,255,0.4);">Earn titles through achievements. Displayed next to your name in battle.</div>
+  <div id="title-list" style="display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow-y:auto;width:100%;max-width:420px;padding:4px;"></div>
+  <button class="btn btn-ghost" onclick="closeTitlePanel()" style="margin-top:4px;font-size:0.75rem;">✕ CLOSE</button>
+</div>
+
 <!-- GIFT NOTIFICATION -->
 <div id="gift-notification">
   <div class="gift-star">💰</div>
@@ -1060,6 +1166,28 @@ h1.logo{animation:logoGlitch 7s infinite;}
     <button class="touch-ability-btn hidden" id="touch-F" ontouchstart="touchAbility(event,'f')" onmousedown="touchAbility(event,'f')"><span>🛡️</span><span>SHIELD</span><span class="touch-ability-cd" id="touch-F-cd"></span></button>
   </div>
 </div>
+
+<!-- VS OVERLAY -->
+<div id="vs-overlay">
+  <div class="vs-name" id="vs-player-name"></div>
+  <div class="vs-label">VS</div>
+  <div class="vs-name" id="vs-bot-name"></div>
+</div>
+
+<!-- PARRY FLASH -->
+<div id="parry-flash">⚡ PARRY!</div>
+
+<!-- RAGE MODE MSG -->
+<div id="rage-mode-msg">⚡ RAGE MODE! ⚡</div>
+
+<!-- ELEMENT WEAK FLASH -->
+<div id="elem-weak-flash">🔥 ELEMENT WEAK!</div>
+
+<!-- SURVIVAL WAVE BADGE -->
+<div id="survival-wave-badge">WAVE 1</div>
+
+<!-- TIME ATTACK DISPLAY -->
+<div id="time-attack-display">⏱ 0.00s</div>
 
 <!-- COMBO COUNTER -->
 <div id="combo-counter"><div class="combo-num" id="combo-num">2x</div><div class="combo-lbl">COMBO!</div></div>
@@ -1204,12 +1332,16 @@ h1.logo{animation:logoGlitch 7s infinite;}
 
 const ROBOTS = [
   { id:'crusher', name:'Iron Crusher', desc:'Armored titan — built to absorb punishment',
-    color:0x1177cc, accentColor:0x33aaff, baseStats:{hp:150,atk:12,def:15,spd:6,sp:8} },
+    color:0x1177cc, accentColor:0x33aaff, baseStats:{hp:150,atk:12,def:15,spd:6,sp:8}, element:'ice' },
   { id:'thunder', name:'Thunder Strike', desc:'Balanced warrior with electrified attacks',
-    color:0xcc9900, accentColor:0xffe000, baseStats:{hp:100,atk:15,def:10,spd:12,sp:12} },
+    color:0xcc9900, accentColor:0xffe000, baseStats:{hp:100,atk:15,def:10,spd:12,sp:12}, element:'lightning' },
   { id:'phantom', name:'Phantom Blade', desc:'Lightning assassin — strike before they see you',
-    color:0xaa1122, accentColor:0xff2255, baseStats:{hp:80,atk:20,def:6,spd:20,sp:15} }
+    color:0xaa1122, accentColor:0xff2255, baseStats:{hp:80,atk:20,def:6,spd:20,sp:15}, element:'fire' }
 ];
+// Element weakness chart: attacker element -> defender element that is weak (takes +25% dmg)
+const ELEMENT_WEAKNESS = {fire:'ice', ice:'lightning', lightning:'fire'};
+const ELEMENT_LABELS = {fire:'🔥 FIRE', ice:'❄️ ICE', lightning:'⚡ LIGHTNING', neutral:'◆ NEUTRAL'};
+const ELEMENT_BADGE_CLASS = {fire:'elem-fire', ice:'elem-ice', lightning:'elem-lightning', neutral:'elem-neutral'};
 
 function generateShopUpgrades() {
   const categories = [
@@ -1291,7 +1423,9 @@ const ABILITIES = [
 //  GAME STATE
 // ══════════════════════════════════════════════
 
-const G_DEFAULTS = { username:'', robot:null, money:500, purchasedUpgrades:[], sidekickUpgrades:[], purchasedSidekicks:[], sidekickNames:{}, sidekickKills:{}, stats:null, botWins:0, botLosses:0, onlineWins:0, onlineLosses:0, opponents:[], achievements:[], winStreak:0, lastLogin:'', loginStreak:0, robotBodyColor:null, robotAccentColor:null, soundEnabled:true, lastDailyChallenge:'', tournamentBest:0, godMode:false, xp:0, level:1, matchHistory:[], missions:null, missionsDate:'', totalDmgDealt:0, totalBattles:0, _lastBotDiff:'', _lastBotCount:1 };
+const G_DEFAULTS = { username:'', robot:null, money:500, purchasedUpgrades:[], sidekickUpgrades:[], purchasedSidekicks:[], sidekickNames:{}, sidekickKills:{}, stats:null, botWins:0, botLosses:0, onlineWins:0, onlineLosses:0, opponents:[], achievements:[], winStreak:0, lastLogin:'', loginStreak:0, robotBodyColor:null, robotAccentColor:null, soundEnabled:true, lastDailyChallenge:'', tournamentBest:0, godMode:false, xp:0, level:1, matchHistory:[], missions:null, missionsDate:'', totalDmgDealt:0, totalBattles:0, _lastBotDiff:'', _lastBotCount:1,
+  prestigeLevel:0, skillPoints:0, skills:[], survivalBest:0, timeAttackBest:0, bossRushBest:0,
+  lastBountyDate:'', bountiesCompleted:0, title:'' };
 let G = {...G_DEFAULTS};
 
 function loadState() {
@@ -1762,6 +1896,22 @@ function goToHub() {
   // Show quick fight button if they've fought before
   const qfBtn=document.getElementById('hub-quick-fight-btn');
   if(qfBtn)qfBtn.style.display=G._lastBotDiff?'':'none';
+  // Prestige badge
+  const pBadge=document.getElementById('hub-prestige-badge');
+  if(pBadge){if((G.prestigeLevel||0)>0){pBadge.textContent=`★ PRESTIGE ${G.prestigeLevel}`;pBadge.style.display='';}else pBadge.style.display='none';}
+  // Prestige button
+  const presBtn=document.getElementById('hub-prestige-btn');
+  if(presBtn)presBtn.style.display=(G.purchasedUpgrades||[]).length>=150?'':'none';
+  // Title display
+  const titleDisp=document.getElementById('hub-title-display');
+  if(titleDisp)titleDisp.textContent=G.title||'None';
+  const titleBadge=document.getElementById('hub-title-badge');
+  if(titleBadge){if(G.title){titleBadge.textContent=G.title;titleBadge.style.display='';}else titleBadge.style.display='none';}
+  // Skill points badge
+  const spBadge=document.getElementById('skill-points-hub-badge');
+  if(spBadge){const sp=G.skillPoints||0;if(sp>0){spBadge.textContent=sp;spBadge.style.display='';}else spBadge.style.display='none';}
+  // Bounty board
+  updateBountyButton();
   checkDailyBonus();
   updateMissionsUI();
   initPeer(); // silently keep peer alive so players can receive admin gifts from any screen
@@ -1870,6 +2020,12 @@ let _sessionCoins=0;
 let _lowestHpPct=1.0;
 // New systems
 let comboCount=0,comboTimer=0,battleModifier=null,isTournamentBattle=false,isDailyBattle=false;
+let isSurvivalMode=false,isTimeAttackMode=false,isBossRushMode=false;
+let survivalWave=0,survivalCoinsEarned=0;
+let _timeAttackStart=0;
+let _bossRushIdx=0,_bossRushCoinsEarned=0;
+let parryCd=0,_parryWindowOpen=false,_parryWindowTimer=0;
+let isBountyBattle=false;
 let tournamentRound=0,tournamentPrize=0;
 let modifierTimer=0;
 // Sidekick squad
@@ -1888,7 +2044,11 @@ window.addEventListener('keydown',e=>{
   if(e.key===' '){e.preventDefault();doAttack(false);}
   if(e.key.toLowerCase()==='e')doAttack(true);
   if(e.key==='Shift')doDash();
-  if(e.key.toLowerCase()==='q')doRepair();
+  if(e.key.toLowerCase()==='q'){
+    // Q = PARRY if parry window open, else REPAIR
+    if(_parryWindowOpen&&parryCd<=0&&!isOnlineBattle)doParry();
+    else doRepair();
+  }
   if(e.key.toLowerCase()==='f')doShield();
   // 1-5: switch target in multi-bot battles
   if(!isOnlineBattle&&botSquad.length>1&&e.key>='1'&&e.key<='5'){const ti=parseInt(e.key)-1;if(ti<botSquad.length&&botSquad[ti].alive)selectTarget(ti);}
@@ -1924,11 +2084,42 @@ function goToBattle(customBotDef){
   clearTimeout(_randomTimeout);
   stopOnlinePlayerPolling();
   if(hubSD){hubSD.renderer.dispose();hubSD=null;}
+
+  // Show VS overlay for non-gauntlet-continuation, non-online battles
+  const skipVS=isOnlineBattle||_gauntletActive||isTournamentBattle||isDailyBattle;
+  if(!skipVS&&customBotDef){
+    showVsOverlay(G.username, customBotDef.name||'OPPONENT', ()=>_goToBattleCore(customBotDef));
+    return;
+  } else if(!skipVS&&!customBotDef){
+    const previewBot=makeBotStats();
+    showVsOverlay(G.username, previewBot.name, ()=>_goToBattleCore(customBotDef));
+    return;
+  }
+  _goToBattleCore(customBotDef);
+}
+
+function showVsOverlay(playerName, botName, callback){
+  const overlay=document.getElementById('vs-overlay');
+  document.getElementById('vs-player-name').textContent=playerName.toUpperCase();
+  document.getElementById('vs-bot-name').textContent=(botName||'OPPONENT').toUpperCase();
+  overlay.classList.add('show');
+  setTimeout(()=>{overlay.classList.remove('show');callback();},1500);
+}
+
+function _goToBattleCore(customBotDef){
   showScreen('battle');
   document.getElementById('battle-result').classList.remove('show');
   document.getElementById('bs-card').style.display='none';
+  document.getElementById('mvp-result-card').classList.remove('show');
   document.getElementById('battle-log').innerHTML='';
-  document.getElementById('battle-mode-label').textContent=isOnlineBattle?'🌐 ONLINE BATTLE':_gauntletActive?`⚔ GAUNTLET ${_gauntletRound+1}/${_botCount}`:'⚔ ARENA';
+  // Mode label
+  let modeLabel='⚔ ARENA';
+  if(isOnlineBattle)modeLabel='🌐 ONLINE BATTLE';
+  else if(_gauntletActive)modeLabel=`⚔ GAUNTLET ${_gauntletRound+1}/${_botCount}`;
+  else if(isSurvivalMode)modeLabel=`💀 SURVIVAL — WAVE ${survivalWave}`;
+  else if(isTimeAttackMode)modeLabel='⏱ TIME ATTACK';
+  else if(isBossRushMode)modeLabel=`👹 BOSS RUSH — BOSS ${_bossRushIdx+1}/10`;
+  document.getElementById('battle-mode-label').textContent=modeLabel;
   document.getElementById('btn-battle-again').style.display=isOnlineBattle?'none':'';
   const chatEl=document.getElementById('battle-chat');
   if(isOnlineBattle){chatEl.classList.add('show');}else{chatEl.classList.remove('show');}
@@ -2037,7 +2228,12 @@ function setupBattleArena(customBotDef){
   const botPositions=getBotPositions(numBots);
   const platScale=numBots>2?0.7:1.0; // smaller platforms when crowded
   for(let bi=0;bi<numBots;bi++){
-    const bDef=customBotDef||makeBotStats();
+    let bDef=customBotDef||makeBotStats();
+    // Survival mode: scale bot stats by +15% per wave
+    if(isSurvivalMode&&survivalWave>1){
+      const sm=Math.pow(1.15,survivalWave-1);
+      bDef={...bDef,hp:Math.floor(bDef.hp*sm),atk:Math.floor(bDef.atk*sm),def:Math.floor(bDef.def*sm)};
+    }
     const bp=botPositions[bi];
     const bMesh2=buildRobotMesh(bScene,bDef);
     bMesh2.position.set(bp.x,0,bp.z);bMesh2.rotation.y=Math.PI*0.92;
@@ -2128,18 +2324,48 @@ function setupBattleArena(customBotDef){
   }
 
   G.stats=calcStats();
-  pHp=G.stats.hp;pHpMax=G.stats.hp;
+  // Apply prestige stat bonus
+  const prestigeBonus=1+((G.prestigeLevel||0)*0.10);
+  // Apply skill bonuses
+  const hasSkill=id=>(G.skills||[]).includes(id);
+  const skillHpBonus=hasSkill('iron_skin')?15:0;
+  const totalHp=Math.floor((G.stats.hp+skillHpBonus)*prestigeBonus);
+  pHp=totalHp;pHpMax=totalHp;
   // bHp/bHpMax/botStats etc. set via syncGlobalsFromBot above
-  attackCd=0;specialCd=0;dashCd=0;repairCd=0;shieldCd=0;
+  attackCd=0;specialCd=0;dashCd=0;repairCd=0;shieldCd=0;parryCd=0;
+  _parryWindowOpen=false;_parryWindowTimer=0;
   shieldActive=false;shieldTimer=0;lungeTimer=0;
   lastPlayerAttackTime=performance.now();
   bsDmgDealt=0;bsDmgTaken=0;bsAttacks=0;bsAbilities=0;bsStartTime=performance.now();bsSkKills=0;
   _firstBloodDone=false;_botTauntTimer=8+Math.random()*6;_skMegaTimer=15;
   _rageTriggered=false;_surgeCount=0;_lowestHpPct=1.0;
   activeParticles=[];camShakeTimer=0;
+  // Survival/time attack/boss rush inits
+  if(isSurvivalMode){
+    const sw=document.getElementById('survival-wave-badge');
+    if(sw){sw.textContent=`WAVE ${survivalWave}`;sw.classList.add('show');}
+  } else {
+    const sw=document.getElementById('survival-wave-badge');if(sw)sw.classList.remove('show');
+  }
+  if(isTimeAttackMode){
+    _timeAttackStart=performance.now();
+    const ta=document.getElementById('time-attack-display');if(ta)ta.style.display='block';
+  } else {
+    const ta=document.getElementById('time-attack-display');if(ta)ta.style.display='none';
+  }
+  // Show element badge for player's robot in HP label
+  if(G.robot&&G.robot.element){
+    const el=G.robot.element;
+    document.getElementById('player-hp-label').innerHTML=`${G.username.toUpperCase().substring(0,7)} <span class="elem-badge ${ELEMENT_BADGE_CLASS[el]||'elem-neutral'}">${ELEMENT_LABELS[el]||el}</span>`;
+  } else {
+    document.getElementById('player-hp-label').textContent=G.username.toUpperCase().substring(0,10);
+  }
+  // Element badge for bot
+  const botElem=botSquad[0]&&['crusher','thunder','phantom'].includes(botSquad[0].stats.id)?
+    ROBOTS.find(r=>r.id===botSquad[0].stats.id)?.element||'neutral':'neutral';
+  const bots2=botSquad[0].stats;
+  document.getElementById('enemy-hp-label').innerHTML=`${(bots2.name||'OPPONENT').toUpperCase().substring(0,8)} <span class="elem-badge ${ELEMENT_BADGE_CLASS[botElem]||'elem-neutral'}">${ELEMENT_LABELS[botElem]||botElem}</span>`;
 
-  document.getElementById('player-hp-label').textContent=G.username.toUpperCase().substring(0,10);
-  document.getElementById('enemy-hp-label').textContent=(bots.name||'OPPONENT').toUpperCase().substring(0,10);
   document.getElementById('battle-money-display').textContent=G.money.toLocaleString();
   buildTargetPanel();updateHpUI();
   const fightMsg=botSquad.length>1?`⚡ ${botSquad.length}-BOT BRAWL! Press 1-${botSquad.length} to switch targets!`:isOnlineBattle?`🌐 ONLINE vs ${bots.name} — SPAM SPACE to attack!`:`⚡ FIGHT vs ${bots.name} — SPAM SPACE to attack!`;
@@ -2182,7 +2408,17 @@ function updateBattle(dt,time){
   if(!battleActive)return;
   const now=time||performance.now();
 
-  attackCd=Math.max(0,attackCd-dt);specialCd=Math.max(0,specialCd-dt);dashCd=Math.max(0,dashCd-dt);repairCd=Math.max(0,repairCd-dt);shieldCd=Math.max(0,shieldCd-dt);
+  attackCd=Math.max(0,attackCd-dt);specialCd=Math.max(0,specialCd-dt);dashCd=Math.max(0,dashCd-dt);repairCd=Math.max(0,repairCd-dt);shieldCd=Math.max(0,shieldCd-dt);parryCd=Math.max(0,parryCd-dt);
+  // Parry window timer
+  if(_parryWindowOpen){
+    _parryWindowTimer=Math.max(0,_parryWindowTimer-dt);
+    if(_parryWindowTimer<=0)_parryWindowOpen=false;
+  }
+  // Time attack display update
+  if(isTimeAttackMode&&_timeAttackStart>0){
+    const ta=document.getElementById('time-attack-display');
+    if(ta){const ms=performance.now()-_timeAttackStart;ta.textContent=`⏱ ${(ms/1000).toFixed(2)}s`;}
+  }
   if(shieldActive){shieldTimer-=dt;if(shieldTimer<=0)shieldActive=false;}
   // Modifier tick effects
   if(battleModifier&&!isOnlineBattle){
@@ -2404,6 +2640,8 @@ function botDecideNextMove(tier){
 
 function executeBotAttack(type){
   botLungeTimer=0.18;
+  // Open parry window for 0.4s
+  if(!isOnlineBattle){_parryWindowOpen=true;_parryWindowTimer=0.4;}
   const df=shieldActive?0.25:0.5;
   const defMult=battleModifier?.id==='glasscannon'?0.5:battleModifier?.id==='armored'?2:1;
   const atkMult=(battleModifier?.id==='glasscannon'?2:1)*(battleModifier?.id==='berserker'?1.5:1);
@@ -2560,29 +2798,49 @@ function updateSidekick(dt,now){
 
 // ── Player Actions ──
 
+function getElementMultiplier(attackerElement, defenderElement){
+  if(!attackerElement||!defenderElement)return 1.0;
+  if(ELEMENT_WEAKNESS[attackerElement]===defenderElement)return 1.25;
+  return 1.0;
+}
+
 function doAttack(isSpecial){
-  const rageMult=(pHp/pHpMax<0.25)?1.25:1.0;
+  const rageThreshold=(G.skills||[]).includes('berserker_soul')?0.35:0.25;
+  const rageMult=(pHp/pHpMax<rageThreshold)?1.5:1.0; // upgraded from 1.25 to 1.5
+  // Sharp edge skill bonus
+  const sharpEdge=(G.skills||[]).includes('sharp_edge')?1.10:1.0;
+  // Prestige bonus
+  const prestigeAtkBonus=1+((G.prestigeLevel||0)*0.10);
+  // Element multiplier
+  const playerElem=G.robot&&G.robot.element?G.robot.element:'neutral';
+  const botElemId=tgt()&&tgt().stats&&tgt().stats.id?tgt().stats.id:'neutral';
+  const botElemForCalc=ROBOTS.find(r=>r.id===botElemId)?.element||'neutral';
+  const elemMult=getElementMultiplier(playerElem,botElemForCalc);
   if(isSpecial){
     if(specialCd>0)return;
     if(!getUnlockedAbilities().find(a=>a.id==='powerStrike'))return;
-    specialCd=14;
+    const cdReduct=(G.skills||[]).includes('quick_reflex')?1:0;
+    specialCd=14-cdReduct;
     const dodge=botDodging?0.25:1;
     const atkMult=(battleModifier?.id==='glasscannon'?2:1)*(battleModifier?.id==='blitz'?1.15:1)*(battleModifier?.id==='berserker'?1.5:1);
     const defMult=battleModifier?.id==='armored'?2:1;
-    let dmg=Math.max(1,Math.floor(G.stats.atk*1.4*dodge*atkMult*rageMult)-Math.floor(botStats.def*0.5*defMult)+Math.floor(Math.random()*3));
+    let dmg=Math.max(1,Math.floor(G.stats.atk*1.4*dodge*atkMult*rageMult*sharpEdge*prestigeAtkBonus)-Math.floor(botStats.def*0.5*defMult)+Math.floor(Math.random()*3));
     if(battleModifier?.id==='ghostly'&&Math.random()<0.3){logB('👻 Ghost dodge! Miss!','system');return;}
     const isCrit=rollCrit();if(isCrit){dmg=Math.floor(dmg*(battleModifier?.id==='critheavy'?3:2));showCritOverlay();}
-    dmg=Math.floor(dmg*comboMultiplier());
+    dmg=Math.floor(dmg*comboMultiplier()*elemMult);
+    if(elemMult>1)showElemWeakFlash();
     if(battleModifier?.id==='overtime'&&battleModifier._overtimeTriggered)dmg=Math.floor(dmg*1.2);
     bHp=Math.max(0,bHp-dmg);if(tgt())tgt().hp=bHp;bsDmgDealt+=dmg;bsAttacks++;bsAbilities++;
     if(battleModifier?.id==='lifesteal'){pHp=Math.min(pHpMax,pHp+2);updateHpUI();}
-    floatDmgNumber(dmg,true);
-    logB(`💥 POWER STRIKE!${isCrit?' CRIT!':''} ${dmg} dmg!${botDodging?' (dodged)':''}${rageMult>1?' 🔥RAGE':''}`, 'player');
+    // Vampiric skill
+    if((G.skills||[]).includes('vampiric')){pHp=Math.min(pHpMax,pHp+1);}
+    floatDmgNumber(dmg,true,false,false);
+    logB(`💥 POWER STRIKE!${isCrit?' CRIT!':''} ${dmg} dmg!${botDodging?' (dodged)':''}${rageMult>1?' 🔥RAGE':''}${elemMult>1?' 🔥WEAK!':''}`, 'player');
     lungeTimer=0.18;
     hitFlash(bPos.x,0.5,0,botStats.accentColor||0xff4400);
     spawnSparks(bPos.x,0.5,0.3,botStats.accentColor||0xff4400,isCrit?20:14);
     triggerShake(isCrit?1.6:1.0);
-    sfx(isCrit?'crit':'hit');
+    sfx(isCrit?'crit':'hit',botStats.id);
     if(isOnlineBattle&&onlineConn)onlineConn.send({type:'attack',dmg,label:'💥 POWER STRIKE'});
   } else {
     if(attackCd>0)return;
@@ -2590,10 +2848,11 @@ function doAttack(isSpecial){
     const dodge=botDodging?0.3:1;
     const atkMult=(battleModifier?.id==='glasscannon'?2:1)*(battleModifier?.id==='blitz'?1.15:1)*(battleModifier?.id==='berserker'?1.5:1);
     const defMult2=battleModifier?.id==='armored'?2:1;
-    let dmg=Math.max(1,Math.floor(G.stats.atk*0.4*dodge*atkMult*rageMult)-Math.floor(botStats.def*0.12*defMult2)+Math.floor(Math.random()*3));
+    let dmg=Math.max(1,Math.floor(G.stats.atk*0.4*dodge*atkMult*rageMult*sharpEdge*prestigeAtkBonus)-Math.floor(botStats.def*0.12*defMult2)+Math.floor(Math.random()*3));
     if(battleModifier?.id==='ghostly'&&Math.random()<0.3){logB('👻 Ghost dodge! Miss!','system');return;}
     const isCrit=rollCrit();if(isCrit){dmg=Math.floor(dmg*(battleModifier?.id==='critheavy'?3:2));showCritOverlay();}
-    dmg=Math.floor(dmg*comboMultiplier());
+    dmg=Math.floor(dmg*comboMultiplier()*elemMult);
+    if(elemMult>1)showElemWeakFlash();
     // Overtime: +20% damage after 60s
     if(battleModifier?.id==='overtime'&&battleModifier._overtimeTriggered)dmg=Math.floor(dmg*1.2);
     // Quickdraw: 3x on very first hit
@@ -2604,16 +2863,18 @@ function doAttack(isSpecial){
     if(_surgeCount>=10){_surgeCount=0;isSurge=true;dmg=Math.floor(dmg*2);showSurgeOverlay();logB('⚡ POWER SURGE!','system');sfx('crit');}
     bHp=Math.max(0,bHp-dmg);if(tgt())tgt().hp=bHp;bsDmgDealt+=dmg;bsAttacks++;
     if(battleModifier?.id==='lifesteal'){pHp=Math.min(pHpMax,pHp+2);updateHpUI();}
+    // Vampiric skill
+    if((G.skills||[]).includes('vampiric')){pHp=Math.min(pHpMax,pHp+1);}
     if(!_firstBloodDone&&dmg>0){_firstBloodDone=true;logB('🩸 FIRST BLOOD!','system');sfx('crit');}
-    floatDmgNumber(dmg,isCrit||isSurge);
-    logB(`Hit!${isCrit?' CRIT!':''} ${dmg} dmg${botDodging?' (dodged)':''}${rageMult>1?' 🔥':''}${isSurge?' ⚡SURGE':''}`, 'player');
+    floatDmgNumber(dmg,isCrit,isSurge,false);
+    logB(`Hit!${isCrit?' CRIT!':''} ${dmg} dmg${botDodging?' (dodged)':''}${rageMult>1?' 🔥':''}${isSurge?' ⚡SURGE':''}${elemMult>1?' 🔥WEAK!':''}`, 'player');
     // Bot reacts to heavy hits
     if(!isOnlineBattle&&dmg>20&&Math.random()<0.35){const reacts=['Ugh… that stings!','You\'ll pay for that!','Is that all you\'ve got?!','*sparks fly* RAGE ACTIVATING!','Calculating… you got lucky!'];logB(`${botStats.name}: "${reacts[Math.floor(Math.random()*reacts.length)]}"  💢`,'enemy');}
     lungeTimer=0.18;
     hitFlash(bPos.x,0.5,0,botStats.accentColor||0xff4400);
     spawnSparks(bPos.x,0.5,0.3,botStats.accentColor||0xff4400,isCrit?12:6);
     triggerShake(isCrit?0.8:0.3);
-    sfx(isCrit?'crit':'hit');
+    sfx(isCrit?'crit':'hit',botStats.id);
     if(isOnlineBattle&&onlineConn)onlineConn.send({type:'attack',dmg,label:'Hit'});
   }
   incrementCombo();
@@ -2627,20 +2888,31 @@ function doAttack(isSpecial){
 }
 
 function doDash(){
+  const cdReduct=(G.skills||[]).includes('quick_reflex')?1:0;
   if(dashCd>0||!getUnlockedAbilities().find(a=>a.id==='dash'))return;
-  dashCd=battleModifier?.id==='blitz'?5:8;lungeTimer=0.18;
+  dashCd=(battleModifier?.id==='blitz'?5:8)-cdReduct;lungeTimer=0.18;
   const dodge=botDodging?0.25:1;
-  const rageMult=(pHp/pHpMax<0.25)?1.25:1.0;
+  const rageThreshD=(G.skills||[]).includes('berserker_soul')?0.35:0.25;
+  const rageMult=(pHp/pHpMax<rageThreshD)?1.5:1.0;
+  const sharpEdgeD=(G.skills||[]).includes('sharp_edge')?1.10:1.0;
+  const prestigeAtkD=1+((G.prestigeLevel||0)*0.10);
+  const playerElemD=G.robot&&G.robot.element?G.robot.element:'neutral';
+  const botElemIdD=tgt()&&tgt().stats&&tgt().stats.id?tgt().stats.id:'neutral';
+  const botElemD=ROBOTS.find(r=>r.id===botElemIdD)?.element||'neutral';
+  const elemMultD=getElementMultiplier(playerElemD,botElemD);
   const atkMult=(battleModifier?.id==='glasscannon'?2:1)*(battleModifier?.id==='blitz'?1.15:1)*(battleModifier?.id==='berserker'?1.5:1);
   const defMult=battleModifier?.id==='armored'?2:1;
   if(battleModifier?.id==='ghostly'&&Math.random()<0.3){logB('👻 Ghost dodge! Dash missed!','system');return;}
-  let dmg=Math.max(1,Math.floor(G.stats.atk*0.55*dodge*atkMult*rageMult)-Math.floor(botStats.def*0.25*defMult)+Math.floor(Math.random()*3));
+  let dmg=Math.max(1,Math.floor(G.stats.atk*0.55*dodge*atkMult*rageMult*sharpEdgeD*prestigeAtkD)-Math.floor(botStats.def*0.25*defMult)+Math.floor(Math.random()*3));
   const isCrit=rollCrit();if(isCrit){dmg=Math.floor(dmg*(battleModifier?.id==='critheavy'?3:2));showCritOverlay();}
-  dmg=Math.floor(dmg*comboMultiplier());
+  dmg=Math.floor(dmg*comboMultiplier()*elemMultD);
+  if(elemMultD>1)showElemWeakFlash();
   if(battleModifier?.id==='overtime'&&battleModifier._overtimeTriggered)dmg=Math.floor(dmg*1.2);
   bHp=Math.max(0,bHp-dmg);if(tgt())tgt().hp=bHp;bsDmgDealt+=dmg;bsAttacks++;bsAbilities++;
   if(battleModifier?.id==='lifesteal'){pHp=Math.min(pHpMax,pHp+2);}
-  logB(`💨 Rocket Dash!${isCrit?' CRIT!':''} ${dmg} dmg!${rageMult>1?' 🔥':''}`,'player');
+  if((G.skills||[]).includes('vampiric')){pHp=Math.min(pHpMax,pHp+1);}
+  logB(`💨 Rocket Dash!${isCrit?' CRIT!':''} ${dmg} dmg!${rageMult>1?' 🔥':''}${elemMultD>1?' 🔥WEAK!':''}`,'player');
+  floatDmgNumber(dmg,isCrit,false,false);
   hitFlash(bPos.x,0.5,0,botStats.accentColor||0xff4400);
   spawnSparks(bPos.x,0.5,0.3,botStats.accentColor||0xff4400,10);
   triggerShake(0.6);
@@ -2655,9 +2927,11 @@ function doDash(){
 
 function doRepair(){
   if(repairCd>0||!getUnlockedAbilities().find(a=>a.id==='repair'))return;
-  repairCd=22;bsAbilities++;
+  const cdReduct=(G.skills||[]).includes('quick_reflex')?1:0;
+  repairCd=22-cdReduct;bsAbilities++;
   const heal=Math.floor(pHpMax*0.12);pHp=Math.min(pHpMax,pHp+heal);
   logB(`❤️ Self Repair! +${heal} HP`,'player');
+  floatDmgNumber(heal,false,false,true);
   sfx('repair');checkMissions('heal',1);
   if(isOnlineBattle&&onlineConn)onlineConn.send({type:'repair',heal});
   updateHpUI();
@@ -2665,10 +2939,35 @@ function doRepair(){
 
 function doShield(){
   if(shieldCd>0||shieldActive||!getUnlockedAbilities().find(a=>a.id==='shield'))return;
-  shieldCd=20;shieldActive=true;shieldTimer=1.8;bsAbilities++;
-  logB('🛡️ Force Shield! (1.8s)','player');
+  const cdReduct=(G.skills||[]).includes('quick_reflex')?1:0;
+  const shieldExt=(G.skills||[]).includes('shield_expert')?0.5:0;
+  shieldCd=20-cdReduct;shieldActive=true;shieldTimer=1.8+shieldExt;bsAbilities++;
+  logB(`🛡️ Force Shield! (${(1.8+shieldExt).toFixed(1)}s)`,'player');
   sfx('shield');
   if(isOnlineBattle&&onlineConn)onlineConn.send({type:'shield'});
+}
+
+function doParry(){
+  if(!_parryWindowOpen||parryCd>0||isOnlineBattle)return;
+  _parryWindowOpen=false;_parryWindowTimer=0;
+  parryCd=6;
+  // Store the incoming damage to reflect it back
+  // We get the pending bot attack dmg from the next bot attack — use a rough estimate
+  const reflectDmg=Math.max(5,Math.floor((tgt()?tgt().stats.atk:botStats.atk)*0.5));
+  bHp=Math.max(0,bHp-reflectDmg);if(tgt())tgt().hp=bHp;
+  bsDmgDealt+=reflectDmg;
+  // Stun the bot for 1.5s
+  if(tgt()){tgt().state='idle';tgt().stateTimer=1.5;saveGlobalsToBot(tgt());}
+  botState='idle';botStateTimer=1.5;
+  // Flash the parry overlay
+  const el=document.getElementById('parry-flash');
+  el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');
+  el.addEventListener('animationend',()=>el.classList.remove('pop'),{once:true});
+  logB(`⚡ PARRY! Bot stunned 1.5s! Reflected ${reflectDmg} dmg!`,'player');
+  sfx('shield');
+  hitFlash(bPos.x,0.5,0,0x00f5ff);spawnSparks(bPos.x,0.5,0,0x00f5ff,16);triggerShake(1.2);
+  updateHpUI();updateTargetUI();
+  if(bHp<=0){if(tgt()&&botSquad.length>1)onBotKilled(tgt());else endBattle(true);}
 }
 
 function updateHpUI(){
@@ -2682,8 +2981,8 @@ function updateHpUI(){
   const isRage=battleActive&&pHp>0&&(pHp/pHpMax)<0.25;
   document.getElementById('hp-danger-vignette').classList.toggle('show',isLowHp);
   document.getElementById('rage-indicator').classList.toggle('show',isRage);
-  // Trigger rage SFX exactly once when first crossing 25%
-  if(isRage&&!_rageTriggered&&pHp>0){_rageTriggered=true;sfx('rage');}
+  // Trigger rage SFX + message exactly once when first crossing threshold
+  if(isRage&&!_rageTriggered&&pHp>0){_rageTriggered=true;sfx('rage');showRageModeMsg();}
   // Track lowest HP percentage for comeback achievement
   if(battleActive&&pHpMax>0){_lowestHpPct=Math.min(_lowestHpPct,pHp/pHpMax);}
   const t=tgt();
@@ -2707,13 +3006,18 @@ function logB(msg,type){
   log.appendChild(el);log.scrollTop=log.scrollHeight;
 }
 
-function floatDmgNumber(val, isCrit){
+function floatDmgNumber(val, isCrit, isSurge, isHeal){
   const el=document.createElement('div');
   el.className='float-dmg';
-  el.textContent=(isCrit?'💥 ':'')+val;
+  let color,size,prefix;
+  if(isHeal){color='var(--green)';size=1.1;prefix='❤️ +';}
+  else if(isCrit){color='#ff3300';size=1.9;prefix='💥 ';}
+  else if(isSurge){color='#ff9900';size=1.5;prefix='⚡ ';}
+  else{color='var(--cyan)';size=1.1;prefix='';}
+  el.textContent=prefix+val;
   const baseX=window.innerWidth*0.62+Math.random()*80-40;
   const baseY=window.innerHeight*0.38+Math.random()*40-20;
-  el.style.cssText=`left:${baseX}px;top:${baseY}px;font-size:${isCrit?1.6:1.1}rem;color:${isCrit?'var(--yellow)':'var(--cyan)'};text-shadow:0 0 14px currentColor;`;
+  el.style.cssText=`left:${baseX}px;top:${baseY}px;font-size:${size}rem;color:${color};text-shadow:0 0 14px currentColor;font-weight:${(isCrit||isSurge)?'900':'normal'};`;
   document.body.appendChild(el);
   setTimeout(()=>el.remove(),1200);
 }
@@ -2723,6 +3027,20 @@ function showBossWarning(){
   el.classList.remove('show');void el.offsetWidth;el.classList.add('show');
   setTimeout(()=>el.classList.remove('show'),2200);
   sfx('crit');
+}
+
+function showElemWeakFlash(){
+  const el=document.getElementById('elem-weak-flash');
+  if(!el)return;
+  el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');
+  el.addEventListener('animationend',()=>el.classList.remove('pop'),{once:true});
+}
+
+function showRageModeMsg(){
+  const el=document.getElementById('rage-mode-msg');
+  if(!el)return;
+  el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');
+  el.addEventListener('animationend',()=>el.classList.remove('pop'),{once:true});
 }
 
 function showSurgeOverlay(){
@@ -2892,6 +3210,56 @@ function showBattleStats(xpGain){
   }
 }
 
+function showMvpCard(xpGain, won){
+  const card=document.getElementById('mvp-result-card');
+  if(!card)return;
+  const elapsed=Math.round((performance.now()-bsStartTime)/1000);
+  const dps=elapsed>0?Math.round(bsDmgDealt/elapsed):0;
+  const efficiency=Math.max(0,100-Math.floor(bsDmgTaken/3)-Math.floor(elapsed/5));
+  const grade=efficiency>=90?'S':efficiency>=75?'A':efficiency>=55?'B':efficiency>=35?'C':'D';
+  const botName=(tgt()||botSquad[0]||{stats:{name:'???'}}).stats.name;
+  const robotName=document.getElementById('mvp-robot-name');
+  if(robotName)robotName.textContent=G.robot?G.robot.name.toUpperCase():'ROBOT';
+  const statsGrid=document.getElementById('mvp-stats-grid');
+  if(statsGrid){
+    const modeLabel=isSurvivalMode?`WAVE ${survivalWave}`:isTimeAttackMode?'TIME ATTACK':isBossRushMode?`BOSS ${_bossRushIdx}/10`:'';
+    statsGrid.innerHTML=`
+      <div class="mvp-stat-row"><span>VS</span><span>${escHtml(botName)}</span></div>
+      <div class="mvp-stat-row"><span>RESULT</span><span style="color:${won?'var(--green)':'var(--red)'}">${won?'VICTORY':'DEFEAT'}</span></div>
+      <div class="mvp-stat-row"><span>DAMAGE</span><span>${bsDmgDealt}</span></div>
+      <div class="mvp-stat-row"><span>TAKEN</span><span>${bsDmgTaken}</span></div>
+      <div class="mvp-stat-row"><span>DPS</span><span>${dps}</span></div>
+      <div class="mvp-stat-row"><span>HITS</span><span>${bsAttacks}</span></div>
+      <div class="mvp-stat-row"><span>TIME</span><span>${elapsed}s</span></div>
+      <div class="mvp-stat-row"><span>XP</span><span>+${xpGain||0}</span></div>
+      ${modeLabel?`<div class="mvp-stat-row"><span>MODE</span><span>${modeLabel}</span></div>`:''}`;
+  }
+  const gradeEl=document.getElementById('mvp-grade');
+  if(gradeEl){
+    gradeEl.textContent=`GRADE: ${grade}`;
+    gradeEl.style.color=grade==='S'?'var(--yellow)':grade==='A'?'var(--green)':grade==='B'?'var(--cyan)':grade==='C'?'var(--orange)':'var(--red)';
+  }
+  card.classList.add('show');
+}
+
+function copyMvpStats(){
+  const botName=(tgt()||botSquad[0]||{stats:{name:'???'}}).stats.name;
+  const elapsed=Math.round((performance.now()-bsStartTime)/1000);
+  const dps=elapsed>0?Math.round(bsDmgDealt/elapsed):0;
+  const efficiency=Math.max(0,100-Math.floor(bsDmgTaken/3)-Math.floor(elapsed/5));
+  const grade=efficiency>=90?'S':efficiency>=75?'A':efficiency>=55?'B':efficiency>=35?'C':'D';
+  const text=[
+    '⭐ DEATH MATCH UP — RESULT CARD ⭐',
+    `Robot: ${G.robot?G.robot.name:'Unknown'}`,
+    `VS: ${botName}`,
+    `Damage Dealt: ${bsDmgDealt}  Taken: ${bsDmgTaken}`,
+    `DPS: ${dps}  Hits: ${bsAttacks}`,
+    `Time: ${elapsed}s  Grade: ${grade}`,
+  ].join('\n');
+  if(navigator.clipboard){navigator.clipboard.writeText(text).then(()=>logToast('📋','Stats copied to clipboard!'));}
+  else{logToast('❌','Clipboard not available');}
+}
+
 function updateStreakDisplay(){
   const el=document.getElementById('hub-streak');
   if(!el)return;
@@ -3009,12 +3377,18 @@ function endBattle(won){
   G.xp=(G.xp||0)+xpGain;
   const oldLevel=G.level||1;
   G.level=Math.floor(1+Math.sqrt(G.xp/80));
-  if(G.level>oldLevel){sfx('levelup');logToast('⬆️',`LEVEL UP! Now Level ${G.level}!`);}
+  if(G.level>oldLevel){
+    sfx('levelup');
+    const levelsGained=G.level-oldLevel;
+    G.skillPoints=(G.skillPoints||0)+levelsGained;
+    logToast('⬆️',`LEVEL UP! Now Level ${G.level}! +${levelsGained} Skill Point${levelsGained>1?'s':''}!`);
+  }
   // Record match history (keep last 20)
   const elapsed=Math.round((performance.now()-bsStartTime)/1000);
   if(!G.matchHistory)G.matchHistory=[];
   const oppName=isOnlineBattle?(botStats&&botStats.name?botStats.name:'Opponent'):(tgt()||botSquad[0]||{stats:{name:'Bot'}}).stats.name;
-  G.matchHistory.unshift({won,opp:oppName,earn:0,duration:elapsed,ts:Date.now(),mode:isOnlineBattle?'online':isDailyBattle?'daily':isTournamentBattle?'tournament':'bot',dmg:bsDmgDealt});
+  const modeStr=isOnlineBattle?'online':isDailyBattle?'daily':isTournamentBattle?'tournament':isSurvivalMode?'survival':isTimeAttackMode?'timeattack':isBossRushMode?'bossrush':isBountyBattle?'bounty':'bot';
+  G.matchHistory.unshift({won,opp:oppName,earn:0,duration:elapsed,ts:Date.now(),mode:modeStr,dmg:bsDmgDealt});
   if(G.matchHistory.length>20)G.matchHistory.pop();
   if(isOnlineBattle&&botStats&&botStats.name){
     const ex=G.opponents.find(o=>o.name===botStats.name);
@@ -3047,9 +3421,67 @@ function endBattle(won){
   res.classList.remove('show');void res.offsetWidth;res.classList.add('show');
   showBattleStats(xpGain);
   const title=document.getElementById('result-title');
+  // Show MVP result card
+  showMvpCard(xpGain, won);
   if(won){
     title.textContent='VICTORY!';title.className='result-title result-win';
-    if(isTournamentBattle){
+    if(isSurvivalMode){
+      // Advance to next wave
+      survivalWave++;
+      const waveCoins=Math.floor(60*(1+survivalWave*0.3));
+      survivalCoinsEarned+=waveCoins;
+      G.money+=waveCoins;
+      G.survivalBest=Math.max(G.survivalBest||0,survivalWave);
+      saveState();
+      document.getElementById('battle-money-display').textContent=G.money.toLocaleString();
+      document.getElementById('result-earn').textContent=`💀 WAVE ${survivalWave} COMPLETE! +${waveCoins} coins (total: ${survivalCoinsEarned})`;
+      const btn=document.getElementById('btn-battle-again');btn.style.display='';
+      btn.textContent=`→ WAVE ${survivalWave+1} (+15% stats)`;
+      btn.onclick=()=>{document.getElementById('battle-result').classList.remove('show');document.getElementById('bs-card').style.display='none';document.getElementById('mvp-result-card').classList.remove('show');restartBattle();};
+    } else if(isTimeAttackMode){
+      const killTime=_timeAttackStart>0?((performance.now()-_timeAttackStart)/1000):elapsed;
+      const prevBest=G.timeAttackBest||0;
+      if(prevBest===0||killTime<prevBest){G.timeAttackBest=killTime;saveState();logToast('⏱','NEW TIME ATTACK RECORD: '+killTime.toFixed(2)+'s!');}
+      const timeCoins=Math.floor(Math.max(100,500-killTime*5));
+      G.money+=timeCoins;saveState();
+      document.getElementById('battle-money-display').textContent=G.money.toLocaleString();
+      document.getElementById('result-earn').textContent=`⏱ ${killTime.toFixed(2)}s! Best: ${G.timeAttackBest.toFixed(2)}s  +${timeCoins} coins`;
+      isTimeAttackMode=false;
+      document.getElementById('btn-battle-again').style.display='';
+      document.getElementById('btn-battle-again').textContent='⏱ TRY AGAIN';
+      document.getElementById('btn-battle-again').onclick=()=>{document.getElementById('battle-result').classList.remove('show');document.getElementById('bs-card').style.display='none';document.getElementById('mvp-result-card').classList.remove('show');startTimeAttackMode();};
+    } else if(isBossRushMode){
+      _bossRushIdx++;
+      const bossCoins=Math.floor(150*(1+_bossRushIdx*0.5));
+      _bossRushCoinsEarned+=bossCoins;
+      G.money+=bossCoins;
+      G.bossRushBest=Math.max(G.bossRushBest||0,_bossRushIdx);
+      saveState();
+      document.getElementById('battle-money-display').textContent=G.money.toLocaleString();
+      if(_bossRushIdx>=BOSS_RUSH_BOTS.length){
+        isBossRushMode=false;
+        document.getElementById('result-earn').textContent=`👹 BOSS RUSH COMPLETE! All 10 bosses slain! Total: +${_bossRushCoinsEarned} coins!`;
+        document.getElementById('btn-battle-again').style.display='none';
+      } else {
+        // Heal 30% between bosses
+        pHp=Math.min(pHpMax,pHp+Math.floor(pHpMax*0.3));
+        document.getElementById('result-earn').textContent=`👹 Boss ${_bossRushIdx}/10 down! +${bossCoins} coins. Healed 30%! Next: ${BOSS_RUSH_BOTS[_bossRushIdx].name}`;
+        const btn=document.getElementById('btn-battle-again');btn.style.display='';
+        btn.textContent=`→ BOSS ${_bossRushIdx+1}: ${BOSS_RUSH_BOTS[_bossRushIdx].name}`;
+        btn.onclick=()=>{document.getElementById('battle-result').classList.remove('show');document.getElementById('bs-card').style.display='none';document.getElementById('mvp-result-card').classList.remove('show');restartBattle();};
+      }
+    } else if(isBountyBattle){
+      const bountyCoins=Math.floor((50+Math.floor(Math.random()*80)+Math.max(1,Math.floor(G.purchasedUpgrades.length/20))*20)*5);
+      G.money+=bountyCoins;
+      G.bountiesCompleted=(G.bountiesCompleted||0)+1;
+      G.lastBountyDate=new Date().toISOString().slice(0,10);
+      saveState();
+      document.getElementById('battle-money-display').textContent=G.money.toLocaleString();
+      document.getElementById('result-earn').textContent=`🎯 BOUNTY DEFEATED! 5x reward: +${bountyCoins} coins!`;
+      isBountyBattle=false;
+      document.getElementById('btn-battle-again').style.display='none';
+      updateBountyButton();
+    } else if(isTournamentBattle){
       const roundReward=100*(tournamentRound+1);
       tournamentPrize+=roundReward;
       G.money+=roundReward;
@@ -3117,7 +3549,31 @@ function endBattle(won){
     }
   } else {
     title.textContent='DEFEATED';title.className='result-title result-lose';
-    if(_gauntletActive){
+    if(isSurvivalMode){
+      G.survivalBest=Math.max(G.survivalBest||0,survivalWave);saveState();
+      document.getElementById('result-earn').textContent=`💀 Survived ${survivalWave} wave${survivalWave!==1?'s':''}! Best: ${G.survivalBest}. Coins: +${survivalCoinsEarned}`;
+      isSurvivalMode=false;survivalWave=0;survivalCoinsEarned=0;
+      document.getElementById('btn-battle-again').style.display='';
+      document.getElementById('btn-battle-again').textContent='💀 RETRY SURVIVAL';
+      document.getElementById('btn-battle-again').onclick=()=>{document.getElementById('battle-result').classList.remove('show');document.getElementById('bs-card').style.display='none';document.getElementById('mvp-result-card').classList.remove('show');startSurvivalMode();};
+    } else if(isTimeAttackMode){
+      document.getElementById('result-earn').textContent='⏱ Time attack failed!';
+      isTimeAttackMode=false;
+      document.getElementById('btn-battle-again').style.display='';
+      document.getElementById('btn-battle-again').textContent='⏱ TRY AGAIN';
+      document.getElementById('btn-battle-again').onclick=()=>{document.getElementById('battle-result').classList.remove('show');document.getElementById('bs-card').style.display='none';document.getElementById('mvp-result-card').classList.remove('show');startTimeAttackMode();};
+    } else if(isBossRushMode){
+      G.bossRushBest=Math.max(G.bossRushBest||0,_bossRushIdx);saveState();
+      document.getElementById('result-earn').textContent=`👹 Fell at Boss ${_bossRushIdx+1}/10. Best: ${G.bossRushBest}`;
+      isBossRushMode=false;_bossRushIdx=0;_bossRushCoinsEarned=0;
+      document.getElementById('btn-battle-again').style.display='';
+      document.getElementById('btn-battle-again').textContent='👹 RETRY BOSS RUSH';
+      document.getElementById('btn-battle-again').onclick=()=>{document.getElementById('battle-result').classList.remove('show');document.getElementById('bs-card').style.display='none';document.getElementById('mvp-result-card').classList.remove('show');startBossRush();};
+    } else if(isBountyBattle){
+      document.getElementById('result-earn').textContent='🎯 Bounty escaped! Try again tomorrow.';
+      isBountyBattle=false;
+      document.getElementById('btn-battle-again').style.display='none';
+    } else if(_gauntletActive){
       _gauntletActive=false;
       document.getElementById('result-earn').textContent=`Gauntlet over at bot ${_gauntletRound+1}/${_botCount}. Coins earned: ${_gauntletEarned.toLocaleString()}`;
     } else if(isTournamentBattle){
@@ -3150,11 +3606,21 @@ function restartBattle(){
   activeParticles=[];ambientParticles=[];arenaOrbLights=[];modifierTimer=0;
   document.getElementById('battle-result').classList.remove('show');
   document.getElementById('bs-card').style.display='none';
+  document.getElementById('mvp-result-card').classList.remove('show');
   document.getElementById('battle-log').innerHTML='';
   resetCombo();
-  rollModifier(); // fresh modifier each restart
+  // Don't reset mode flags — survival/boss rush continue to next wave
+  if(!isSurvivalMode&&!isBossRushMode){rollModifier();}
+  // Update mode label
+  let modeLabel2='⚔ ARENA';
+  if(isSurvivalMode)modeLabel2=`💀 SURVIVAL — WAVE ${survivalWave}`;
+  else if(isTimeAttackMode)modeLabel2='⏱ TIME ATTACK';
+  else if(isBossRushMode)modeLabel2=`👹 BOSS RUSH — BOSS ${_bossRushIdx+1}/10`;
+  const mlEl=document.getElementById('battle-mode-label');if(mlEl)mlEl.textContent=modeLabel2;
   hideTouchControls();
-  setupBattleArena();startBattleLoop();
+  // Boss rush: use the correct boss for current index
+  const nextBossDef=isBossRushMode?BOSS_RUSH_BOTS[_bossRushIdx]||null:null;
+  setupBattleArena(nextBossDef);startBattleLoop();
 }
 
 function surrenderBattle(){
@@ -3181,11 +3647,16 @@ function leaveBattle(){
   // Clear taunt overlay
   const to=document.getElementById('taunt-overlay');if(to){to.className='';to.classList.remove('pop');}
   if(isOnlineBattle&&onlineConn){try{onlineConn.send({type:'iLost'});}catch(e){}try{onlineConn.close();}catch(e){}onlineConn=null;}
-  isOnlineBattle=false;isTournamentBattle=false;isDailyBattle=false;resetCombo();
+  isOnlineBattle=false;isTournamentBattle=false;isDailyBattle=false;
+  isSurvivalMode=false;isTimeAttackMode=false;isBossRushMode=false;isBountyBattle=false;
+  survivalWave=0;survivalCoinsEarned=0;_timeAttackStart=0;_bossRushIdx=0;_bossRushCoinsEarned=0;
+  resetCombo();
   document.getElementById('modifier-banner').classList.remove('show');
   document.getElementById('squad-section').style.display='none';
   document.getElementById('sk-mega-bar-wrap').style.display='none';
   document.getElementById('battle-heal-btn').classList.remove('show');
+  const swb=document.getElementById('survival-wave-badge');if(swb)swb.style.display='none';
+  const tad=document.getElementById('time-attack-display');if(tad)tad.style.display='none';
   if(battleAnimId){cancelAnimationFrame(battleAnimId);battleAnimId=null;}
   if(bRenderer){try{bRenderer.dispose();}catch(e){}bRenderer=null;}
   bScene=null;bCam=null;pMesh=null;bMesh=null;activeSidekicks=[];
@@ -4193,14 +4664,16 @@ function updateTouchAbilityButtons(){
 
 let _audioCtx=null;
 function getAudio(){return _audioCtx||(_audioCtx=new(window.AudioContext||window.webkitAudioContext)());}
-function sfx(type){
+function sfx(type,botId){
   if(!G.soundEnabled)return;
   try{
     const ctx=getAudio();
     if(ctx.state==='suspended')ctx.resume();
     const t=ctx.currentTime;
     const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);
-    if(type==='hit'){o.type='sawtooth';o.frequency.value=150;g.gain.setValueAtTime(0.22,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.13);o.start(t);o.stop(t+0.15);}
+    // Per-robot hit frequency variation
+    const hitFreq=botId==='crusher'?110:botId==='thunder'?160:botId==='phantom'?200:150;
+    if(type==='hit'){o.type='sawtooth';o.frequency.value=hitFreq;g.gain.setValueAtTime(0.22,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.13);o.start(t);o.stop(t+0.15);}
     else if(type==='crit'){o.type='square';o.frequency.setValueAtTime(440,t);o.frequency.exponentialRampToValueAtTime(880,t+0.18);g.gain.setValueAtTime(0.28,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.32);o.start(t);o.stop(t+0.32);}
     else if(type==='dash'){o.type='sine';o.frequency.setValueAtTime(700,t);o.frequency.exponentialRampToValueAtTime(200,t+0.22);g.gain.setValueAtTime(0.18,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.25);o.start(t);o.stop(t+0.25);}
     else if(type==='repair'){o.type='sine';o.frequency.setValueAtTime(440,t);o.frequency.linearRampToValueAtTime(660,t+0.25);g.gain.setValueAtTime(0.15,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.4);o.start(t);o.stop(t+0.4);}
@@ -4274,14 +4747,18 @@ function resetCombo(){
   document.getElementById('combo-counter').classList.remove('show');
 }
 function comboMultiplier(){
-  if(comboCount>=8)return 2.0;if(comboCount>=5)return 1.5;if(comboCount>=3)return 1.25;return 1.0;
+  const base=(G.skills||[]).includes('momentum')?1.2:1.0;
+  if(comboCount>=8)return 2.0;if(comboCount>=5)return 1.5;if(comboCount>=3)return 1.25;return base;
 }
 
 // ══════════════════════════════════════════════
 //  CRITICAL HIT SYSTEM
 // ══════════════════════════════════════════════
 
-function rollCrit(){return Math.random()<Math.min(0.35,0.05+(G.stats?G.stats.spd*0.007:0));}
+function rollCrit(){
+  const luckyBonus=(G.skills||[]).includes('lucky_strike')?0.05:0;
+  return Math.random()<Math.min(0.40,0.05+luckyBonus+(G.stats?G.stats.spd*0.007:0));
+}
 function showCritOverlay(){
   const el=document.getElementById('crit-overlay');
   el.classList.remove('show');void el.offsetWidth;el.classList.add('show');
@@ -4332,6 +4809,45 @@ const TOURNAMENT_BOTS=[
   {name:'Steel Blade', hp:130, atk:15, def:10, spd:14, color:0xaa8800,accentColor:0xffe000,id:'phantom'},
   {name:'War Titan',   hp:175, atk:20, def:15, spd:10, color:0xcc3300,accentColor:0xff6a00,id:'crusher'},
   {name:'APEX UNIT',   hp:240, atk:26, def:22, spd:18, color:0xaa0022,accentColor:0xff2255,id:'phantom'},
+];
+
+const BOSS_RUSH_BOTS=(()=>{
+  const base=[
+    {name:'GATEKEEPER',id:'crusher',color:0x223344,accentColor:0x4499ff},
+    {name:'INFERNO',id:'phantom',color:0x440000,accentColor:0xff4400},
+    {name:'STORM KING',id:'thunder',color:0x334400,accentColor:0xffdd00},
+    {name:'VOID REAPER',id:'phantom',color:0x220044,accentColor:0xaa00ff},
+    {name:'IRON SENTINEL',id:'crusher',color:0x1a1a1a,accentColor:0xaaaaaa},
+    {name:'PLAGUE CORE',id:'thunder',color:0x003322,accentColor:0x00ff88},
+    {name:'WAR MACHINE',id:'crusher',color:0x440011,accentColor:0xff0044},
+    {name:'CHRONO TYRANT',id:'phantom',color:0x002244,accentColor:0x00ccff},
+    {name:'OMEGA PRIME',id:'thunder',color:0x330033,accentColor:0xff00ff},
+    {name:'GOD BREAKER',id:'crusher',color:0x1a0a00,accentColor:0xff6600},
+  ];
+  return base.map((b,i)=>{
+    const mult=2.0*Math.pow(1.2,i);
+    return {...b,hp:Math.floor(100*mult),atk:Math.floor(14*mult),def:Math.floor(8*mult),spd:Math.floor(8*mult*0.7)};
+  });
+})();
+
+const SKILL_DEFS=[
+  {id:'iron_skin',    icon:'🛡️', name:'Iron Skin',       desc:'+15 max HP permanently',         cost:1},
+  {id:'sharp_edge',   icon:'⚔️', name:'Sharp Edge',       desc:'+10% attack damage',             cost:1},
+  {id:'quick_reflex', icon:'⚡', name:'Quick Reflexes',   desc:'All cooldowns reduced by 1s',    cost:1},
+  {id:'lucky_strike', icon:'🎯', name:'Lucky Strike',     desc:'+5% critical hit chance',        cost:1},
+  {id:'vampiric',     icon:'🩸', name:'Vampiric',         desc:'+1 HP healed on each hit',       cost:2},
+  {id:'momentum',     icon:'🔥', name:'Momentum',         desc:'Combo multiplier starts at 1.2x',cost:2},
+  {id:'shield_expert',icon:'🔵', name:'Shield Expert',    desc:'Force Shield lasts 0.5s longer', cost:2},
+  {id:'berserker_soul',icon:'💀',name:'Berserker Soul',   desc:'Rage activates at 35% HP',       cost:3},
+];
+
+const TITLES_DEFS=[
+  {id:'destroyer',  title:'The Destroyer', desc:'Win 50 battles',         icon:'⚔️',  check:()=>(G.botWins||0)+(G.onlineWins||0)>=50},
+  {id:'iron_fist',  title:'Iron Fist',     desc:'Reach Prestige 1',       icon:'👊',  check:()=>(G.prestigeLevel||0)>=1},
+  {id:'ghost',      title:'Ghost',         desc:'100 online wins',        icon:'👻',  check:()=>(G.onlineWins||0)>=100},
+  {id:'untouchable',title:'Untouchable',   desc:'10 perfect victories',   icon:'🛡️',  check:()=>(G.achievements||[]).includes('untouchable')&&(G.achievements||[]).filter(x=>x==='untouchable').length>=1},
+  {id:'legend',     title:'Legend',        desc:'Reach Legend rank',      icon:'👑',  check:()=>(G.botWins||0)+(G.onlineWins||0)>=500},
+  {id:'speedster',  title:'Speedster',     desc:'Speedrun achievement',   icon:'🏎️',  check:()=>(G.achievements||[]).includes('speedrun')},
 ];
 
 function goToTournament(){
@@ -4391,6 +4907,152 @@ function startDailyChallenge(){
   isDailyBattle=true;isTournamentBattle=false;
   if(hubSD){hubSD.renderer.dispose();hubSD=null;}
   goToBattle(getDailyChallengeBot());
+}
+
+// ══════════════════════════════════════════════
+//  SURVIVAL / TIME ATTACK / BOSS RUSH / BOUNTY / PRESTIGE / SKILLS / TITLES
+// ══════════════════════════════════════════════
+
+function startSurvivalMode(){
+  if(hubSD){hubSD.renderer.dispose();hubSD=null;}
+  isSurvivalMode=true;isTimeAttackMode=false;isBossRushMode=false;isBountyBattle=false;
+  isTournamentBattle=false;isDailyBattle=false;
+  survivalWave=1;survivalCoinsEarned=0;
+  goToBattle(null);
+}
+
+function startTimeAttackMode(){
+  if(hubSD){hubSD.renderer.dispose();hubSD=null;}
+  isTimeAttackMode=true;isSurvivalMode=false;isBossRushMode=false;isBountyBattle=false;
+  isTournamentBattle=false;isDailyBattle=false;
+  _timeAttackStart=0; // will be set when battle starts
+  goToBattle(null);
+}
+
+function startBossRush(){
+  if(hubSD){hubSD.renderer.dispose();hubSD=null;}
+  isBossRushMode=true;isSurvivalMode=false;isTimeAttackMode=false;isBountyBattle=false;
+  isTournamentBattle=false;isDailyBattle=false;
+  _bossRushIdx=0;_bossRushCoinsEarned=0;
+  goToBattle(BOSS_RUSH_BOTS[0]);
+}
+
+function getBountyBot(){
+  const today=new Date().toISOString().slice(0,10);
+  let seed=0;for(const c of today)seed=(seed*31+c.charCodeAt(0))%7919;
+  const robotIds=['crusher','thunder','phantom'];
+  const robot=ROBOTS.find(r=>r.id===robotIds[seed%3])||ROBOTS[0];
+  const names=['IRON TYRANT','SHADOW PRIME','VORTEX KING','DOOM WALKER','CHAOS ENGINE','STEEL TITAN'];
+  return {id:robot.id,name:'BOUNTY: '+names[seed%names.length],color:robot.color,accentColor:0xff2255,
+    hp:Math.floor(robot.baseStats.hp*2),atk:Math.floor(robot.baseStats.atk*2),
+    def:Math.floor(robot.baseStats.def*2),spd:robot.baseStats.spd,isBounty:true};
+}
+
+function isBountyAvailableToday(){
+  return (G.lastBountyDate||'')!==new Date().toISOString().slice(0,10);
+}
+
+function updateBountyButton(){
+  const btn=document.getElementById('hub-bounty-btn');
+  if(!btn)return;
+  if(isBountyAvailableToday()){
+    btn.style.display='';
+    btn.innerHTML='🎯 BOUNTY BOARD <span class="bounty-badge">!</span>';
+  } else {
+    btn.style.display='none';
+  }
+}
+
+function startBountyBattle(){
+  if(!isBountyAvailableToday()){logToast('🎯','Bounty already claimed today!');return;}
+  if(hubSD){hubSD.renderer.dispose();hubSD=null;}
+  isBountyBattle=true;isSurvivalMode=false;isTimeAttackMode=false;isBossRushMode=false;
+  isTournamentBattle=false;isDailyBattle=false;
+  goToBattle(getBountyBot());
+}
+
+function doPrestige(){
+  const upgCount=(G.purchasedUpgrades||[]).length;
+  if(upgCount<150){logToast('⭐','Need 150+ upgrades to Prestige!');return;}
+  if(!confirm(`PRESTIGE? This resets all upgrades but grants permanent +10% stats per prestige level. You are at ${G.purchasedUpgrades.length} upgrades.`))return;
+  G.prestigeLevel=(G.prestigeLevel||0)+1;
+  G.purchasedUpgrades=[];
+  G.stats=calcStats();
+  saveState();
+  logToast('⭐',`PRESTIGE ${G.prestigeLevel}! Permanent +${G.prestigeLevel*10}% to all stats!`);
+  goToHub();
+}
+
+function goToSkillTree(){
+  if(hubSD){hubSD.renderer.dispose();hubSD=null;}
+  showScreen('skills');
+  renderSkillTree();
+}
+
+function renderSkillTree(){
+  const spEl=document.getElementById('skill-points-display');
+  if(spEl)spEl.textContent=`🔮 ${G.skillPoints||0} SKILL POINT${(G.skillPoints||0)!==1?'S':''} AVAILABLE`;
+  const grid=document.getElementById('skill-grid');
+  if(!grid)return;
+  grid.innerHTML=SKILL_DEFS.map(sk=>{
+    const owned=(G.skills||[]).includes(sk.id);
+    const canBuy=!owned&&(G.skillPoints||0)>=sk.cost;
+    return `<div class="skill-card${owned?' owned':''}" style="background:${owned?'rgba(0,255,136,0.08)':'rgba(0,20,40,0.7)'};border:1px solid ${owned?'rgba(0,255,136,0.4)':'rgba(0,245,255,0.15)'};border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:8px;">
+      <div style="font-size:1.5rem">${sk.icon}</div>
+      <div style="font-family:'Orbitron',sans-serif;font-size:0.8rem;font-weight:700;color:${owned?'var(--green)':'#fff'}">${sk.name}</div>
+      <div style="font-size:0.68rem;color:rgba(200,232,255,0.6)">${sk.desc}</div>
+      <div style="font-size:0.62rem;color:${sk.cost===1?'var(--cyan)':sk.cost===2?'var(--orange)':'var(--red)'}">COST: ${sk.cost} SP</div>
+      ${owned?'<div style="font-size:0.62rem;color:var(--green);font-weight:700">✓ UNLOCKED</div>':''}
+      ${canBuy?`<button class="btn btn-ghost" style="font-size:0.7rem;padding:8px;margin-top:4px;" onclick="buySkill('${sk.id}')">UNLOCK (${sk.cost} SP)</button>`:''}
+      ${!owned&&!canBuy?`<div style="font-size:0.6rem;color:rgba(200,232,255,0.3)">Need ${sk.cost} skill point${sk.cost>1?'s':''}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function buySkill(id){
+  const sk=SKILL_DEFS.find(s=>s.id===id);
+  if(!sk)return;
+  if((G.skills||[]).includes(id)){logToast('❌','Already unlocked!');return;}
+  if((G.skillPoints||0)<sk.cost){logToast('❌',`Need ${sk.cost} skill points!`);return;}
+  G.skillPoints=(G.skillPoints||0)-sk.cost;
+  G.skills=(G.skills||[]).concat(id);
+  saveState();
+  logToast(sk.icon,`${sk.name} unlocked!`);
+  renderSkillTree();
+}
+
+function openTitlePanel(){
+  const panel=document.getElementById('title-panel');
+  if(panel){panel.style.display='flex';renderTitleList();}
+}
+function closeTitlePanel(){
+  const panel=document.getElementById('title-panel');
+  if(panel)panel.style.display='none';
+}
+function renderTitleList(){
+  const list=document.getElementById('title-list');
+  if(!list)return;
+  list.innerHTML=TITLES_DEFS.map(td=>{
+    const earned=td.check();
+    const active=G.title===td.title;
+    return `<div style="display:flex;align-items:center;gap:12px;background:${active?'rgba(255,106,0,0.15)':earned?'rgba(0,20,40,0.7)':'rgba(0,0,0,0.3)'};border:1px solid ${active?'rgba(255,106,0,0.6)':earned?'rgba(0,245,255,0.2)':'rgba(255,255,255,0.05)'};border-radius:6px;padding:12px 16px;opacity:${earned?1:0.45}">
+      <span style="font-size:1.3rem">${td.icon}</span>
+      <div style="flex:1">
+        <div style="font-family:'Orbitron',sans-serif;font-size:0.75rem;font-weight:700;color:${earned?'var(--orange)':'rgba(200,232,255,0.4)'}">${td.title}</div>
+        <div style="font-size:0.62rem;color:rgba(200,232,255,0.5);margin-top:2px">${td.desc}</div>
+      </div>
+      ${earned?`<button class="btn btn-ghost" style="font-size:0.65rem;padding:6px 12px;${active?'border-color:var(--orange);color:var(--orange);':''}" onclick="selectTitle('${td.title}')">${active?'✓ ACTIVE':'SELECT'}</button>`:'<span style="font-size:0.62rem;color:rgba(200,232,255,0.25)">🔒 LOCKED</span>'}
+    </div>`;
+  }).join('');
+}
+function selectTitle(title){
+  G.title=G.title===title?'':title; // toggle off if already active
+  saveState();
+  renderTitleList();
+  const titleDisp=document.getElementById('hub-title-display');
+  if(titleDisp)titleDisp.textContent=G.title||'None';
+  const titleBadge=document.getElementById('hub-title-badge');
+  if(titleBadge){if(G.title){titleBadge.textContent=G.title;titleBadge.style.display='';}else titleBadge.style.display='none';}
 }
 
 // ══════════════════════════════════════════════
@@ -4543,7 +5205,7 @@ function closeColorPanel(){
 //  AUTO-UPDATE CHECKER
 // ══════════════════════════════════════════════
 
-const BUILD_TS = '20260430_v35';
+const BUILD_TS = '20260501_v36';
 
 function startVersionChecker(){
   setInterval(async ()=>{
