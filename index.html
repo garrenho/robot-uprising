@@ -687,6 +687,33 @@ h1.logo{animation:logoGlitch 7s infinite;}
 /* ── BOUNTY BOARD ── */
 .bounty-btn{border-color:rgba(255,224,0,0.6)!important;color:var(--yellow)!important;position:relative;}
 .bounty-badge{display:inline-block;background:rgba(255,34,85,0.8);color:#fff;font-size:0.5rem;font-family:'Orbitron',sans-serif;padding:1px 5px;border-radius:10px;margin-left:5px;vertical-align:middle;animation:ragePulse 0.8s ease-in-out infinite;}
+
+/* ── FINISHER OVERLAY ── */
+#finisher-overlay{position:fixed;inset:0;z-index:85;pointer-events:none;display:flex;align-items:center;justify-content:center;opacity:0;}
+#finisher-overlay.pop{animation:finisherIn 0.8s ease forwards;}
+@keyframes finisherIn{0%{opacity:0;transform:scale(0.5);}30%{opacity:1;transform:scale(1.15);}70%{opacity:1;transform:scale(1);}100%{opacity:0;}}
+.finisher-text{font-family:'Orbitron',sans-serif;font-size:clamp(2.5rem,8vw,5rem);font-weight:900;color:var(--yellow);text-shadow:0 0 40px var(--yellow),0 0 80px rgba(255,224,0,0.5);letter-spacing:0.15em;}
+
+/* ── CHALLENGE CARDS ── */
+#challenge-card-modal{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,0.85);display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
+#challenge-card-modal.show{display:flex;}
+.challenge-card-grid{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;max-width:700px;}
+.ccard{background:rgba(0,20,40,0.9);border:2px solid rgba(0,245,255,0.3);border-radius:8px;padding:16px;width:180px;cursor:pointer;transition:all 0.2s;text-align:center;}
+.ccard:hover{border-color:var(--orange);transform:translateY(-3px);}
+.ccard-icon{font-size:2rem;margin-bottom:8px;}
+.ccard-name{font-family:'Orbitron',sans-serif;font-size:0.75rem;font-weight:700;color:var(--orange);margin-bottom:4px;}
+.ccard-desc{font-size:0.62rem;color:rgba(200,232,255,0.6);margin-bottom:8px;}
+.ccard-bonus{font-size:0.7rem;color:var(--yellow);font-family:'Orbitron',sans-serif;}
+
+/* ── PARRY GAUGE ── */
+#parry-gauge-wrap{display:none;align-items:center;gap:6px;font-size:0.6rem;color:var(--cyan);}
+#parry-gauge-wrap.show{display:flex;}
+#parry-gauge-bg{flex:1;height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;}
+#parry-gauge-fill{height:100%;background:linear-gradient(90deg,#00f5ff,#ffffff);border-radius:3px;transition:width 0.3s;box-shadow:0 0 8px var(--cyan);}
+
+/* ── STATUS INDICATOR ── */
+#status-indicator{position:fixed;top:52px;left:50%;transform:translateX(-50%);z-index:22;font-family:'Orbitron',sans-serif;font-size:0.65rem;padding:3px 12px;border-radius:3px;display:none;letter-spacing:0.1em;}
+#status-indicator.show{display:block;}
 </style>
 </head>
 <body>
@@ -756,17 +783,25 @@ h1.logo{animation:logoGlitch 7s infinite;}
         <button class="btn btn-ghost" id="hub-quick-fight-btn" onclick="quickFightAgain()" style="display:none;border-color:rgba(255,106,0,0.5);color:var(--orange);font-size:0.75rem;padding:9px;">⚡ QUICK FIGHT (repeat last)</button>
         <button class="btn btn-ghost bounty-btn" id="hub-bounty-btn" onclick="startBountyBattle()" style="display:none;">🎯 BOUNTY BOARD</button>
         <button class="btn btn-ghost btn-daily" onclick="startDailyChallenge()" style="border-color:rgba(255,224,0,0.45);color:var(--yellow);">📅 DAILY CHALLENGE <span style="font-size:0.6rem;opacity:0.7">+500💰</span><span id="daily-dot"></span></button>
+        <button class="btn btn-ghost" id="hub-weekly-btn" onclick="startWeeklyChallenge()" style="border-color:rgba(100,200,255,0.5);color:#88ccff;">📆 WEEKLY CHALLENGE <span id="weekly-dot" style="width:8px;height:8px;background:var(--cyan);border-radius:50%;display:none;margin-left:4px;box-shadow:0 0 6px var(--cyan);vertical-align:middle;"></span></button>
         <button class="btn btn-ghost" onclick="goToTournament()" style="border-color:rgba(255,106,0,0.45);color:var(--orange);">🏆 TOURNAMENT</button>
+        <button class="btn btn-ghost" onclick="startEndlessTournament()" style="border-color:rgba(255,106,0,0.6);color:var(--orange);">♾️ ENDLESS TOURNAMENT</button>
         <button class="btn btn-ghost" onclick="startSurvivalMode()" style="border-color:rgba(255,34,85,0.5);color:var(--red);">💀 SURVIVAL MODE</button>
         <button class="btn btn-ghost" onclick="startTimeAttackMode()" style="border-color:rgba(0,245,255,0.5);color:var(--cyan);">⏱ TIME ATTACK</button>
         <button class="btn btn-ghost" onclick="startBossRush()" style="border-color:rgba(255,106,0,0.6);color:var(--orange);">👹 BOSS RUSH</button>
+        <button class="btn btn-ghost" onclick="startMirrorMatch()" style="border-color:rgba(170,0,255,0.5);color:#cc00ff;">🪞 MIRROR MATCH</button>
+        <button class="btn btn-ghost" onclick="startChallengeFight()" style="border-color:rgba(255,106,0,0.5);color:var(--orange);">🎴 CHALLENGE FIGHT</button>
+        <button class="btn btn-ghost" onclick="startDraftGauntlet()" style="border-color:rgba(255,106,0,0.4);color:var(--orange);">🎲 DRAFT GAUNTLET</button>
         <button class="btn btn-green" onclick="goToOnlineMode()">🌐 ONLINE BATTLE</button>
         <button class="btn btn-cyan" onclick="goToShop()">🛒 UPGRADE SHOP</button>
+        <button class="btn btn-ghost" onclick="openBlackMarket()" style="border-color:rgba(255,0,255,0.5);color:#ff00ff;">🕵️ BLACK MARKET <span id="bm-dot" style="width:8px;height:8px;background:#ff00ff;border-radius:50%;display:none;margin-left:4px;box-shadow:0 0 6px #ff00ff;vertical-align:middle;"></span></button>
         <button class="btn btn-ghost" onclick="goToSkillTree()" style="border-color:rgba(170,0,255,0.5);color:#cc00ff;">🧠 SKILL TREE <span id="skill-points-hub-badge" style="display:none;" class="bounty-badge"></span></button>
         <button class="btn btn-ghost" onclick="openTitlePanel()" style="border-color:rgba(255,106,0,0.4);color:var(--orange);" id="hub-title-btn">🏅 TITLE: <span id="hub-title-display">None</span></button>
         <button class="btn btn-ghost" id="hub-prestige-btn" onclick="doPrestige()" style="display:none;border-color:rgba(255,0,255,0.6);color:#ff00ff;">⭐ PRESTIGE</button>
         <button class="btn btn-ghost" onclick="goToLeaderboard()" style="border-color:rgba(255,224,0,0.4);color:var(--yellow);">📊 LEADERBOARD</button>
         <button class="btn btn-ghost" onclick="openColorPanel()" style="border-color:rgba(255,34,85,0.45);color:var(--red);">🎨 CUSTOMIZE ROBOT</button>
+        <button class="btn btn-ghost" id="arena-theme-btn" onclick="cycleArenaTheme()" style="font-size:0.72rem;padding:9px;">🎨 ARENA: NEON CITY</button>
+        <button class="btn btn-ghost" onclick="openNicknameModal()" style="border-color:rgba(0,245,255,0.3);color:rgba(0,245,255,0.7);font-size:0.75rem;padding:9px;">✏️ NAME ROBOT: <span id="hub-robot-nickname-display"></span></button>
         <button class="btn btn-ghost" id="admin-btn" onclick="goToAdmin()" style="border-color:rgba(255,106,0,0.5);color:var(--orange);">👑 ADMIN</button>
       </div>
     </div>
@@ -837,6 +872,7 @@ h1.logo{animation:logoGlitch 7s infinite;}
     <div id="squad-section" style="display:none;flex-direction:column;gap:2px;"></div>
     <div id="sk-mega-bar-wrap" style="display:none;align-items:center;gap:6px;font-size:0.58rem;color:rgba(0,255,136,0.5);font-family:'Orbitron',sans-serif;">⚡ MEGA <div style="flex:1;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;"><div id="sk-mega-bar-fill" style="height:100%;background:linear-gradient(90deg,#00aa55,#00ff88);border-radius:2px;transition:width 0.3s;width:0%"></div></div></div>
     <div class="battle-log" id="battle-log"></div>
+    <div id="parry-gauge-wrap"><span>⚡ PARRY</span><div id="parry-gauge-bg"><div id="parry-gauge-fill" style="width:0%"></div></div><span id="parry-gauge-count">0/3</span></div>
     <div id="battle-chat">
       <input id="battle-chat-input" type="text" placeholder="Say something…" maxlength="80" autocomplete="off" onkeydown="if(event.key==='Enter')sendBattleChat()">
       <button id="battle-chat-send" onclick="sendBattleChat()">SEND</button>
@@ -1433,7 +1469,8 @@ const ABILITIES = [
 
 const G_DEFAULTS = { username:'', robot:null, money:500, purchasedUpgrades:[], sidekickUpgrades:[], purchasedSidekicks:[], sidekickNames:{}, sidekickKills:{}, stats:null, botWins:0, botLosses:0, onlineWins:0, onlineLosses:0, opponents:[], achievements:[], winStreak:0, lastLogin:'', loginStreak:0, robotBodyColor:null, robotAccentColor:null, soundEnabled:true, lastDailyChallenge:'', tournamentBest:0, godMode:false, xp:0, level:1, matchHistory:[], missions:null, missionsDate:'', totalDmgDealt:0, totalBattles:0, _lastBotDiff:'', _lastBotCount:1,
   prestigeLevel:0, skillPoints:0, skills:[], survivalBest:0, timeAttackBest:0, bossRushBest:0,
-  lastBountyDate:'', bountiesCompleted:0, title:'' };
+  lastBountyDate:'', bountiesCompleted:0, title:'',
+  weeklyChallengeDone:'', robotMastery:{}, robotNickname:'', blackMarketPurchased:[], arenaTheme:'neon', rivals:[] };
 let G = {...G_DEFAULTS};
 
 function loadState() {
@@ -1460,6 +1497,8 @@ function calcStats() {
   if (!G.robot) return null;
   const s = {...G.robot.baseStats};
   G.purchasedUpgrades.forEach(uid => { const u=SHOP_UPGRADES.find(x=>x.id===uid); if(u) s[u.stat]=(s[u.stat]||0)+u.boost; });
+  // Robot mastery bonus
+  if(G.robot&&G.robotMastery){const mc=G.robotMastery[G.robot.id]||0;const mastBonus=mc>=100?1.10:mc>=50?1.05:mc>=10?1.02:1.0;s.atk=Math.floor(s.atk*mastBonus);}
   return s;
 }
 function calcSidekickStats() {
@@ -1498,6 +1537,13 @@ function startBotBattle(diff){
   _gauntletRound=0;
   _gauntletEarned=0;
   G._lastBotDiff=diff;G._lastBotCount=_botCount;saveState();
+  if(_pendingChallengeMode){
+    _pendingChallengeMode=false;
+    resetChallengeCards();
+    closeDifficultyPicker();
+    openChallengeCards(()=>goToBattle());
+    return;
+  }
   closeDifficultyPicker();
   goToBattle();
 }
@@ -1515,6 +1561,17 @@ function startGauntletNextRound(){
   const savedHpPct=Math.max(0.12,pHp/pHpMax); // carry HP into next round
   renderLoopActive=false;
   if(battleAnimId){cancelAnimationFrame(battleAnimId);battleAnimId=null;}
+  if(_draftMode){
+    openDraftPick(()=>{
+      goToBattle();
+      const restoredPct=Math.min(1,savedHpPct+0.20);
+      pHp=Math.max(1,Math.floor(pHpMax*restoredPct));
+      updateHpUI();
+      logB(`⚡ ROUND ${_gauntletRound+1}/${_botCount} — bots are +${Math.round(_gauntletRound*18)}% stronger!`,'system');
+      logB(`💊 Between-round heal: HP restored to ${Math.round(restoredPct*100)}%`,'player');
+    });
+    return;
+  }
   goToBattle();
   // goToBattle is synchronous — restore HP immediately after
   const restoredPct=Math.min(1,savedHpPct+0.20); // +20% bonus heal between rounds
@@ -1825,7 +1882,8 @@ function showRobotSelect() {
     grid.appendChild(card);
     requestAnimationFrame(()=>{
       const sd=makeScene(canvas,robot);cardScenes.push(sd);
-      (function loop(){if(!cardScenes[i])return;requestAnimationFrame(loop);sd.robot.rotation.y+=0.012;sd.renderer.render(sd.scene,sd.cam);})();
+      let _cLast=0;
+      (function loop(ts){if(!cardScenes[i])return;requestAnimationFrame(loop);if(ts-_cLast<10)return;_cLast=ts;sd.robot.rotation.y+=0.004;sd.renderer.render(sd.scene,sd.cam);})();
     });
   });
 }
@@ -1846,11 +1904,15 @@ function goToHub() {
   checkAchievements();
   renderRankBadge();
   updateDailyDot();
+  const wDot=document.getElementById('weekly-dot');if(wDot)wDot.style.display=isWeeklyChallengeAvailable()?'inline-block':'none';
+  const bmItems=getBlackMarket();const bmDot=document.getElementById('bm-dot');if(bmDot)bmDot.style.display=bmItems.some(u=>!(G.purchasedUpgrades||[]).includes(u.id)&&!(G.blackMarketPurchased||[]).includes(u.id))?'inline-block':'none';
+  const atBtn=document.getElementById('arena-theme-btn');if(atBtn)atBtn.textContent=`🎨 ARENA: ${(ARENA_THEMES[G.arenaTheme||'neon']||ARENA_THEMES.neon).name.toUpperCase()}`;
   document.getElementById('sound-toggle').textContent=G.soundEnabled?'🔊':'🔇';
   document.getElementById('hub-username-display').textContent=`⚡ ${G.username}`;
   document.getElementById('hub-money-display').textContent=G.money.toLocaleString();
-  document.getElementById('hub-robot-name').textContent=G.robot.name;
+  document.getElementById('hub-robot-name').textContent=(G.robotNickname&&G.robotNickname.trim())||G.robot.name;
   document.getElementById('hub-robot-name').style.color='#'+(G.robotAccentColor||G.robot.accentColor).toString(16).padStart(6,'0');
+  const nnd=document.getElementById('hub-robot-nickname-display');if(nnd)nnd.textContent=(G.robotNickname&&G.robotNickname.trim())||G.robot.name;
   document.getElementById('hub-robot-desc').textContent=G.robot.desc;
   // XP / Level display
   const lv=G.level||1;const xp=G.xp||0;
@@ -1862,7 +1924,8 @@ function goToHub() {
   if(lv>=10)lvBadge.style.color='var(--yellow)';
   else if(lv>=5)lvBadge.style.color='var(--cyan)';
   else lvBadge.style.color='rgba(170,100,255,0.8)';
-  document.getElementById('hub-xp-label').textContent=`${xp-xpPrev}/${xpForNext-xpPrev} XP`;
+  const sessionXpStr=_sessionXpTotal>0?`  (+${_sessionXpTotal} this session)`:'';
+  document.getElementById('hub-xp-label').textContent=`${xp-xpPrev}/${xpForNext-xpPrev} XP${sessionXpStr}`;
   document.getElementById('hub-xp-bar').style.width=xpPct+'%';
   document.getElementById('hub-xp-bar').title=`Level ${lv} — ${xp} total XP`;
 
@@ -1881,6 +1944,7 @@ function goToHub() {
     <div class="hub-stat-row"><span class="hub-stat-name">⚔️ Battles</span><span class="hub-stat-val">${totalGm}</span></div>
     <div class="hub-stat-row"><span class="hub-stat-name">💥 Dmg Dealt</span><span class="hub-stat-val">${(G.totalDmgDealt||0).toLocaleString()}</span></div>
     <div class="hub-stat-row"><span class="hub-stat-name">🤖 SK Kills</span><span class="hub-stat-val">${Object.values(G.sidekickKills||{}).reduce((s,v)=>s+v,0)}</span></div>
+    ${G.robot&&(G.robotMastery||{})[G.robot.id]?`<div class="hub-stat-row"><span class="hub-stat-name">🎖 Mastery</span><span class="hub-stat-val">${G.robotMastery[G.robot.id]} battles${G.robotMastery[G.robot.id]>=100?' ★MASTER':G.robotMastery[G.robot.id]>=50?' ★VET':G.robotMastery[G.robot.id]>=10?' ★APP':''}</span></div>`:''}
     ${(G.prestigeLevel||0)>0?`<div class="hub-stat-row"><span class="hub-stat-name">⭐ Prestige Bonus</span><span class="hub-stat-val" style="color:#ff00ff">+${G.prestigeLevel*10}% ATK/DEF</span></div>`:''}
     ${(G.survivalBest||0)>0?`<div class="hub-stat-row"><span class="hub-stat-name">💀 Survival Best</span><span class="hub-stat-val">Wave ${G.survivalBest}</span></div>`:''}
     ${(G.timeAttackBest||0)>0?`<div class="hub-stat-row"><span class="hub-stat-name">⏱ Time Attack Best</span><span class="hub-stat-val">${G.timeAttackBest.toFixed(2)}s</span></div>`:''}
@@ -1889,8 +1953,8 @@ function goToHub() {
   // Match history dots (last 10)
   const dotsEl=document.getElementById('hub-match-dots');
   if(dotsEl&&G.matchHistory&&G.matchHistory.length){
-    const modeIcon={online:'🌐',daily:'📅',tournament:'🏆',survival:'💀',timeattack:'⏱',bossrush:'👹',bounty:'🎯',bot:'⚔️'};
-    dotsEl.innerHTML=G.matchHistory.slice(0,10).map(m=>`<span title="${m.won?'WIN':'LOSS'} vs ${m.opp}${m.earn?'  +'+m.earn+'💰':''}" style="width:12px;height:12px;border-radius:50%;background:${m.won?'var(--green)':'var(--red)'};box-shadow:0 0 6px ${m.won?'rgba(0,255,136,0.6)':'rgba(255,34,85,0.6)'};flex-shrink:0;" title="${(modeIcon[m.mode]||'⚔️')} ${m.won?'WIN':'LOSS'}"></span>`).join('');
+    const modeIcon={online:'🌐',daily:'📅',weekly:'📆',tournament:'🏆',survival:'💀',timeattack:'⏱',bossrush:'👹',bounty:'🎯',gauntlet:'⚔️',mirror:'🪞',bot:'⚔️'};
+    dotsEl.innerHTML=G.matchHistory.slice(0,10).map(m=>`<span title="${(modeIcon[m.mode]||'⚔️')} ${m.won?'WIN':'LOSS'} vs ${m.opp}${m.earn?'  +'+m.earn+'💰':''}" style="width:12px;height:12px;border-radius:50%;background:${m.won?'var(--green)':'var(--red)'};box-shadow:0 0 6px ${m.won?'rgba(0,255,136,0.6)':'rgba(255,34,85,0.6)'};flex-shrink:0;"></span>`).join('');
   } else if(dotsEl)dotsEl.innerHTML='';
   const abs=getUnlockedAbilities();
   const abEl=document.getElementById('hub-abilities');
@@ -1922,8 +1986,9 @@ function goToHub() {
   const presBtn=document.getElementById('hub-prestige-btn');
   if(presBtn){
     const nextPL=(G.prestigeLevel||0)+1;
-    presBtn.style.display=(G.level||1)>=15?'':'none';
-    presBtn.title=`Prestige ${nextPL}: Resets upgrades & level, grants permanent +${nextPL*10}% ATK/DEF & +5 Skill Points`;
+    const upgCount=(G.purchasedUpgrades||[]).length;
+    presBtn.style.display=((G.level||1)>=15&&upgCount>=150)?'':'none';
+    presBtn.title=`Prestige ${nextPL}: Resets upgrades & level, grants permanent +${nextPL*10}% ATK/DEF & +5 Skill Points (${upgCount}/150 upgrades, LV${G.level||1}/15)`;
     presBtn.textContent=`⭐ PRESTIGE ${nextPL} (+${nextPL*10}% stats)`;
   }
   // Title display
@@ -1942,7 +2007,8 @@ function goToHub() {
   const canvas=document.getElementById('hub-canvas');
   if(hubSD){hubSD.renderer.dispose();hubSD=null;}
   hubSD=makeScene(canvas,playerRobotDef());
-  (function loop(){const sd=hubSD;if(!sd)return;requestAnimationFrame(loop);sd.robot.rotation.y+=0.008;sd.renderer.render(sd.scene,sd.cam);})();
+  let _hubLast=0;
+  (function loop(ts){const sd=hubSD;if(!sd)return;requestAnimationFrame(loop);if(ts-_hubLast<10)return;_hubLast=ts;sd.robot.rotation.y+=0.003;sd.renderer.render(sd.scene,sd.cam);})();
 }
 
 // ══════════════════════════════════════════════
@@ -2040,7 +2106,7 @@ let _skMegaTimer=0;
 let _rageTriggered=false;
 let _surgeCount=0;
 let _lastTauntTime=0;
-let _sessionCoins=0;
+let _sessionXpTotal=0;
 let _lowestHpPct=1.0;
 // New systems
 let comboCount=0,comboTimer=0,battleModifier=null,isTournamentBattle=false,isDailyBattle=false;
@@ -2052,6 +2118,19 @@ let parryCd=0,_parryWindowOpen=false,_parryWindowTimer=0;
 let isBountyBattle=false;
 let tournamentRound=0,tournamentPrize=0;
 let modifierTimer=0;
+// New mode flags
+let isMirrorMatch=false;
+let _isWeeklyChallenge=false;
+let _challengeCard=null;
+let _ccGlass=false,_ccNoHeal=false,_ccHalfHp=false,_ccNoDash=false,_ccFastBot=false;
+let _ccBonus=1.0;
+let _pendingBattleCallback=null;
+let _pendingChallengeMode=false;
+let _draftMode=false;
+let _draftTempBoosts=[];
+let isEndlessTournament=false,endlessRound=0,endlessPrize=0;
+let parryGauge=0;
+let playerStatus=null,playerStatusTimer=0;
 // Sidekick squad
 let activeSidekicks=[]; // [{def,hp,hpMax,alive,mesh,light,attackTimer}]
 
@@ -2060,6 +2139,11 @@ let activeParticles=[];
 let camShakeTimer=0,camShakeAmt=0;
 let arenaOrbLights=[];
 let ambientParticles=[];
+// Cached DOM refs for hot battle-loop paths (set in setupBattleArena, cleared on leave)
+let _elBattleTimer=null,_elDmgVal=null,_elTimeAttack=null;
+let _elHpPlayer=null,_elHpEnemy=null,_elHpPlayerNum=null,_elHpEnemyNum=null;
+let _elDangerVignette=null,_elRageIndicator=null;
+let _battleTimerLastSec=-1; // throttle timer display to once/sec
 
 window.addEventListener('keydown',e=>{
   KEYS[e.key.toLowerCase()]=true;
@@ -2144,6 +2228,9 @@ function _goToBattleCore(customBotDef){
   else if(isSurvivalMode)modeLabel=`💀 SURVIVAL — WAVE ${survivalWave}`;
   else if(isTimeAttackMode)modeLabel='⏱ TIME ATTACK';
   else if(isBossRushMode)modeLabel=`👹 BOSS RUSH — BOSS ${_bossRushIdx+1}/10`;
+  else if(isMirrorMatch)modeLabel='🪞 MIRROR MATCH';
+  else if(isEndlessTournament)modeLabel=`♾️ ENDLESS ROUND ${endlessRound+1}`;
+  isMirrorMatch=isMirrorMatch; // preserve
   document.getElementById('battle-mode-label').textContent=modeLabel;
   document.getElementById('btn-battle-again').style.display=isOnlineBattle?'none':'';
   const chatEl=document.getElementById('battle-chat');
@@ -2198,6 +2285,7 @@ function makeBotStats(){
 function playerRobotDef(){return G.robot?{...G.robot,color:G.robotBodyColor||G.robot.color,accentColor:G.robotAccentColor||G.robot.accentColor}:G.robot;}
 
 function setupBattleArena(customBotDef){
+  const th=ARENA_THEMES[G.arenaTheme||'neon']||ARENA_THEMES.neon;
   const canvas=document.getElementById('battle-canvas');
   const W=window.innerWidth,H=window.innerHeight;
   canvas.width=W;canvas.height=H;canvas.style.width=W+'px';canvas.style.height=H+'px';
@@ -2206,8 +2294,8 @@ function setupBattleArena(customBotDef){
   bRenderer.setPixelRatio(window.devicePixelRatio);
   bRenderer.setSize(W,H);bRenderer.shadowMap.enabled=true;
   bScene=new THREE.Scene();
-  bScene.background=new THREE.Color(0x010610);
-  bScene.fog=new THREE.Fog(0x010610,14,26);
+  bScene.background=new THREE.Color(th.bg);
+  bScene.fog=new THREE.Fog(th.fog,14,26);
   const numBotsForCam=customBotDef?1:_botCount;
   bCam=new THREE.PerspectiveCamera(numBotsForCam>1?78:65,W/H,0.1,100);
   if(numBotsForCam>1){
@@ -2218,25 +2306,25 @@ function setupBattleArena(customBotDef){
   }
 
   // Lighting
-  bScene.add(new THREE.AmbientLight(0x112233,0.6));
+  bScene.add(new THREE.AmbientLight(th.ambient,0.6));
   const sun=new THREE.DirectionalLight(0xaaaaff,0.7);sun.position.set(0,8,4);sun.castShadow=true;bScene.add(sun);
   const backL=new THREE.PointLight(0x002244,1.5,14);backL.position.set(0,-2,-5);bScene.add(backL);
   // Rotating rim light
-  const rimA=new THREE.PointLight(0x00f5ff,1.2,10);rimA.position.set(-5,2,0);bScene.add(rimA);
-  const rimB=new THREE.PointLight(0xff2255,0.8,10);rimB.position.set(5,2,0);bScene.add(rimB);
+  const rimA=new THREE.PointLight(th.rim1,1.2,10);rimA.position.set(-5,2,0);bScene.add(rimA);
+  const rimB=new THREE.PointLight(th.rim2,0.8,10);rimB.position.set(5,2,0);bScene.add(rimB);
 
   const numBots=customBotDef?1:_botCount;
   const pDef=playerRobotDef();
   pLight=new THREE.PointLight(pDef.accentColor,3.5,6);pLight.position.set(-2.2,2,1);bScene.add(pLight);
 
   // Floor (reflective)
-  const floorMat=new THREE.MeshStandardMaterial({color:0x050d1a,metalness:0.95,roughness:0.35});
+  const floorMat=new THREE.MeshStandardMaterial({color:th.floor,metalness:0.95,roughness:0.35});
   const floor=new THREE.Mesh(new THREE.PlaneGeometry(40,30),floorMat);
   floor.rotation.x=-Math.PI/2;floor.position.y=-1.9;floor.receiveShadow=true;bScene.add(floor);
 
-  // Floor grid
-  const gMat=new THREE.MeshBasicMaterial({color:0x00f5ff,transparent:true,opacity:0.07});
-  for(let i=-10;i<=10;i++){
+  // Floor grid (sparse — every other line for perf)
+  const gMat=new THREE.MeshBasicMaterial({color:th.grid,transparent:true,opacity:0.07});
+  for(let i=-8;i<=8;i+=2){
     const h=new THREE.Mesh(new THREE.PlaneGeometry(40,0.016),gMat);h.rotation.x=-Math.PI/2;h.position.set(0,-1.88,i*1.2);bScene.add(h);
     const v=new THREE.Mesh(new THREE.PlaneGeometry(0.016,30),gMat);v.rotation.x=-Math.PI/2;v.position.set(i*1.8,-1.88,0);bScene.add(v);
   }
@@ -2293,19 +2381,17 @@ function setupBattleArena(customBotDef){
   // Back wall for depth
   const wallMat=new THREE.MeshStandardMaterial({color:0x040b18,metalness:0.6,roughness:0.8});
   const wall=new THREE.Mesh(new THREE.PlaneGeometry(40,14),wallMat);wall.position.set(0,5,-10);bScene.add(wall);
-  // Side accent strips on wall
-  const stripMat=new THREE.MeshBasicMaterial({color:0x00f5ff,transparent:true,opacity:0.06});
-  for(let i=-8;i<=8;i+=2){const strip=new THREE.Mesh(new THREE.PlaneGeometry(0.04,14),stripMat);strip.position.set(i,5,-9.9);bScene.add(strip);}
+  // (accent strips removed for performance)
 
-  // Ambient floating particles
+  // Ambient floating particles (keep low — each updates per frame)
   ambientParticles=[];
-  for(let i=0;i<24;i++){
+  for(let i=0;i<10;i++){
     const geo=new THREE.BoxGeometry(0.025,0.025,0.025);
-    const mat=new THREE.MeshBasicMaterial({color:0x00f5ff,transparent:true,opacity:Math.random()*0.3+0.05});
+    const mat=new THREE.MeshBasicMaterial({color:0x00f5ff,transparent:true,opacity:Math.random()*0.2+0.05});
     const p=new THREE.Mesh(geo,mat);
     p.position.set((Math.random()-0.5)*9,Math.random()*3-1,(Math.random()-0.5)*5);
     bScene.add(p);
-    ambientParticles.push({mesh:p,speed:0.08+Math.random()*0.15,phase:Math.random()*Math.PI*2,ox:p.position.x});
+    ambientParticles.push({mesh:p,speed:0.08+Math.random()*0.12,phase:Math.random()*Math.PI*2,ox:p.position.x});
   }
 
   // Player mesh
@@ -2360,6 +2446,7 @@ function setupBattleArena(customBotDef){
   const skillHpBonus=hasSkill('iron_skin')?15:0;
   const totalHp=Math.floor((G.stats.hp+skillHpBonus)*prestigeBonus);
   pHp=totalHp;pHpMax=totalHp;
+  if(_ccHalfHp){pHp=Math.floor(pHpMax*0.5);}
   // bHp/bHpMax/botStats etc. set via syncGlobalsFromBot above
   attackCd=0;specialCd=0;dashCd=0;repairCd=0;shieldCd=0;parryCd=0;
   _parryWindowOpen=false;_parryWindowTimer=0;
@@ -2368,7 +2455,17 @@ function setupBattleArena(customBotDef){
   bsDmgDealt=0;bsDmgTaken=0;bsAttacks=0;bsAbilities=0;bsStartTime=performance.now();bsSkKills=0;
   _firstBloodDone=false;_botTauntTimer=8+Math.random()*6;_skMegaTimer=15;
   _rageTriggered=false;_surgeCount=0;_lowestHpPct=1.0;
-  activeParticles=[];camShakeTimer=0;
+  activeParticles=[];camShakeTimer=0;_battleTimerLastSec=-1;
+  // Cache hot DOM refs
+  _elBattleTimer=document.getElementById('battle-timer');
+  _elDmgVal=document.getElementById('battle-dmg-val');
+  _elTimeAttack=document.getElementById('time-attack-display');
+  _elHpPlayer=document.getElementById('player-hp-bar');
+  _elHpEnemy=document.getElementById('enemy-hp-bar');
+  _elHpPlayerNum=document.getElementById('player-hp-num');
+  _elHpEnemyNum=document.getElementById('enemy-hp-num');
+  _elDangerVignette=document.getElementById('hp-danger-vignette');
+  _elRageIndicator=document.getElementById('rage-indicator');
   // Survival/time attack/boss rush inits
   if(isSurvivalMode){
     const sw=document.getElementById('survival-wave-badge');
@@ -2406,8 +2503,8 @@ function setupBattleArena(customBotDef){
     } else {
       botSquad.forEach((bot,i)=>{setTimeout(()=>{if(battleActive)logB(`${bot.stats.name}: "${preFights[(i*3+Math.floor(Math.random()*3))%preFights.length]}"  ⚡`,'enemy');},(600+i*500));});
     }
-    // Boss warning for high-HP bots
-    if(bots.hp>150){setTimeout(()=>{showBossWarning();},300);}
+    // Boss warning for high-HP bots (not online or custom modes)
+    if(bots.hp>150&&!isOnlineBattle&&!isTournamentBattle&&!isDailyBattle){setTimeout(()=>{showBossWarning();},300);}
   }
   // Difficulty badge
   const diffBadge=document.getElementById('battle-diff-badge');
@@ -2443,10 +2540,9 @@ function updateBattle(dt,time){
     _parryWindowTimer=Math.max(0,_parryWindowTimer-dt);
     if(_parryWindowTimer<=0)_parryWindowOpen=false;
   }
-  // Time attack display update
-  if(isTimeAttackMode&&_timeAttackStart>0){
-    const ta=document.getElementById('time-attack-display');
-    if(ta){const ms=performance.now()-_timeAttackStart;ta.textContent=`⏱ ${(ms/1000).toFixed(2)}s`;}
+  // Time attack display update (every frame — needs sub-second precision)
+  if(isTimeAttackMode&&_timeAttackStart>0&&_elTimeAttack){
+    const ms=performance.now()-_timeAttackStart;_elTimeAttack.textContent=`⏱ ${(ms/1000).toFixed(2)}s`;
   }
   if(shieldActive){shieldTimer-=dt;if(shieldTimer<=0)shieldActive=false;}
   // Modifier tick effects
@@ -2458,13 +2554,22 @@ function updateBattle(dt,time){
       else if(battleModifier.id==='burning'){pHp=Math.max(0,pHp-3);botSquad.forEach(b=>{if(b.alive){b.hp=Math.max(0,b.hp-3);if(b.hp<=0&&b.alive){b.alive=false;if(b.mesh)b.mesh.scale.setScalar(0);if(b.light)b.light.intensity=0;}}});if(tgt())bHp=tgt().hp;updateHpUI();if(pHp<=0){endBattle(false);return;}if(botSquad.every(b=>!b.alive)){endBattle(true);return;}}
     }
   }
+  // Status effects
+  if(playerStatus&&playerStatusTimer>0){
+    playerStatusTimer-=dt;
+    if(playerStatusTimer<=0){clearStatus();}
+    else if(playerStatus==='burn'&&Math.floor(now/1000)!==Math.floor((now-dt*1000)/1000)){
+      pHp=Math.max(0,pHp-2);updateHpUI();logB('🔥 Burning! -2 HP','enemy');if(pHp<=0){endBattle(false);return;}
+    }
+  }
   // Combo decay
   if(comboCount>0&&(performance.now()/1000-comboTimer)>1.8)resetCombo();
-  // Battle timer display + live damage counter
-  const btEl=document.getElementById('battle-timer');
-  if(btEl&&bsStartTime>0){const sec=Math.floor((performance.now()-bsStartTime)/1000);btEl.textContent=`${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}`;}
-  const dmgValEl=document.getElementById('battle-dmg-val');
-  if(dmgValEl)dmgValEl.textContent=bsDmgDealt;
+  // Battle timer — throttled to once per second
+  if(_elBattleTimer&&bsStartTime>0){
+    const sec=Math.floor((performance.now()-bsStartTime)/1000);
+    if(sec!==_battleTimerLastSec){_battleTimerLastSec=sec;_elBattleTimer.textContent=`${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}`;}
+  }
+  if(_elDmgVal)_elDmgVal.textContent=bsDmgDealt;
 
   // Camera shake
   if(camShakeTimer>0){
@@ -2491,8 +2596,8 @@ function updateBattle(dt,time){
     if(bi===targetBotIdx)bot.mesh.scale.setScalar(RS*(1+Math.sin(now*0.005)*0.03));
   });
 
-  // Player light pulse
-  pLight.intensity=2.8+Math.sin(now*0.003)*0.7;
+  // Player light pulse — throttled
+  if(Math.floor(now*10)%6===0)pLight.intensity=2.8+Math.sin(now*0.003)*0.7;
 
   // Overtime modifier: trigger at 60s
   if(battleModifier&&battleModifier.id==='overtime'&&bsStartTime>0){
@@ -2516,14 +2621,13 @@ function updateBattle(dt,time){
     if(bLight)bLight.intensity=2.8+Math.sin(now*0.0028+1)*0.7;
   }
 
-  // Orb lights pulse
-  arenaOrbLights.forEach((l,i)=>{l.intensity=0.8+Math.sin(now*0.002+i*1.5)*0.4;});
+  // Orb lights pulse — throttled (update every ~100ms, not every frame)
+  if(Math.floor(now*10)%6===0)arenaOrbLights.forEach((l,i)=>{l.intensity=0.8+Math.sin(now*0.002+i*1.5)*0.4;});
 
-  // Ambient particles drift upward
+  // Ambient particles drift upward (no per-frame material.opacity — too expensive)
   ambientParticles.forEach(p=>{
     p.mesh.position.y+=p.speed*dt;
     p.mesh.position.x=p.ox+Math.sin(now*0.0008+p.phase)*0.3;
-    p.mesh.material.opacity=0.05+Math.sin(now*0.001+p.phase)*0.15;
     if(p.mesh.position.y>3.5)p.mesh.position.y=-1;
   });
 
@@ -2573,7 +2677,7 @@ function updateBotAI(dt,now){
       bot.mesh.scale.setScalar(RS*(1+prog*0.22));bot.light.intensity=3+prog*7;
       bot.light.color.setHex(botNextMoveType==='special'?0xffffff:bot.stats.accentColor);
       if(prog>0.65)bot.mesh.position.x+=( Math.random()-0.5)*0.07;
-      if(botStateTimer<=0){executeBotAttack(botNextMoveType);botState='idle';botStateTimer=Math.max(0.2,1.0-tier*0.08);}
+      if(botStateTimer<=0){executeBotAttack(botNextMoveType);botState='idle';botStateTimer=Math.max(0.2,(1.0-tier*0.08)*(_ccFastBot?0.5:1));}
     } else if(botState==='dodging'){
       botStateTimer=Math.max(0,botStateTimer-dt);
       bot.mesh.position.z=bot.pos.z+0.55;bot.mesh.scale.setScalar(RS*0.9);
@@ -2663,7 +2767,7 @@ function botDecideNextMove(tier){
     // Normal attack — sometimes start a combo
     executeBotAttack('normal');
     botState='idle';
-    const idleTime=Math.max(0.12,baseIdle+(berserk?-0.15:0)+Math.random()*0.2);
+    const idleTime=Math.max(0.12,(baseIdle+(berserk?-0.15:0)+Math.random()*0.2)*(_ccFastBot?0.5:1));
     botStateTimer=idleTime;
     if(tier>=2&&Math.random()<0.3){botComboLeft=tier>=4?2:1;}
   }
@@ -2725,11 +2829,17 @@ function executeBotAttack(type){
   if(!shieldActive)resetCombo(); // shield absorbs the hit — keep the combo
   if(G.godMode){logB(`🛡 GOD MODE — ${msg} blocked!`,'system');return;}
   if(battleModifier?.id==='berserker')dmg=Math.floor(dmg*1.5);
+  if(_ccGlass)dmg=Math.floor(dmg*2);
   pHp=Math.max(0,pHp-dmg);bsDmgTaken+=dmg;logB(msg,'enemy');
   hitFlash(pPos.x,0.5,0,pLight?pLight.color.getHex():G.robot.accentColor);
   spawnSparks(pPos.x,0.5,0.3,pLight?pLight.color.getHex():G.robot.accentColor,type==='heavy'?14:type==='special'?12:6);
   triggerShake(type==='heavy'?1.2:type==='special'?1.0:0.35);
   updateHpUI();
+  // 10% chance to inflict status on normal attacks (not online, not already statused)
+  if(!playerStatus&&!isOnlineBattle&&Math.random()<0.10){
+    const statuses=['burn','freeze','shock'];
+    applyStatus(statuses[Math.floor(Math.random()*statuses.length)]);
+  }
   if(pHp<=0)endBattle(false);
 }
 
@@ -2836,6 +2946,7 @@ function getElementMultiplier(attackerElement, defenderElement){
 }
 
 function doAttack(isSpecial){
+  const isShockCrit=playerStatus==='shock';if(isShockCrit)clearStatus();
   const rageThreshold=(G.skills||[]).includes('berserker_soul')?0.35:0.25;
   const rageMult=(pHp/pHpMax<rageThreshold)?1.5:1.0; // upgraded from 1.25 to 1.5
   // Sharp edge skill bonus
@@ -2856,15 +2967,18 @@ function doAttack(isSpecial){
     const atkMult=(battleModifier?.id==='glasscannon'?2:1)*(battleModifier?.id==='blitz'?1.15:1)*(battleModifier?.id==='berserker'?1.5:1);
     const defMult=battleModifier?.id==='armored'?2:1;
     let dmg=Math.max(1,Math.floor(G.stats.atk*1.4*dodge*atkMult*rageMult*sharpEdge*prestigeAtkBonus)-Math.floor(botStats.def*0.5*defMult)+Math.floor(Math.random()*3));
+    dmg=Math.floor(dmg*(_ccGlass?2:1));
     if(battleModifier?.id==='ghostly'&&Math.random()<0.3){logB('👻 Ghost dodge! Miss!','system');return;}
-    const isCrit=rollCrit();if(isCrit){dmg=Math.floor(dmg*(battleModifier?.id==='critheavy'?3:2));showCritOverlay();}
+    const isCrit=isShockCrit||rollCrit();if(isCrit){dmg=Math.floor(dmg*(battleModifier?.id==='critheavy'?3:2));showCritOverlay();}
     dmg=Math.floor(dmg*comboMultiplier()*elemMult);
     if(elemMult>1)showElemWeakFlash();
+    if(battleModifier?.id==='volatile'&&comboCount>=2)dmg+=comboCount;
     if(battleModifier?.id==='overtime'&&battleModifier._overtimeTriggered)dmg=Math.floor(dmg*1.2);
     bHp=Math.max(0,bHp-dmg);if(tgt())tgt().hp=bHp;bsDmgDealt+=dmg;bsAttacks++;bsAbilities++;
     if(battleModifier?.id==='lifesteal'){pHp=Math.min(pHpMax,pHp+2);updateHpUI();}
     // Vampiric skill
     if((G.skills||[]).includes('vampiric')){pHp=Math.min(pHpMax,pHp+1);}
+    if(bHp<=0&&comboCount>=8)showFinisher();
     floatDmgNumber(dmg,true,false,false);
     logB(`💥 POWER STRIKE!${isCrit?' CRIT!':''} ${dmg} dmg!${botDodging?' (dodged)':''}${rageMult>1?' 🔥RAGE':''}${elemMult>1?' 🔥WEAK!':''}`, 'player');
     lungeTimer=0.18;
@@ -2875,15 +2989,17 @@ function doAttack(isSpecial){
     if(isOnlineBattle&&onlineConn)onlineConn.send({type:'attack',dmg,label:'💥 POWER STRIKE'});
   } else {
     if(attackCd>0)return;
-    attackCd=battleModifier?.id==='turbo'?0.07:battleModifier?.id==='blitz'?0.08:0.12;
+    attackCd=(battleModifier?.id==='turbo'?0.07:battleModifier?.id==='blitz'?0.08:0.12)*(playerStatus==='freeze'?1.5:1);
     const dodge=botDodging?0.3:1;
     const atkMult=(battleModifier?.id==='glasscannon'?2:1)*(battleModifier?.id==='blitz'?1.15:1)*(battleModifier?.id==='berserker'?1.5:1);
     const defMult2=battleModifier?.id==='armored'?2:1;
     let dmg=Math.max(1,Math.floor(G.stats.atk*0.4*dodge*atkMult*rageMult*sharpEdge*prestigeAtkBonus)-Math.floor(botStats.def*0.12*defMult2)+Math.floor(Math.random()*3));
+    dmg=Math.floor(dmg*(_ccGlass?2:1));
     if(battleModifier?.id==='ghostly'&&Math.random()<0.3){logB('👻 Ghost dodge! Miss!','system');return;}
-    const isCrit=rollCrit();if(isCrit){dmg=Math.floor(dmg*(battleModifier?.id==='critheavy'?3:2));showCritOverlay();}
+    const isCrit=isShockCrit||rollCrit();if(isCrit){dmg=Math.floor(dmg*(battleModifier?.id==='critheavy'?3:2));showCritOverlay();}
     dmg=Math.floor(dmg*comboMultiplier()*elemMult);
     if(elemMult>1)showElemWeakFlash();
+    if(battleModifier?.id==='volatile'&&comboCount>=2)dmg+=comboCount;
     // Overtime: +20% damage after 60s
     if(battleModifier?.id==='overtime'&&battleModifier._overtimeTriggered)dmg=Math.floor(dmg*1.2);
     // Quickdraw: 3x on very first hit
@@ -2896,6 +3012,7 @@ function doAttack(isSpecial){
     if(battleModifier?.id==='lifesteal'){pHp=Math.min(pHpMax,pHp+2);updateHpUI();}
     // Vampiric skill
     if((G.skills||[]).includes('vampiric')){pHp=Math.min(pHpMax,pHp+1);}
+    if(bHp<=0&&comboCount>=8)showFinisher();
     if(!_firstBloodDone&&dmg>0){_firstBloodDone=true;logB('🩸 FIRST BLOOD!','system');sfx('crit');}
     floatDmgNumber(dmg,isCrit,isSurge,false);
     logB(`Hit!${isCrit?' CRIT!':''} ${dmg} dmg${botDodging?' (dodged)':''}${rageMult>1?' 🔥':''}${isSurge?' ⚡SURGE':''}${elemMult>1?' 🔥WEAK!':''}`, 'player');
@@ -2919,6 +3036,7 @@ function doAttack(isSpecial){
 }
 
 function doDash(){
+  if(_ccNoDash){logB('🚫 Grounded — Challenge Card active!','system');return;}
   const cdReduct=(G.skills||[]).includes('quick_reflex')?1:0;
   if(dashCd>0||!getUnlockedAbilities().find(a=>a.id==='dash'))return;
   dashCd=(battleModifier?.id==='blitz'?5:8)-cdReduct;lungeTimer=0.18;
@@ -2942,6 +3060,7 @@ function doDash(){
   bHp=Math.max(0,bHp-dmg);if(tgt())tgt().hp=bHp;bsDmgDealt+=dmg;bsAttacks++;bsAbilities++;
   if(battleModifier?.id==='lifesteal'){pHp=Math.min(pHpMax,pHp+2);}
   if((G.skills||[]).includes('vampiric')){pHp=Math.min(pHpMax,pHp+1);}
+  if(bHp<=0&&comboCount>=8)showFinisher();
   logB(`💨 Rocket Dash!${isCrit?' CRIT!':''} ${dmg} dmg!${rageMult>1?' 🔥':''}${elemMultD>1?' 🔥WEAK!':''}`,'player');
   floatDmgNumber(dmg,isCrit,false,false);
   hitFlash(bPos.x,0.5,0,botStats.accentColor||0xff4400);
@@ -2958,6 +3077,8 @@ function doDash(){
 
 function doRepair(){
   if(repairCd>0||!getUnlockedAbilities().find(a=>a.id==='repair'))return;
+  if(_ccNoHeal){logB('❌ No Repair — Challenge Card active!','system');return;}
+  if(battleModifier&&battleModifier.id==='frozen'){logB('❄️ Self Repair blocked by Frozen Arena!','system');return;}
   const cdReduct=(G.skills||[]).includes('quick_reflex')?1:0;
   repairCd=22-cdReduct;bsAbilities++;
   const heal=Math.floor(pHpMax*0.12);pHp=Math.min(pHpMax,pHp+heal);
@@ -2997,29 +3118,44 @@ function doParry(){
   logB(`⚡ PARRY! Bot stunned 1.5s! Reflected ${reflectDmg} dmg!`,'player');
   sfx('shield');
   hitFlash(bPos.x,0.5,0,0x00f5ff);spawnSparks(bPos.x,0.5,0,0x00f5ff,16);triggerShake(1.2);
+  // Parry gauge
+  parryGauge++;
+  const pgFill=document.getElementById('parry-gauge-fill');
+  const pgCount=document.getElementById('parry-gauge-count');
+  const pgWrap=document.getElementById('parry-gauge-wrap');
+  if(pgWrap)pgWrap.classList.add('show');
+  if(pgFill)pgFill.style.width=Math.min(100,(parryGauge/3)*100)+'%';
+  if(pgCount)pgCount.textContent=`${Math.min(parryGauge,3)}/3`;
+  if(parryGauge>=3){
+    parryGauge=0;if(pgFill)pgFill.style.width='0%';if(pgCount)pgCount.textContent='0/3';
+    logB('⚡ PARRY COUNTER! Free Power Strike!','system');
+    const prevCd=specialCd;specialCd=0;
+    doAttack(true);
+    specialCd=prevCd;
+  }
   updateHpUI();updateTargetUI();
   if(bHp<=0){if(tgt()&&botSquad.length>1)onBotKilled(tgt());else endBattle(true);}
 }
 
 function updateHpUI(){
   const pPct=pHpMax>0?pHp/pHpMax:1;
-  const pBar=document.getElementById('player-hp-bar');
+  const pBar=_elHpPlayer||document.getElementById('player-hp-bar');
   pBar.style.width=Math.max(0,pPct*100)+'%';
   pBar.classList.toggle('hp-mid',pPct<=0.5&&pPct>0.2);
   pBar.classList.toggle('hp-low',pPct<=0.2);
-  document.getElementById('player-hp-num').textContent=`${pHp}/${pHpMax}`;
-  const isLowHp=battleActive&&pHp>0&&(pHp/pHpMax)<0.2;
-  const isRage=battleActive&&pHp>0&&(pHp/pHpMax)<0.25;
-  document.getElementById('hp-danger-vignette').classList.toggle('show',isLowHp);
-  document.getElementById('rage-indicator').classList.toggle('show',isRage);
+  (_elHpPlayerNum||document.getElementById('player-hp-num')).textContent=`${pHp}/${pHpMax}`;
+  const isLowHp=battleActive&&pHp>0&&pPct<0.2;
+  const isRage=battleActive&&pHp>0&&pPct<0.25;
+  (_elDangerVignette||document.getElementById('hp-danger-vignette')).classList.toggle('show',isLowHp);
+  (_elRageIndicator||document.getElementById('rage-indicator')).classList.toggle('show',isRage);
   // Trigger rage SFX + message exactly once when first crossing threshold
   if(isRage&&!_rageTriggered&&pHp>0){_rageTriggered=true;sfx('rage');showRageModeMsg();}
   // Track lowest HP percentage for comeback achievement
   if(battleActive&&pHpMax>0){_lowestHpPct=Math.min(_lowestHpPct,pHp/pHpMax);}
   const t=tgt();
   const ehp=t?t.hp:bHp;const ehpMax=t?t.hpMax:bHpMax;
-  document.getElementById('enemy-hp-bar').style.width=Math.max(0,(ehp/ehpMax)*100)+'%';
-  document.getElementById('enemy-hp-num').textContent=`${ehp}/${ehpMax}`;
+  (_elHpEnemy||document.getElementById('enemy-hp-bar')).style.width=Math.max(0,(ehp/ehpMax)*100)+'%';
+  (_elHpEnemyNum||document.getElementById('enemy-hp-num')).textContent=`${ehp}/${ehpMax}`;
   // Update target panel hp numbers
   botSquad.forEach((bot,i)=>{const n=document.getElementById('target-num-'+i);if(n)n.textContent=bot.alive?bot.hp:'-';});
   activeSidekicks.forEach((sk,i)=>{
@@ -3137,6 +3273,12 @@ const ACHIEVEMENTS=[
   {id:'streak10',      icon:'🌋', name:'On A Roll',             desc:'Win 10 battles in a row'},
   {id:'total_dmg_1m',  icon:'💥', name:'Damage Dealer',         desc:'Deal 1,000,000 total damage across all battles'},
   {id:'daily_deal',    icon:'⭐', name:'Bargain Hunter',         desc:'Purchase the daily deal upgrade'},
+  {id:'level20',       icon:'🌟', name:'Elite Pilot',            desc:'Reach Level 20'},
+  {id:'bounty_hunter', icon:'🎯', name:'Bounty Hunter',          desc:'Complete 5 bounty battles'},
+  {id:'prestige_1',    icon:'⭐', name:'Prestige',               desc:'Reach your first Prestige'},
+  {id:'sk_kills_100',  icon:'🤖', name:'Sidekick Army',          desc:'Rack up 100 sidekick kills'},
+  {id:'survivor_5',    icon:'💀', name:'Survival Specialist',    desc:'Survive 5 waves in Survival mode'},
+  {id:'boss_rush_5',   icon:'👹', name:'Boss Slayer',            desc:'Defeat 5 bosses in Boss Rush'},
 ];
 
 function checkAchievements(context={}){
@@ -3192,6 +3334,13 @@ function checkAchievements(context={}){
   if((G.winStreak||0)>=10)unlock('streak10');
   if((G.totalDmgDealt||0)>=1000000)unlock('total_dmg_1m');
   if(context.daily_deal)unlock('daily_deal');
+  if((G.level||1)>=20)unlock('level20');
+  if((G.bountiesCompleted||0)>=5)unlock('bounty_hunter');
+  if((G.prestigeLevel||0)>=1)unlock('prestige_1');
+  const totalSkKills=Object.values(G.sidekickKills||{}).reduce((s,v)=>s+v,0);
+  if(totalSkKills>=100)unlock('sk_kills_100');
+  if((G.survivalBest||0)>=5)unlock('survivor_5');
+  if((G.bossRushBest||0)>=5)unlock('boss_rush_5');
 }
 
 function logToast(icon,msg){
@@ -3297,7 +3446,9 @@ function updateStreakDisplay(){
   const s=G.winStreak||0;
   if(s>=2){
     const mult=streakMultiplier(s);
-    el.textContent=`🔥 ${s} WIN STREAK — ${mult}x COINS`;
+    const xpBonus=s>=5?' · 1.5x XP':'';
+    el.textContent=`🔥 ${s} WIN STREAK — ${mult}x COINS${xpBonus}`;
+    el.style.color=s>=10?'var(--yellow)':s>=5?'#ff9900':'var(--orange)';
   } else {
     el.textContent='';
   }
@@ -3330,6 +3481,11 @@ function getMissionTemplates(){
     {id:'dmg2000',type:'dmg',target:2000,desc:'Deal 2,000 total damage',reward:600},
     {id:'combo5',type:'combo',target:5,desc:'Land a 5x combo in battle',reward:300},
     {id:'win_streak3',type:'streak',target:3,desc:'Win 3 battles in a row',reward:450},
+    {id:'dmg300',type:'dmg',target:300,desc:'Deal 300 total damage',reward:150},
+    {id:'combo4',type:'combo',target:4,desc:'Land a 4x combo',reward:220},
+    {id:'play3',type:'play',target:3,desc:'Play 3 battles',reward:120},
+    {id:'ability5',type:'ability',target:5,desc:'Use abilities 5 times in battle',reward:250},
+    {id:'win2_easy',type:'win',target:2,desc:'Win 2 battles',reward:180},
   ];
   return [all[seed%all.length],all[(seed+3)%all.length],all[(seed+5)%all.length]];
 }
@@ -3346,8 +3502,7 @@ function checkMissions(type,amount){
     let match=m.type===type;
     if(type==='play')match=m.type==='play';
     if(type==='win'&&m.type==='win_hard')match=_botDifficulty==='hard';
-    if(type==='win'&&m.type==='streak')match=(G.winStreak||0)>=m.target;
-    if(type==='win'&&m.type==='win_online')match=isOnlineBattle;
+    if(type==='win'&&m.type==='streak'){m.progress=Math.max(m.progress||0,G.winStreak||0);if((G.winStreak||0)>=m.target){m.done=true;G.money+=m.reward;['hub-money-display','shop-money-display','battle-money-display'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=G.money.toLocaleString();});logToast('📋',`MISSION DONE: ${m.desc} +${m.reward}💰`);changed=true;}return;}
     if(type==='ability'&&m.type==='ability')match=true;
     if(type==='combo'&&m.type==='combo')match=true;
     if(!match)return;
@@ -3398,14 +3553,17 @@ function endBattle(won){
   _rageTriggered=false;
   const untouchable=bsDmgTaken===0;
   if(won){if(isOnlineBattle)G.onlineWins++;else G.botWins++;G.winStreak=(G.winStreak||0)+1;}
-  else{if(isOnlineBattle)G.onlineLosses++;else G.botLosses++;G.winStreak=0;}
+  else{if(isOnlineBattle)G.onlineLosses++;else G.botLosses++;G.winStreak=0;if(G.missions)G.missions.forEach(m=>{if(m.type==='streak'&&!m.done)m.progress=0;});}
   G.totalBattles=(G.totalBattles||0)+1;
   G.totalDmgDealt=(G.totalDmgDealt||0)+bsDmgDealt;
+  // Robot mastery tracking
+  if(G.robot){if(!G.robotMastery)G.robotMastery={};G.robotMastery[G.robot.id]=(G.robotMastery[G.robot.id]||0)+1;const mc=G.robotMastery[G.robot.id];if(mc===10)logToast('🎖','Robot Mastery: APPRENTICE — +2% ATK with this robot!');else if(mc===50)logToast('🎖','Robot Mastery: VETERAN — +5% ATK with this robot!');else if(mc===100)logToast('🎖','Robot Mastery: MASTER — +10% ATK with this robot!');}
   // XP multiplier: 1.5x when streak >= 5
   const streakXpBonus=(G.winStreak||0)>=5&&won?1.5:1;
   // Award XP
   const xpGain=Math.floor((won?(isOnlineBattle?120:_botDifficulty==='hard'?90:_botDifficulty==='easy'?40:60):15)*streakXpBonus);
   G.xp=(G.xp||0)+xpGain;
+  _sessionXpTotal+=xpGain;
   const oldLevel=G.level||1;
   G.level=Math.floor(1+Math.sqrt(G.xp/80));
   if(G.level>oldLevel){
@@ -3413,6 +3571,7 @@ function endBattle(won){
     const levelsGained=G.level-oldLevel;
     G.skillPoints=(G.skillPoints||0)+levelsGained;
     G.stats=calcStats();
+    checkAchievements();
     logToast('⬆️',`LEVEL UP! Now Level ${G.level}! +${levelsGained} Skill Point${levelsGained>1?'s':''}!`);
   }
   // Show XP progress on result screen
@@ -3421,7 +3580,7 @@ function endBattle(won){
   const elapsed=Math.round((performance.now()-bsStartTime)/1000);
   if(!G.matchHistory)G.matchHistory=[];
   const oppName=isOnlineBattle?(botStats&&botStats.name?botStats.name:'Opponent'):(tgt()||botSquad[0]||{stats:{name:'Bot'}}).stats.name;
-  const modeStr=isOnlineBattle?'online':isDailyBattle?'daily':isTournamentBattle?'tournament':isSurvivalMode?'survival':isTimeAttackMode?'timeattack':isBossRushMode?'bossrush':isBountyBattle?'bounty':'bot';
+  const modeStr=isOnlineBattle?'online':isDailyBattle?(_isWeeklyChallenge?'weekly':'daily'):isTournamentBattle?'tournament':isSurvivalMode?'survival':isTimeAttackMode?'timeattack':isBossRushMode?'bossrush':isBountyBattle?'bounty':isMirrorMatch?'mirror':_gauntletActive||_gauntletRound>0?'gauntlet':'bot';
   G.matchHistory.unshift({won,opp:oppName,earn:0,duration:elapsed,ts:Date.now(),mode:modeStr,dmg:bsDmgDealt});
   if(G.matchHistory.length>20)G.matchHistory.pop();
   if(isOnlineBattle&&botStats&&botStats.name){
@@ -3431,7 +3590,7 @@ function endBattle(won){
   }
   // Missions: all battles count for play; online wins also trigger win_online
   checkMissions('play',1);
-  if(won&&isOnlineBattle){checkMissions('win',1);checkMissions('win_online',1);}
+  if(won){checkMissions('win',1);if(isOnlineBattle)checkMissions('win_online',1);}
   checkMissions('dmg',bsDmgDealt);checkMissions('ability',bsAbilities);
   if(won&&bsAbilities>=10)checkAchievements({ability_master:true});
   saveState();
@@ -3468,7 +3627,7 @@ function endBattle(won){
       survivalCoinsEarned+=waveCoins;
       G.money+=waveCoins;
       G.survivalBest=Math.max(G.survivalBest||0,survivalWave);
-      saveState();
+      saveState();checkAchievements();
       document.getElementById('battle-money-display').textContent=G.money.toLocaleString();
       if(G.matchHistory&&G.matchHistory[0])G.matchHistory[0].earn=waveCoins;
       document.getElementById('result-earn').textContent=`💀 WAVE ${survivalWave} COMPLETE! +${waveCoins} coins (total: ${survivalCoinsEarned})`;
@@ -3493,7 +3652,7 @@ function endBattle(won){
       _bossRushCoinsEarned+=bossCoins;
       G.money+=bossCoins;
       G.bossRushBest=Math.max(G.bossRushBest||0,_bossRushIdx);
-      saveState();
+      saveState();checkAchievements();
       document.getElementById('battle-money-display').textContent=G.money.toLocaleString();
       if(_bossRushIdx>=BOSS_RUSH_BOTS.length){
         isBossRushMode=false;
@@ -3512,7 +3671,7 @@ function endBattle(won){
       G.money+=bountyCoins;
       G.bountiesCompleted=(G.bountiesCompleted||0)+1;
       G.lastBountyDate=new Date().toISOString().slice(0,10);
-      saveState();
+      saveState();checkAchievements();
       document.getElementById('battle-money-display').textContent=G.money.toLocaleString();
       if(G.matchHistory&&G.matchHistory[0])G.matchHistory[0].earn=bountyCoins;
       document.getElementById('result-earn').textContent=`🎯 BOUNTY DEFEATED! 5x reward: +${bountyCoins} coins!`;
@@ -3527,7 +3686,13 @@ function endBattle(won){
       G.tournamentBest=Math.max(G.tournamentBest||0,tournamentRound);
       saveState();
       document.getElementById('battle-money-display').textContent=G.money.toLocaleString();
-      if(tournamentRound>=TOURNAMENT_BOTS.length){
+      if(isEndlessTournament){
+        endlessRound++;endlessPrize+=roundReward;
+        document.getElementById('result-earn').textContent=`♾️ Endless Round ${endlessRound} done! +${roundReward} coins. Next: ${getEndlessTournamentBot(endlessRound).name}`;
+        const btn=document.getElementById('btn-battle-again');btn.style.display='';
+        btn.textContent=`→ ROUND ${endlessRound+1}`;
+        btn.onclick=()=>{document.getElementById('battle-result').classList.remove('show');document.getElementById('bs-card').style.display='none';document.getElementById('mvp-result-card').classList.remove('show');startEndlessTournamentRound();};
+      } else if(tournamentRound>=TOURNAMENT_BOTS.length){
         const bonus=400;G.money+=bonus;saveState();
         document.getElementById('result-earn').textContent=`🏆 TOURNAMENT CHAMPION! +${roundReward+bonus} coins!`;
         document.getElementById('battle-money-display').textContent=G.money.toLocaleString();
@@ -3541,12 +3706,21 @@ function endBattle(won){
         btn.onclick=()=>{document.getElementById('battle-result').classList.remove('show');document.getElementById('bs-card').style.display='none';startTournamentRound();};
       }
     } else if(isDailyBattle){
-      const reward=500;G.money+=reward;G.lastDailyChallenge=new Date().toISOString().slice(0,10);saveState();
-      if(G.matchHistory&&G.matchHistory[0])G.matchHistory[0].earn=reward;
-      document.getElementById('result-earn').textContent=`⭐ DAILY CHALLENGE COMPLETE! +${reward} coins!`;
-      document.getElementById('battle-money-display').textContent=G.money.toLocaleString();
-      isDailyBattle=false;updateDailyDot();checkAchievements({daily:true});
-      document.getElementById('btn-battle-again').style.display='none'; // no rematch for daily
+      if(_isWeeklyChallenge){
+        const reward=1500;G.money+=reward;G.weeklyChallengeDone=getWeekKey();saveState();
+        if(G.matchHistory&&G.matchHistory[0])G.matchHistory[0].earn=reward;
+        document.getElementById('result-earn').textContent=`📆 WEEKLY CHALLENGE COMPLETE! +${reward} coins!`;
+        document.getElementById('battle-money-display').textContent=G.money.toLocaleString();
+        _isWeeklyChallenge=false;isDailyBattle=false;checkAchievements();
+        document.getElementById('btn-battle-again').style.display='none';
+      } else {
+        const reward=500;G.money+=reward;G.lastDailyChallenge=new Date().toISOString().slice(0,10);saveState();
+        if(G.matchHistory&&G.matchHistory[0])G.matchHistory[0].earn=reward;
+        document.getElementById('result-earn').textContent=`⭐ DAILY CHALLENGE COMPLETE! +${reward} coins!`;
+        document.getElementById('battle-money-display').textContent=G.money.toLocaleString();
+        isDailyBattle=false;updateDailyDot();checkAchievements({daily:true});
+        document.getElementById('btn-battle-again').style.display='none'; // no rematch for daily
+      }
     } else if(!isOnlineBattle){
       const tier=Math.max(1,Math.floor(G.purchasedUpgrades.length/20));
       const streak=G.winStreak||1;const mult=streakMultiplier(streak);
@@ -3555,13 +3729,14 @@ function endBattle(won){
       const perfectBonus=untouchable?1.5:1.0;
       const weekendBonus=isWeekend?1.5:1.0;
       const doubleDownBonus=battleModifier?.id==='doubledown'?2:1;
-      const earn=Math.floor(base*mult*perfectBonus*weekendBonus*doubleDownBonus);
+      let earn=Math.floor(base*mult*perfectBonus*weekendBonus*doubleDownBonus*_ccBonus);
+      if(isMirrorMatch){earn=earn*2;}
       G.money+=earn;saveState();
       _gauntletEarned+=earn;
       if(G.matchHistory&&G.matchHistory[0])G.matchHistory[0].earn=earn;
-      checkMissions('win',1);checkMissions('streak',1);
+      checkMissions('win',1);
       const streakMsg=mult>1?` (🔥${mult}x streak!)`:'';
-      const bonusMsgs=[];if(untouchable)bonusMsgs.push('✨ PERFECT!');if(isWeekend)bonusMsgs.push('📅 WEEKEND 1.5x');
+      const bonusMsgs=[];if(untouchable)bonusMsgs.push('✨ PERFECT!');if(isWeekend)bonusMsgs.push('📅 WEEKEND 1.5x');if(isMirrorMatch)bonusMsgs.push('🪞 Mirror Match bonus!');if(_challengeCard)bonusMsgs.push(`${_challengeCard.icon} Challenge bonus!`);
       document.getElementById('battle-money-display').textContent=G.money.toLocaleString();
       if(_gauntletActive&&_gauntletRemaining>1){
         // More bots to fight — offer next round
@@ -3584,13 +3759,20 @@ function endBattle(won){
         document.getElementById('result-earn').textContent=`+ ${earn} coins earned!${streakMsg}${bonusStr}`;
       }
     } else {
-      document.getElementById('result-earn').textContent=`You defeated ${botStats.name||'opponent'}!`;
+      const onlineEarn=Math.floor(150+Math.random()*100+(G.purchasedUpgrades||[]).length*2);
+      G.money+=onlineEarn;saveState();
+      if(G.matchHistory&&G.matchHistory[0])G.matchHistory[0].earn=onlineEarn;
+      document.getElementById('battle-money-display').textContent=G.money.toLocaleString();
+      document.getElementById('result-earn').textContent=`🌐 Online win vs ${botStats.name||'opponent'}! +${onlineEarn} coins!`;
+      checkAchievements();
     }
   } else {
-    const defeatMsgs=['DEFEATED','OBLITERATED','SHUT DOWN','DESTROYED','SYSTEM FAILURE'];
+    const defeatMsgs=['DEFEATED','SHUT DOWN','DESTROYED','SYSTEM FAILURE','CIRCUIT BREAKER'];
     const dmgPct=pHpMax>0?(_lowestHpPct||0):0;
-    const defeatTitle=dmgPct<0.05?'OBLITERATED':bsDmgDealt>200?'NEARLY GOT THEM':defeatMsgs[Math.floor(Math.random()*defeatMsgs.length)];
+    const defeatTitle=dmgPct<0.05?'OBLITERATED':bsDmgDealt>300?'SO CLOSE!':defeatMsgs[Math.floor(Math.random()*defeatMsgs.length)];
     title.textContent=defeatTitle;title.className='result-title result-lose';
+    const defeatDps=elapsed>0?Math.round(bsDmgDealt/elapsed):0;
+    document.getElementById('result-xp-progress').textContent+=`  ·  ${bsDmgDealt} dmg dealt (${defeatDps} DPS)`;
     if(isSurvivalMode){
       G.survivalBest=Math.max(G.survivalBest||0,survivalWave);saveState();
       document.getElementById('result-earn').textContent=`💀 Survived ${survivalWave} wave${survivalWave!==1?'s':''}! Best: ${G.survivalBest}. Coins: +${survivalCoinsEarned}`;
@@ -3599,7 +3781,8 @@ function endBattle(won){
       document.getElementById('btn-battle-again').textContent='💀 RETRY SURVIVAL';
       document.getElementById('btn-battle-again').onclick=()=>{document.getElementById('battle-result').classList.remove('show');document.getElementById('bs-card').style.display='none';document.getElementById('mvp-result-card').classList.remove('show');startSurvivalMode();};
     } else if(isTimeAttackMode){
-      document.getElementById('result-earn').textContent='⏱ Time attack failed!';
+      const taDps=elapsed>0?Math.round(bsDmgDealt/elapsed):0;
+      document.getElementById('result-earn').textContent=`⏱ Time attack failed! ${bsDmgDealt} dmg dealt (${taDps} DPS) — best: ${G.timeAttackBest>0?G.timeAttackBest.toFixed(2)+'s':'--'}`;
       isTimeAttackMode=false;
       document.getElementById('btn-battle-again').style.display='';
       document.getElementById('btn-battle-again').textContent='⏱ TRY AGAIN';
@@ -3621,20 +3804,21 @@ function endBattle(won){
     } else if(isTournamentBattle){
       // Coins already given per-round in the win path — do NOT re-add tournamentPrize here
       G.tournamentBest=Math.max(G.tournamentBest||0,tournamentRound);saveState();
-      document.getElementById('result-earn').textContent=tournamentPrize>0?`Tournament ended. You earned ${tournamentPrize} coins across ${tournamentRound} round${tournamentRound!==1?'s':''}!`:`Tournament failed at round 1!`;
-      isTournamentBattle=false;
+      if(isEndlessTournament&&endlessRound>0){document.getElementById('result-earn').textContent=`♾️ Endless Tournament: reached round ${endlessRound}! Earned ${endlessPrize} coins!`;}
+      else{document.getElementById('result-earn').textContent=tournamentPrize>0?`Tournament ended. You earned ${tournamentPrize} coins across ${tournamentRound} round${tournamentRound!==1?'s':''}!`:`Tournament failed at round 1!`;}
+      isTournamentBattle=false;isEndlessTournament=false;endlessRound=0;endlessPrize=0;
     } else if(isDailyBattle){
-      document.getElementById('result-earn').textContent='Daily challenge failed. Try again tomorrow!';
+      if(_isWeeklyChallenge){document.getElementById('result-earn').textContent='Weekly challenge failed! Try again next week.';_isWeeklyChallenge=false;}
+      else{document.getElementById('result-earn').textContent='Daily challenge failed. Try again tomorrow!';}
       isDailyBattle=false;
       document.getElementById('btn-battle-again').style.display='none'; // don't replay daily
     } else {
-      document.getElementById('result-earn').textContent=isOnlineBattle?`${(botStats&&botStats.name)||'Opponent'} wins!`:'Better luck next time!';
-      if(!isOnlineBattle){
-        const btn=document.getElementById('btn-battle-again');
-        btn.style.display='';
-        btn.textContent='⚡ REVENGE!';
-        btn.onclick=restartBattle;
-      }
+      const lossMsg=isOnlineBattle?`${(botStats&&botStats.name)||'Opponent'} wins! You dealt ${bsDmgDealt} dmg.`:'Better luck next time!';
+      document.getElementById('result-earn').textContent=lossMsg;
+      const lossBtn=document.getElementById('btn-battle-again');
+      lossBtn.style.display='';
+      lossBtn.textContent=isOnlineBattle?'⚡ REMATCH?':'⚡ REVENGE!';
+      lossBtn.onclick=restartBattle;
     }
   }
 }
@@ -3650,7 +3834,9 @@ function restartBattle(){
   document.getElementById('mvp-result-card').classList.remove('show');
   document.getElementById('battle-log').innerHTML='';
   resetCombo();
-  // Don't reset mode flags — survival/boss rush continue to next wave
+  resetChallengeCards();parryGauge=0;clearStatus();
+  const pgW2=document.getElementById('parry-gauge-wrap');if(pgW2)pgW2.classList.remove('show');
+  // Don't reset mode flags — survival/boss rush/mirror/endless continue to next wave
   if(!isSurvivalMode&&!isBossRushMode){rollModifier();}
   // Update mode label
   let modeLabel2='⚔ ARENA';
@@ -3690,7 +3876,11 @@ function leaveBattle(){
   if(isOnlineBattle&&onlineConn){try{onlineConn.send({type:'iLost'});}catch(e){}try{onlineConn.close();}catch(e){}onlineConn=null;}
   isOnlineBattle=false;isTournamentBattle=false;isDailyBattle=false;
   isSurvivalMode=false;isTimeAttackMode=false;isBossRushMode=false;isBountyBattle=false;
+  isMirrorMatch=false;_isWeeklyChallenge=false;isEndlessTournament=false;endlessRound=0;endlessPrize=0;
+  _draftMode=false;_draftTempBoosts.length=0;
   survivalWave=0;survivalCoinsEarned=0;_timeAttackStart=0;_bossRushIdx=0;_bossRushCoinsEarned=0;
+  resetChallengeCards();parryGauge=0;clearStatus();
+  const pgW=document.getElementById('parry-gauge-wrap');if(pgW)pgW.classList.remove('show');
   resetCombo();
   document.getElementById('modifier-banner').classList.remove('show');
   document.getElementById('squad-section').style.display='none';
@@ -3839,6 +4029,7 @@ function recruitSidekick(rosterId){
   if(!G.purchasedSidekicks)G.purchasedSidekicks=[];
   if(G.purchasedSidekicks.includes(rosterId))return;
   G.money-=r.cost;G.purchasedSidekicks.push(rosterId);saveState();
+  checkAchievements();
   logToast('🤖',`${r.name} joins your squad!`);
   renderShop();
 }
@@ -3877,13 +4068,16 @@ function goToLeaderboard(){
     <div class="lb-stat-card"><div class="lb-stat-val" style="color:var(--yellow)">${G.xp||0}</div><div class="lb-stat-label">TOTAL XP</div></div>
     <div class="lb-stat-card"><div class="lb-stat-val" style="color:var(--green)">${Object.values(G.sidekickKills||{}).reduce((s,v)=>s+v,0)}</div><div class="lb-stat-label">SK KILLS</div></div>
     <div class="lb-stat-card"><div class="lb-stat-val" style="color:var(--cyan)">${(G.winStreak||0)}</div><div class="lb-stat-label">STREAK</div></div>
-    <div class="lb-stat-card"><div class="lb-stat-val" style="color:var(--orange);font-size:1rem">${totalGames>0?Math.round((G.totalDmgDealt||0)/totalGames).toLocaleString():'--'}</div><div class="lb-stat-label">AVG DMG/BATTLE</div></div>`;
+    <div class="lb-stat-card"><div class="lb-stat-val" style="color:var(--orange);font-size:1rem">${totalGames>0?Math.round((G.totalDmgDealt||0)/totalGames).toLocaleString():'--'}</div><div class="lb-stat-label">AVG DMG/BATTLE</div></div>
+    <div class="lb-stat-card"><div class="lb-stat-val" style="color:var(--red)">${G.onlineLosses||0}</div><div class="lb-stat-label">ONLINE LOSSES</div></div>
+    ${(G.rivals||[]).length>0?`<div class="lb-stat-card"><div class="lb-stat-val" style="color:var(--red)">${(G.rivals||[]).length}</div><div class="lb-stat-label">RIVALS</div></div>`:''}
+    `;
   // Match history
   const mhEl=document.getElementById('lb-match-history');
   if(mhEl){
     const mh=G.matchHistory||[];
     if(mh.length===0){mhEl.innerHTML='<div class="lb-empty">No battles recorded yet.</div>';}
-    else{mhEl.innerHTML=mh.map(m=>{const d=new Date(m.ts);const t=d.toLocaleString(undefined,{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});const dur=m.duration?(Math.floor(m.duration/60)?Math.floor(m.duration/60)+'m '+(m.duration%60)+'s':m.duration+'s'):'';const dmgStr=m.dmg?`<span style="font-size:0.58rem;color:var(--red);opacity:0.7">${m.dmg}dmg</span>`:'';const durStr=dur?`<span style="font-size:0.54rem;color:rgba(200,232,255,0.3)">${dur}</span>`:'';return`<div class="mh-row ${m.won?'mh-win':'mh-loss'}"><span class="mh-result">${m.won?'WIN':'LOSS'}</span><span class="mh-opp">${escHtml(m.opp||'?')}</span>${dmgStr}${durStr}<span class="mh-earn">${m.earn?'+'+m.earn+'💰':m.mode||''}</span><span class="mh-time">${t}</span></div>`;}).join('');}
+    else{const mhModeLabel={online:'🌐 Online',daily:'📅 Daily',weekly:'📆 Weekly',tournament:'🏆 Tourney',survival:'💀 Survival',timeattack:'⏱ Time Atk',bossrush:'👹 Boss Rush',bounty:'🎯 Bounty',gauntlet:'⚔️ Gauntlet',mirror:'🪞 Mirror',bot:'⚔️ Bot'};mhEl.innerHTML=mh.map(m=>{const d=new Date(m.ts);const t=d.toLocaleString(undefined,{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});const dur=m.duration?(Math.floor(m.duration/60)?Math.floor(m.duration/60)+'m '+(m.duration%60)+'s':m.duration+'s'):'';const dmgStr=m.dmg?`<span style="font-size:0.58rem;color:var(--red);opacity:0.7">${m.dmg}dmg</span>`:'';const durStr=dur?`<span style="font-size:0.54rem;color:rgba(200,232,255,0.3)">${dur}</span>`:'';const modeStr=m.earn?'+'+m.earn+'💰':(mhModeLabel[m.mode]||m.mode||'');return`<div class="mh-row ${m.won?'mh-win':'mh-loss'}"><span class="mh-result">${m.won?'WIN':'LOSS'}</span><span class="mh-opp">${escHtml(m.opp||'?')}</span>${dmgStr}${durStr}<span class="mh-earn">${modeStr}</span><span class="mh-time">${t}</span></div>`;}).join('');}
   }
   const tbody=document.getElementById('lb-opponents');
   if(!G.opponents||G.opponents.length===0){
@@ -3895,7 +4089,8 @@ function goToLeaderboard(){
     const wr=(o.wins||0)+(o.losses||0)>0?Math.round(((o.wins||0)/((o.wins||0)+(o.losses||0)))*100):0;
     const d=new Date(o.lastSeen);
     const dateStr=`${d.getMonth()+1}/${d.getDate()}`;
-    return `<tr><td class="lb-td lb-rank">#${i+1}</td><td class="lb-td lb-name">${escHtml(o.name)}</td><td class="lb-td lb-win">${o.wins||0}</td><td class="lb-td lb-lose">${o.losses||0}</td><td class="lb-td" style="color:var(--yellow)">${wr}%</td><td class="lb-td" style="color:rgba(200,232,255,0.4)">${dateStr}</td></tr>`;
+    const isRival=(G.rivals||[]).includes(o.name);
+    return `<tr><td class="lb-td lb-rank">#${i+1}</td><td class="lb-td lb-name">${escHtml(o.name)}</td><td class="lb-td lb-win">${o.wins||0}</td><td class="lb-td lb-lose">${o.losses||0}</td><td class="lb-td" style="color:var(--yellow)">${wr}%</td><td class="lb-td" style="color:rgba(200,232,255,0.4)">${dateStr}</td><td class="lb-td"><button onclick="toggleRival('${escHtml(o.name)}')" style="font-size:0.6rem;padding:3px 8px;background:${isRival?'rgba(255,34,85,0.2)':'transparent'};border:1px solid rgba(255,34,85,0.4);color:var(--red);border-radius:3px;cursor:pointer;">${isRival?'★ RIVAL':'☆ RIVAL'}</button></td></tr>`;
   }).join('');
 }
 
@@ -4825,6 +5020,8 @@ const MODIFIERS=[
   {id:'berserker',  name:'🪓 BERSERKER',           desc:'Both sides deal +50% dmg but take +50% dmg too',color:'var(--red)'},
   {id:'ghostly',    name:'👻 GHOST ARENA',         desc:'All attacks have 30% chance to miss',    color:'#aaaaff'},
   {id:'doubledown', name:'💰 DOUBLE DOWN',         desc:'Coins earned this battle are doubled',   color:'var(--yellow)'},
+  {id:'frozen',     name:'❄️ FROZEN ARENA',        desc:'Self Repair is disabled this battle',     color:'#88ccff'},
+  {id:'volatile',   name:'💣 VOLATILE',             desc:'Combo hits deal +1 bonus damage each',   color:'var(--orange)'},
 ];
 function rollModifier(){
   const m=MODIFIERS[Math.floor(Math.random()*MODIFIERS.length)];
@@ -4951,6 +5148,234 @@ function startDailyChallenge(){
 }
 
 // ══════════════════════════════════════════════
+//  NEW FEATURES v39
+// ══════════════════════════════════════════════
+
+// ── ARENA THEMES ──
+const ARENA_THEMES={
+  neon:    {bg:0x010610,fog:0x010610,floor:0x050d1a,ambient:0x112233,rim1:0x00f5ff,rim2:0xff2255,grid:0x00f5ff,name:'Neon City'},
+  volcanic:{bg:0x0d0500,fog:0x0d0500,floor:0x1a0800,ambient:0x221100,rim1:0xff4400,rim2:0xff8800,grid:0xff4400,name:'Volcanic'},
+  void:    {bg:0x030008,fog:0x030008,floor:0x080010,ambient:0x110022,rim1:0xaa00ff,rim2:0x4400aa,grid:0xaa00ff,name:'The Void'},
+};
+function cycleArenaTheme(){
+  const themes=Object.keys(ARENA_THEMES);
+  const idx=themes.indexOf(G.arenaTheme||'neon');
+  G.arenaTheme=themes[(idx+1)%themes.length];
+  saveState();
+  const btn=document.getElementById('arena-theme-btn');
+  if(btn)btn.textContent=`🎨 ARENA: ${ARENA_THEMES[G.arenaTheme].name.toUpperCase()}`;
+  logToast('🎨',`Arena theme: ${ARENA_THEMES[G.arenaTheme].name}`);
+}
+
+// ── MIRROR MATCH ──
+function startMirrorMatch(){
+  if(hubSD){hubSD.renderer.dispose();hubSD=null;}
+  isMirrorMatch=true;isSurvivalMode=false;isTimeAttackMode=false;isBossRushMode=false;isBountyBattle=false;isTournamentBattle=false;isDailyBattle=false;isEndlessTournament=false;
+  const s=G.stats||calcStats();
+  const mirrorBot={name:`SHADOW ${(G.robotNickname||G.robot.name).toUpperCase()}`,hp:s.hp,atk:s.atk,def:s.def,spd:s.spd,color:G.robotBodyColor||G.robot.color,accentColor:G.robotAccentColor||G.robot.accentColor,id:G.robot.id};
+  goToBattle(mirrorBot);
+}
+
+// ── WEEKLY CHALLENGE ──
+function getWeekKey(){const d=new Date();const day=d.getDay()||7;const mon=new Date(d);mon.setDate(d.getDate()-day+1);return mon.toISOString().slice(0,10);}
+function isWeeklyChallengeAvailable(){return (G.weeklyChallengeDone||'')!==getWeekKey();}
+function getWeeklyBot(){
+  const wk=getWeekKey();let seed=0;for(const c of wk)seed=(seed*31+c.charCodeAt(0))%9973;
+  const robotIds=['crusher','thunder','phantom'];
+  const robot=ROBOTS.find(r=>r.id===robotIds[seed%3])||ROBOTS[0];
+  const diff=1.8+((seed*7)%80)/100;
+  return {id:robot.id,name:`WEEKLY: ${robot.name.toUpperCase()}`,color:robot.color,accentColor:robot.accentColor,
+    hp:Math.floor(robot.baseStats.hp*diff*1.8),atk:Math.floor(robot.baseStats.atk*diff*1.3),
+    def:Math.floor(robot.baseStats.def*diff*1.1),spd:robot.baseStats.spd};
+}
+function startWeeklyChallenge(){
+  if(!isWeeklyChallengeAvailable()){logToast('📆','Weekly challenge already done! Resets Monday.');return;}
+  isDailyBattle=true;isTournamentBattle=false;
+  if(hubSD){hubSD.renderer.dispose();hubSD=null;}
+  _isWeeklyChallenge=true;
+  goToBattle(getWeeklyBot());
+}
+
+// ── CHALLENGE CARDS ──
+const CHALLENGE_CARDS=[
+  {id:'glass',icon:'💥',name:'GLASS CANNON',desc:'You deal 2x damage but take 2x damage',bonus:1.8,apply:()=>{_ccGlass=true;}},
+  {id:'noheal',icon:'❌',name:'NO REPAIR',desc:'Self Repair is disabled',bonus:1.4,apply:()=>{_ccNoHeal=true;}},
+  {id:'halfhp',icon:'💔',name:'HALF HP',desc:'Start the battle at 50% HP',bonus:2.0,apply:()=>{_ccHalfHp=true;}},
+  {id:'nodash',icon:'🚫',name:'GROUNDED',desc:'Dash is disabled',bonus:1.3,apply:()=>{_ccNoDash=true;}},
+  {id:'fast',icon:'⚡',name:'OVERCLOCK',desc:'Bot attacks 50% faster',bonus:1.5,apply:()=>{_ccFastBot=true;}},
+];
+function openChallengeCards(callback){
+  _pendingBattleCallback=callback;
+  const grid=document.getElementById('challenge-card-grid');
+  if(!grid){if(callback)callback();return;}
+  const shuffled=[...CHALLENGE_CARDS].sort(()=>Math.random()-0.5).slice(0,3);
+  grid.innerHTML=shuffled.map(c=>`<div class="ccard" onclick="pickChallengeCard('${c.id}')"><div class="ccard-icon">${c.icon}</div><div class="ccard-name">${c.name}</div><div class="ccard-desc">${c.desc}</div><div class="ccard-bonus">+${Math.round((c.bonus-1)*100)}% COINS</div></div>`).join('');
+  document.getElementById('challenge-card-modal').classList.add('show');
+}
+function pickChallengeCard(id){
+  const card=CHALLENGE_CARDS.find(c=>c.id===id);
+  if(card){_challengeCard=card;_ccBonus=card.bonus;card.apply();logToast(card.icon,`Challenge: ${card.name}!`);}
+  document.getElementById('challenge-card-modal').classList.remove('show');
+  if(_pendingBattleCallback)_pendingBattleCallback();
+  _pendingBattleCallback=null;
+}
+function skipChallengeCard(){
+  _challengeCard=null;_ccBonus=1.0;
+  document.getElementById('challenge-card-modal').classList.remove('show');
+  if(_pendingBattleCallback)_pendingBattleCallback();
+  _pendingBattleCallback=null;
+}
+function resetChallengeCards(){
+  _challengeCard=null;_ccBonus=1.0;_ccGlass=false;_ccNoHeal=false;_ccHalfHp=false;_ccNoDash=false;_ccFastBot=false;_pendingBattleCallback=null;
+}
+function startChallengeFight(){
+  _pendingChallengeMode=true;
+  openDifficultyPicker();
+}
+
+// ── FINISHER OVERLAY ──
+function showFinisher(){
+  const el=document.getElementById('finisher-overlay');
+  if(!el)return;
+  el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');
+  el.addEventListener('animationend',()=>el.classList.remove('pop'),{once:true});
+  sfx('crit');
+  logB('⚡⚡⚡ FINISHER!! ⚡⚡⚡','system');
+}
+
+// ── ROBOT NICKNAME ──
+function openNicknameModal(){
+  const m=document.getElementById('nickname-modal');
+  if(!m)return;
+  document.getElementById('nickname-input').value=G.robotNickname||'';
+  m.style.display='flex';
+  setTimeout(()=>document.getElementById('nickname-input').focus(),100);
+}
+function closeNicknameModal(){const m=document.getElementById('nickname-modal');if(m)m.style.display='none';}
+function saveNickname(){
+  const v=document.getElementById('nickname-input').value.trim();
+  G.robotNickname=v;saveState();
+  const d=document.getElementById('hub-robot-nickname-display');if(d)d.textContent=v||G.robot.name;
+  document.getElementById('hub-robot-name').textContent=v||G.robot.name;
+  closeNicknameModal();
+  logToast('✏️',`Robot renamed to "${v||G.robot.name}"!`);
+}
+
+// ── BLACK MARKET ──
+function getBlackMarket(){
+  const today=new Date().toISOString().slice(0,10);
+  const d=new Date(today);const period=Math.floor(d.getTime()/(86400000*3));
+  let s=period*997+13;
+  const pool=SHOP_UPGRADES.filter(u=>u.tier>=7);
+  if(!pool.length)return[];
+  const items=[];
+  for(let i=0;i<3;i++){s=(s*1103515245+12345)&0x7fffffff;const idx=s%pool.length;const u=pool[idx];if(!items.find(x=>x.id===u.id))items.push({...u,bmPrice:u.cost*3});}
+  return items;
+}
+function openBlackMarket(){
+  document.getElementById('bm-modal').style.display='flex';
+  renderBMItems();
+}
+function closeBM(){document.getElementById('bm-modal').style.display='none';}
+function renderBMItems(){
+  const items=getBlackMarket();
+  const grid=document.getElementById('bm-grid');
+  if(!grid)return;
+  if(!items.length){grid.innerHTML='<div style="color:rgba(200,232,255,0.4);font-size:0.7rem;">No items available — check back in 3 days</div>';return;}
+  grid.innerHTML=items.map(u=>{
+    const owned=(G.purchasedUpgrades||[]).includes(u.id)||(G.blackMarketPurchased||[]).includes(u.id);
+    const canAfford=G.money>=u.bmPrice;
+    return `<div style="background:rgba(255,0,255,0.06);border:1px solid rgba(255,0,255,0.3);border-radius:6px;padding:12px;min-width:180px;flex:1;max-width:220px;">
+      <div style="font-size:1rem;margin-bottom:4px;">${u.icon||'⚙️'}</div>
+      <div style="font-family:'Orbitron',sans-serif;font-size:0.7rem;color:#ff00ff;margin-bottom:3px;">${u.name}</div>
+      <div style="font-size:0.6rem;color:rgba(200,232,255,0.5);margin-bottom:6px;">+${u.boost} ${u.stat.toUpperCase()} · Tier ${u.tier}</div>
+      <div style="font-size:0.65rem;color:var(--yellow);margin-bottom:8px;">💰 ${u.bmPrice.toLocaleString()}</div>
+      ${owned?'<div style="color:var(--green);font-size:0.6rem;">✓ OWNED</div>':`<button class="shop-buy-btn" style="width:100%;border-color:rgba(255,0,255,0.5);color:#ff00ff;" ${canAfford?'':'disabled'} onclick="buyBMItem('${u.id}',${u.bmPrice})">BUY</button>`}
+    </div>`;
+  }).join('');
+}
+function buyBMItem(id,price){
+  if(G.money<price)return;
+  if((G.purchasedUpgrades||[]).includes(id)||(G.blackMarketPurchased||[]).includes(id))return;
+  G.money-=price;
+  if(!G.blackMarketPurchased)G.blackMarketPurchased=[];
+  G.blackMarketPurchased.push(id);
+  G.purchasedUpgrades.push(id);
+  G.stats=calcStats();saveState();checkAchievements();
+  logToast('🕵️','Black Market purchase complete!');
+  renderBMItems();
+  document.getElementById('hub-money-display').textContent=G.money.toLocaleString();
+}
+
+// ── RIVAL SYSTEM ──
+function toggleRival(name){
+  if(!G.rivals)G.rivals=[];
+  const idx=G.rivals.indexOf(name);
+  if(idx>=0){G.rivals.splice(idx,1);logToast('☆','Rival removed: '+name);}
+  else{G.rivals.push(name);logToast('★','Rival set: '+name+'! Win/loss tracked separately.');}
+  saveState();goToLeaderboard();
+}
+
+// ── STATUS EFFECTS ──
+function applyStatus(type){
+  playerStatus=type;
+  playerStatusTimer=type==='freeze'?3:type==='burn'?5:type==='shock'?2:0;
+  const si=document.getElementById('status-indicator');
+  if(!si)return;
+  const styles={burn:{bg:'rgba(255,80,0,0.85)',color:'#fff',text:'🔥 BURNING — losing 2 HP/s'},freeze:{bg:'rgba(0,180,255,0.85)',color:'#fff',text:'❄️ FROZEN — attack speed -50%'},shock:{bg:'rgba(255,220,0,0.85)',color:'#000',text:'⚡ SHOCKED — next hit critical'}};
+  const s=styles[type];if(!s)return;
+  si.style.background=s.bg;si.style.color=s.color;si.textContent=s.text;si.classList.add('show');
+}
+function clearStatus(){
+  playerStatus=null;playerStatusTimer=0;
+  const si=document.getElementById('status-indicator');if(si)si.classList.remove('show');
+}
+
+// ── DRAFT MODE ──
+function openDraftPick(callback){
+  const pool=['hp','atk','def','spd'];
+  const labels={hp:'❤️ +15 HP',atk:'⚔️ +8 ATK',def:'🛡️ +6 DEF',spd:'⚡ +5 SPD'};
+  const shuffled=[...pool].sort(()=>Math.random()-0.5).slice(0,3);
+  const grid=document.getElementById('draft-picks');
+  if(!grid){if(callback)callback();return;}
+  grid.innerHTML=shuffled.map(s=>`<div class="ccard" onclick="pickDraft('${s}')"><div class="ccard-icon">${s==='hp'?'❤️':s==='atk'?'⚔️':s==='def'?'🛡️':'⚡'}</div><div class="ccard-name">${labels[s]}</div><div class="ccard-desc">Permanent for this gauntlet run</div></div>`).join('');
+  document.getElementById('draft-modal').style.display='flex';
+  _pendingBattleCallback=callback;
+}
+function pickDraft(stat){
+  const boosts={hp:15,atk:8,def:6,spd:5};
+  const b=boosts[stat]||0;
+  G.stats=G.stats||calcStats();
+  G.stats[stat]=(G.stats[stat]||0)+b;
+  _draftTempBoosts.push({stat,val:b});
+  logToast('🎲',`Draft: +${b} ${stat.toUpperCase()} for this run!`);
+  document.getElementById('draft-modal').style.display='none';
+  if(_pendingBattleCallback){const cb=_pendingBattleCallback;_pendingBattleCallback=null;cb();}
+}
+function startDraftGauntlet(){
+  _draftMode=true;_botDifficulty='normal';_botCount=3;
+  _gauntletActive=true;_gauntletRemaining=3;_gauntletRound=0;_gauntletEarned=0;
+  G._lastBotDiff='normal';G._lastBotCount=3;saveState();
+  if(hubSD){hubSD.renderer.dispose();hubSD=null;}
+  goToBattle();
+}
+
+// ── ENDLESS TOURNAMENT ──
+function getEndlessTournamentBot(round){
+  const scale=1+round*0.25;
+  const names=['GRUNT','SCOUT','SOLDIER','ELITE','VETERAN','CHAMPION','WARLORD','TITAN','OVERLORD','GOD-UNIT'];
+  const name=(round<names.length?names[round]:`NEMESIS ${round-names.length+2}`)+' Mk.'+(Math.floor(round/names.length)+1);
+  return {name,hp:Math.floor(80*scale),atk:Math.floor(10*scale),def:Math.floor(6*scale),spd:Math.floor(7*scale),
+    color:[0x334455,0x114422,0x441100,0x220044][round%4],accentColor:[0x8899aa,0x00ff88,0xff4400,0xaa00ff][round%4],id:['crusher','thunder','phantom','crusher'][round%4]};
+}
+function startEndlessTournament(){
+  if(hubSD){hubSD.renderer.dispose();hubSD=null;}
+  isEndlessTournament=true;isTournamentBattle=true;tournamentRound=0;tournamentPrize=0;endlessRound=0;endlessPrize=0;
+  goToBattle(getEndlessTournamentBot(0));
+}
+function startEndlessTournamentRound(){isTournamentBattle=true;goToBattle(getEndlessTournamentBot(endlessRound));}
+
+// ══════════════════════════════════════════════
 //  SURVIVAL / TIME ATTACK / BOSS RUSH / BOUNTY / PRESTIGE / SKILLS / TITLES
 // ══════════════════════════════════════════════
 
@@ -5022,6 +5447,7 @@ function doPrestige(){
   G.purchasedUpgrades=[];
   G.stats=calcStats();
   saveState();
+  checkAchievements();
   logToast('⭐',`PRESTIGE ${G.prestigeLevel}! Permanent +${G.prestigeLevel*10}% to all stats!`);
   goToHub();
 }
@@ -5144,8 +5570,9 @@ let _pendingDailyDay=0; // session-only, not persisted
 function checkDailyBonus(){
   const today=new Date().toISOString().slice(0,10);
   if((G.lastLogin||'')===today)return; // already claimed today
-  // Don't show bonus to brand-new players who haven't played yet
-  if((G.botWins||0)+(G.onlineWins||0)===0&&!(G.lastLogin))return;
+  // Don't show bonus to absolute first-timers who have never played at all
+  const totalGamesEver=(G.botWins||0)+(G.onlineWins||0)+(G.botLosses||0)+(G.onlineLosses||0);
+  if(totalGamesEver===0&&!(G.lastLogin))return;
   const yesterday=new Date(Date.now()-86400000).toISOString().slice(0,10);
   const streak=((G.lastLogin||'')===yesterday)?(G.loginStreak||0)+1:1;
   _pendingDailyDay=streak;
@@ -5220,7 +5647,7 @@ function updateCpPreview(){
   const def={...G.robot,color:cpBody,accentColor:cpAccent};
   cpSD=makeScene(canvas,def);
   cpSD.robot.rotation.y=0.4;
-  (function loop(){if(!cpSD)return;_cpAnimId=requestAnimationFrame(loop);cpSD.robot.rotation.y+=0.012;cpSD.renderer.render(cpSD.scene,cpSD.cam);})();
+  let _cpLast=0;(function loop(ts){if(!cpSD)return;_cpAnimId=requestAnimationFrame(loop);if(ts-_cpLast<10)return;_cpLast=ts;cpSD.robot.rotation.y+=0.004;cpSD.renderer.render(cpSD.scene,cpSD.cam);})();
 }
 
 function saveColors(){
@@ -5235,7 +5662,8 @@ function saveColors(){
   if(hubSD){hubSD.renderer.dispose();hubSD=null;}
   const canvas=document.getElementById('hub-canvas');
   hubSD=makeScene(canvas,playerRobotDef());
-  (function loop(){const sd=hubSD;if(!sd)return;requestAnimationFrame(loop);sd.robot.rotation.y+=0.008;sd.renderer.render(sd.scene,sd.cam);})();
+  let _hubLast2=0;
+  (function loop(ts){const sd=hubSD;if(!sd)return;requestAnimationFrame(loop);if(ts-_hubLast2<10)return;_hubLast2=ts;sd.robot.rotation.y+=0.003;sd.renderer.render(sd.scene,sd.cam);})();
 }
 
 function closeColorPanel(){
@@ -5248,7 +5676,7 @@ function closeColorPanel(){
 //  AUTO-UPDATE CHECKER
 // ══════════════════════════════════════════════
 
-const BUILD_TS = '20260501_v37';
+const BUILD_TS = '20260504_v39';
 
 function startVersionChecker(){
   setInterval(async ()=>{
@@ -5295,5 +5723,44 @@ function showUpdateBanner(){
 <div id="boss-warning"><div class="boss-warn-text">⚠ BOSS ⚠</div><div class="boss-warn-sub">ELITE UNIT DETECTED</div></div>
 <div id="surge-overlay">⚡ POWER SURGE! ⚡</div>
 <div id="overtime-overlay">⏰ OVERTIME! +20% DMG</div>
+<div id="finisher-overlay"><div class="finisher-text">⚡ FINISHER! ⚡</div></div>
+<div id="status-indicator"></div>
+
+<!-- CHALLENGE CARD MODAL -->
+<div id="challenge-card-modal">
+  <div style="font-family:'Orbitron',sans-serif;font-size:1rem;color:var(--cyan);margin-bottom:4px;">⚔️ CHALLENGE CARDS</div>
+  <div style="font-size:0.7rem;color:rgba(200,232,255,0.5);margin-bottom:12px;">Pick a handicap for a coin bonus — or skip</div>
+  <div class="challenge-card-grid" id="challenge-card-grid"></div>
+  <button class="btn btn-ghost" onclick="skipChallengeCard()" style="margin-top:8px;font-size:0.75rem;">NO HANDICAP — FIGHT NORMALLY</button>
+</div>
+
+<!-- DRAFT MODAL -->
+<div id="draft-modal" style="display:none;position:fixed;inset:0;z-index:91;background:rgba(0,0,0,0.9);align-items:center;justify-content:center;flex-direction:column;gap:12px;">
+  <div style="font-family:'Orbitron',sans-serif;font-size:1rem;color:var(--orange);">🎲 DRAFT PICK</div>
+  <div style="font-size:0.65rem;color:rgba(200,232,255,0.5);margin-bottom:8px;">Pick one upgrade for this gauntlet run</div>
+  <div id="draft-picks" style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;max-width:600px;"></div>
+</div>
+
+<!-- NICKNAME MODAL -->
+<div id="nickname-modal" style="display:none;position:fixed;inset:0;z-index:95;background:rgba(0,0,0,0.85);align-items:center;justify-content:center;">
+  <div class="panel" style="max-width:360px;width:100%;text-align:center;">
+    <div style="font-family:'Orbitron',sans-serif;font-size:0.9rem;color:var(--cyan);margin-bottom:16px;">✏️ NAME YOUR ROBOT</div>
+    <input id="nickname-input" type="text" placeholder="Enter nickname..." maxlength="20" autocomplete="off" style="margin-bottom:12px;">
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-cyan" onclick="saveNickname()" style="flex:1;">SAVE</button>
+      <button class="btn btn-ghost" onclick="closeNicknameModal()" style="flex:1;">CANCEL</button>
+    </div>
+  </div>
+</div>
+
+<!-- BLACK MARKET MODAL -->
+<div id="bm-modal" style="display:none;position:fixed;inset:0;z-index:92;background:rgba(0,0,0,0.9);overflow-y:auto;align-items:flex-start;justify-content:center;padding:20px;">
+  <div class="panel" style="max-width:700px;width:100%;margin:auto;">
+    <div style="font-family:'Orbitron',sans-serif;font-size:1rem;color:#ff00ff;text-shadow:0 0 20px #ff00ff;margin-bottom:4px;">🕵️ BLACK MARKET</div>
+    <div style="font-size:0.65rem;color:rgba(200,232,255,0.4);margin-bottom:16px;">3× price — elite tier upgrades only — refreshes every 3 days</div>
+    <div id="bm-grid" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;"></div>
+    <button class="btn btn-ghost" onclick="closeBM()" style="width:100%;">← CLOSE</button>
+  </div>
+</div>
 </body>
 </html>
