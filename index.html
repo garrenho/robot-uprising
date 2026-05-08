@@ -1058,7 +1058,7 @@ h1.logo{animation:logoGlitch 7s infinite;}
         <button class="btn btn-ghost" style="font-size:0.6rem;padding:5px 10px;" onclick="document.getElementById('badmin-coins').value=10000">10K</button>
       </div>
     </div>
-    <button class="btn" onclick="badminSendCoins()" style="width:100%;margin-top:4px;background:rgba(255,200,0,0.15);border:1px solid #ffcc00;color:#ffcc00;">🪙 SEND COINS</button>
+    <button class="btn" id="badmin-send-btn" onclick="badminSendCoins()" style="width:100%;margin-top:4px;background:rgba(255,200,0,0.15);border:1px solid #ffcc00;color:#ffcc00;transition:all 0.2s;">🪙 SEND COINS</button>
     <div class="admin-status" id="badmin-status"></div>
   </div>
   <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:520px;width:100%;">
@@ -4497,7 +4497,16 @@ function closeAdminLock(){
 
 // ---- BAD ADMIN (MOD PANEL) ----
 const BADMIN_PASS='mod123';
+function isBadminUnlocked(){return localStorage.getItem('ru_badmin_unlocked')==='yes';}
+function openBadminPanel(){
+  document.getElementById('badmin-lock').style.display='none';
+  document.getElementById('badmin-status').textContent='';
+  document.getElementById('badmin-target').value='';
+  document.getElementById('badmin-coins').value='';
+  showScreen('badmin');
+}
 function goToBadmin(){
+  if(isBadminUnlocked()){openBadminPanel();return;}
   document.getElementById('badmin-pin-input').value='';
   document.getElementById('badmin-lock-error').textContent='';
   document.getElementById('badmin-lock').style.display='flex';
@@ -4506,11 +4515,8 @@ function goToBadmin(){
 function checkBadminPin(){
   const entered=document.getElementById('badmin-pin-input').value;
   if(entered===BADMIN_PASS){
-    document.getElementById('badmin-lock').style.display='none';
-    document.getElementById('badmin-status').textContent='';
-    document.getElementById('badmin-target').value='';
-    document.getElementById('badmin-coins').value='';
-    showScreen('badmin');
+    localStorage.setItem('ru_badmin_unlocked','yes');
+    openBadminPanel();
   } else {
     const errEl=document.getElementById('badmin-lock-error');
     errEl.textContent='⚠ Wrong password.';
@@ -4531,6 +4537,8 @@ function badminSendCoins(){
     receiveAdminGift(amt,msg);
     statusEl.style.color='#ffcc00';statusEl.textContent=`✓ Gave yourself ${amt.toLocaleString()} coins!`;
     document.getElementById('badmin-coins').value='';
+    const btn=document.getElementById('badmin-send-btn');
+    if(btn){btn.textContent='✓ SENT!';btn.style.background='rgba(0,255,136,0.2)';btn.style.borderColor='var(--green)';btn.style.color='var(--green)';setTimeout(()=>{btn.textContent='🪙 SEND COINS';btn.style.background='rgba(255,200,0,0.15)';btn.style.borderColor='#ffcc00';btn.style.color='#ffcc00';},3000);}
     setTimeout(()=>statusEl.textContent='',4000);return;
   }
   if(!peer||peer.destroyed){statusEl.style.color='var(--red)';statusEl.textContent='⚠ Not connected — open Online screen first.';return;}
@@ -4542,6 +4550,8 @@ function badminSendCoins(){
     sent=true;
     statusEl.style.color='var(--green)';statusEl.textContent=`✓ Sent ${amt.toLocaleString()} coins to ${target}!`;
     document.getElementById('badmin-target').value='';document.getElementById('badmin-coins').value='';
+    const btn=document.getElementById('badmin-send-btn');
+    if(btn){btn.textContent='✓ SENT!';btn.style.background='rgba(0,255,136,0.2)';btn.style.borderColor='var(--green)';btn.style.color='var(--green)';setTimeout(()=>{btn.textContent='🪙 SEND COINS';btn.style.background='rgba(255,200,0,0.15)';btn.style.borderColor='#ffcc00';btn.style.color='#ffcc00';},3000);}
     setTimeout(()=>{conn.close();statusEl.textContent='';},4000);
   });
   conn.on('error',()=>{if(!sent){statusEl.style.color='var(--red)';statusEl.textContent='⚠ Could not reach '+target+'. Are they online?';setTimeout(()=>statusEl.textContent='',5000);}});
