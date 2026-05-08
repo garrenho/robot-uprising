@@ -1058,7 +1058,10 @@ h1.logo{animation:logoGlitch 7s infinite;}
         <button class="btn btn-ghost" style="font-size:0.6rem;padding:5px 10px;" onclick="document.getElementById('badmin-coins').value=10000">10K</button>
       </div>
     </div>
-    <button class="btn" id="badmin-send-btn" onclick="badminSendCoins()" style="width:100%;margin-top:4px;background:rgba(255,200,0,0.15);border:1px solid #ffcc00;color:#ffcc00;transition:all 0.2s;">🪙 SEND COINS</button>
+    <div style="display:flex;gap:8px;margin-top:4px;">
+      <button class="btn" id="badmin-send-btn" onclick="badminSendCoins(1)" style="flex:1;background:rgba(255,200,0,0.15);border:1px solid #ffcc00;color:#ffcc00;transition:all 0.2s;">🪙 SEND COINS</button>
+      <button class="btn" id="badmin-take-btn" onclick="badminSendCoins(-1)" style="flex:1;background:rgba(255,60,60,0.15);border:1px solid #ff4444;color:#ff4444;transition:all 0.2s;">➖ TAKE COINS</button>
+    </div>
     <div class="admin-status" id="badmin-status"></div>
   </div>
   <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:520px;width:100%;">
@@ -4538,33 +4541,43 @@ function checkBadminPin(){
     setTimeout(()=>errEl.textContent='',2000);
   }
 }
-function badminSendCoins(){
+function badminSendCoins(sign=1){
+  const taking=sign<0;
   const target=(document.getElementById('badmin-target').value||'').trim();
   const amt=parseInt(document.getElementById('badmin-coins').value)||0;
   const statusEl=document.getElementById('badmin-status');
   statusEl.textContent='';
   if(!target){statusEl.style.color='var(--red)';statusEl.textContent='⚠ Enter a player username.';return;}
   if(amt<1||isNaN(amt)){statusEl.style.color='var(--red)';statusEl.textContent='⚠ Enter a valid coin amount.';return;}
-  const msg=`You received 🪙 ${amt.toLocaleString()} coins from a mod!`;
+  const signedAmt=amt*sign;
+  const msg=taking?`⚠ A mod removed 🪙 ${amt.toLocaleString()} coins from your account.`:`You received 🪙 ${amt.toLocaleString()} coins from a mod!`;
+  const flashBtn=(success)=>{
+    const sendBtn=document.getElementById('badmin-send-btn');
+    const takeBtn=document.getElementById('badmin-take-btn');
+    const btn=taking?takeBtn:sendBtn;
+    if(!btn)return;
+    const orig=taking?{text:'➖ TAKE COINS',bg:'rgba(255,60,60,0.15)',bc:'#ff4444',c:'#ff4444'}:{text:'🪙 SEND COINS',bg:'rgba(255,200,0,0.15)',bc:'#ffcc00',c:'#ffcc00'};
+    if(success){btn.textContent='✓ DONE!';btn.style.background='rgba(0,255,136,0.2)';btn.style.borderColor='var(--green)';btn.style.color='var(--green)';}
+    setTimeout(()=>{btn.textContent=orig.text;btn.style.background=orig.bg;btn.style.borderColor=orig.bc;btn.style.color=orig.c;},3000);
+  };
   if(target.toLowerCase()===G.username.toLowerCase()){
-    receiveAdminGift(amt,msg);
-    statusEl.style.color='#ffcc00';statusEl.textContent=`✓ Gave yourself ${amt.toLocaleString()} coins!`;
+    receiveAdminGift(signedAmt,msg);
+    statusEl.style.color=taking?'#ff4444':'#ffcc00';
+    statusEl.textContent=taking?`✓ Took ${amt.toLocaleString()} coins from yourself.`:`✓ Gave yourself ${amt.toLocaleString()} coins!`;
     document.getElementById('badmin-coins').value='';
-    const btn=document.getElementById('badmin-send-btn');
-    if(btn){btn.textContent='✓ SENT!';btn.style.background='rgba(0,255,136,0.2)';btn.style.borderColor='var(--green)';btn.style.color='var(--green)';setTimeout(()=>{btn.textContent='🪙 SEND COINS';btn.style.background='rgba(255,200,0,0.15)';btn.style.borderColor='#ffcc00';btn.style.color='#ffcc00';},3000);}
-    setTimeout(()=>statusEl.textContent='',4000);return;
+    flashBtn(true);setTimeout(()=>statusEl.textContent='',4000);return;
   }
   if(!peer||peer.destroyed){statusEl.style.color='var(--red)';statusEl.textContent='⚠ Not connected — open Online screen first.';return;}
-  statusEl.style.color='#ffcc00';statusEl.textContent='Sending to '+target+'…';
+  statusEl.style.color='#ffcc00';statusEl.textContent=(taking?'Taking from ':'Sending to ')+target+'…';
   const conn=peer.connect(peerId(target),{reliable:true});
   let sent=false;
   conn.on('open',()=>{
-    conn.send({type:'adminGift',coins:amt,message:msg});
+    conn.send({type:'adminGift',coins:signedAmt,message:msg});
     sent=true;
-    statusEl.style.color='var(--green)';statusEl.textContent=`✓ Sent ${amt.toLocaleString()} coins to ${target}!`;
+    statusEl.style.color=taking?'#ff4444':'var(--green)';
+    statusEl.textContent=taking?`✓ Took ${amt.toLocaleString()} coins from ${target}.`:`✓ Sent ${amt.toLocaleString()} coins to ${target}!`;
     document.getElementById('badmin-target').value='';document.getElementById('badmin-coins').value='';
-    const btn=document.getElementById('badmin-send-btn');
-    if(btn){btn.textContent='✓ SENT!';btn.style.background='rgba(0,255,136,0.2)';btn.style.borderColor='var(--green)';btn.style.color='var(--green)';setTimeout(()=>{btn.textContent='🪙 SEND COINS';btn.style.background='rgba(255,200,0,0.15)';btn.style.borderColor='#ffcc00';btn.style.color='#ffcc00';},3000);}
+    flashBtn(true);
     setTimeout(()=>{conn.close();statusEl.textContent='';},4000);
   });
   conn.on('error',()=>{if(!sent){statusEl.style.color='var(--red)';statusEl.textContent='⚠ Could not reach '+target+'. Are they online?';setTimeout(()=>statusEl.textContent='',5000);}});
