@@ -2319,12 +2319,11 @@ function makeBotStats(){
   const dm=_botDifficulty==='easy'?0.7:_botDifficulty==='hard'?1.4:1;
   const hm=_botDifficulty==='easy'?0.75:_botDifficulty==='hard'?1.3:1;
   const gm=_gauntletActive?1+_gauntletRound*0.18:1; // +18% per gauntlet round
-  const opm=isOpBotActive()?(_opBotMult||20):1;
   const suffix=_botDifficulty==='easy'?' [EASY]':_botDifficulty==='hard'?' [HARD]':'';
   const rLabel=_gauntletActive&&_botCount>1?` #${_gauntletRound+1}`:'';
   return {
     name:(['Rust Unit','Scrap-7','Null-X','Dread Bot','Omega-9','Void Mk.'+tier,'APEX-'+tier,'NEMESIS','Iron Reaper','BRUTUS','Phantom X','WAR GOLEM','EXECUTIONER','TITAN Mk.II','DESTROYER','RAGNAROK','OMEGA PRIME','OBLIVION','THE RECKONING','GODBREAKER','NULL ENTITY','SOULRIPPER'][Math.min(Math.floor(Math.random()*4+Math.min(tier,18)),21)]||'NEMESIS')+suffix+rLabel,
-    hp:Math.floor((90+b*6)*hm*gm*opm),atk:Math.floor((12+Math.floor(b*1.3))*dm*gm*opm),def:Math.floor((6+Math.floor(b*0.7))*dm*gm*opm),spd:Math.floor((7+Math.floor(b*0.7))*dm*gm*opm),
+    hp:Math.floor((90+b*6)*hm*gm),atk:Math.floor((12+Math.floor(b*1.3))*dm*gm),def:Math.floor((6+Math.floor(b*0.7))*dm*gm),spd:Math.floor((7+Math.floor(b*0.7))*dm*gm),
     color:[0x994400,0x556600,0x440088,0x880044,0x226644,0x002288,0x882200,0x220066][Math.min(tier,7)],
     accentColor:[0xff6600,0xaacc00,0x8800ff,0xff0088,0x00ff88,0x0044ff,0xff3300,0xaa00ff][Math.min(tier,7)],
     id:['crusher','thunder','phantom','crusher','thunder','phantom','crusher','phantom'][Math.min(tier,7)]
@@ -2394,6 +2393,8 @@ function setupBattleArena(customBotDef){
   const platScale=numBots>2?0.7:1.0; // smaller platforms when crowded
   for(let bi=0;bi<numBots;bi++){
     let bDef=customBotDef||makeBotStats();
+    // OP Bot Timer: multiply all bot stats
+    if(isOpBotActive()){const m=_opBotMult||20;bDef={...bDef,hp:Math.floor(bDef.hp*m),atk:Math.floor(bDef.atk*m),def:Math.floor(bDef.def*m),spd:Math.floor(bDef.spd*m)};}
     // Survival mode: scale bot stats by +15% per wave
     if(isSurvivalMode&&survivalWave>1){
       const sm=Math.pow(1.15,survivalWave-1);
