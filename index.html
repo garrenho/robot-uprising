@@ -4520,16 +4520,31 @@ function checkBadminPin(){
   }
 }
 function badminSendCoins(){
-  const target=(document.getElementById('badmin-target').value||'').trim().toLowerCase();
+  const target=(document.getElementById('badmin-target').value||'').trim();
   const amt=parseInt(document.getElementById('badmin-coins').value)||0;
   const statusEl=document.getElementById('badmin-status');
-  if(!target){statusEl.textContent='⚠ Enter a player username.';return;}
-  if(amt<1||amt>100000){statusEl.textContent='⚠ Amount must be 1–100,000.';return;}
-  if(!peer){statusEl.textContent='⚠ Not connected to network.';return;}
-  broadcastAdmin({type:'adminGift',target,coins:amt,message:`You received 🪙 ${amt.toLocaleString()} coins from a mod!`});
-  statusEl.style.color='#ffcc00';
-  statusEl.textContent=`✓ Sent ${amt.toLocaleString()} coins to ${target}!`;
-  setTimeout(()=>statusEl.textContent='',3000);
+  statusEl.textContent='';
+  if(!target){statusEl.style.color='var(--red)';statusEl.textContent='⚠ Enter a player username.';return;}
+  if(amt<1||isNaN(amt)){statusEl.style.color='var(--red)';statusEl.textContent='⚠ Enter a valid coin amount.';return;}
+  const msg=`You received 🪙 ${amt.toLocaleString()} coins from a mod!`;
+  if(target.toLowerCase()===G.username.toLowerCase()){
+    receiveAdminGift(amt,msg);
+    statusEl.style.color='#ffcc00';statusEl.textContent=`✓ Gave yourself ${amt.toLocaleString()} coins!`;
+    document.getElementById('badmin-coins').value='';
+    setTimeout(()=>statusEl.textContent='',4000);return;
+  }
+  if(!peer||peer.destroyed){statusEl.style.color='var(--red)';statusEl.textContent='⚠ Not connected — open Online screen first.';return;}
+  statusEl.style.color='#ffcc00';statusEl.textContent='Sending to '+target+'…';
+  const conn=peer.connect(peerId(target),{reliable:true});
+  let sent=false;
+  conn.on('open',()=>{
+    conn.send({type:'adminGift',coins:amt,message:msg});
+    sent=true;
+    statusEl.style.color='var(--green)';statusEl.textContent=`✓ Sent ${amt.toLocaleString()} coins to ${target}!`;
+    document.getElementById('badmin-target').value='';document.getElementById('badmin-coins').value='';
+    setTimeout(()=>{conn.close();statusEl.textContent='';},4000);
+  });
+  conn.on('error',()=>{if(!sent){statusEl.style.color='var(--red)';statusEl.textContent='⚠ Could not reach '+target+'. Are they online?';setTimeout(()=>statusEl.textContent='',5000);}});
 }
 
 function togglePinVisible(){
