@@ -1165,8 +1165,10 @@ h1.logo{animation:logoGlitch 7s infinite;}
   <!-- OP BOT TIMER -->
   <div class="panel" style="width:100%;max-width:520px;border-color:rgba(255,68,0,0.5);background:rgba(40,8,0,0.6);">
     <div style="font-family:'Orbitron',sans-serif;font-size:0.7rem;color:#ff4400;margin-bottom:12px;letter-spacing:0.2em;">⚡ OP BOT TIMER</div>
-    <div style="font-size:0.65rem;color:rgba(255,200,150,0.6);margin-bottom:10px;">Bots become 4× stronger for the chosen duration. Affects all battles while active.</div>
+    <div style="font-size:0.65rem;color:rgba(255,200,150,0.6);margin-bottom:10px;">Bots get multiplied stats for the chosen duration. Default 20× — go higher for full chaos.</div>
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+      <input class="admin-input" type="number" id="op-bot-mult" placeholder="Multiplier…" min="1" max="9999" step="1" value="20" style="width:90px;flex:0 0 90px;border-color:rgba(255,68,0,0.5);color:#ff4400;font-weight:bold;">
+      <span style="font-size:0.65rem;color:rgba(255,100,0,0.6);">×</span>
       <input class="admin-input" type="number" id="op-bot-mins" placeholder="Minutes…" min="1" max="999" step="1" style="flex:1;border-color:rgba(255,68,0,0.5);color:#ff8844;">
       <button class="btn" style="background:rgba(255,68,0,0.2);border:1px solid #ff4400;color:#ff4400;font-size:0.68rem;padding:9px 14px;" onclick="startOpBotTimer(parseInt(document.getElementById('op-bot-mins').value)||5)">⚡ START</button>
       <button class="btn btn-ghost" style="font-size:0.68rem;padding:9px 14px;" onclick="stopOpBotTimer()">✕ STOP</button>
@@ -2286,15 +2288,17 @@ function _goToBattleCore(customBotDef){
   startBattleLoop();
 }
 
-let _opBotEndTime=0; // epoch ms when OP mode expires (0=off)
+let _opBotEndTime=0;
+let _opBotMult=20;
 let _opBotCountdownId=null;
 function isOpBotActive(){return _opBotEndTime>0&&Date.now()<_opBotEndTime;}
 function startOpBotTimer(mins){
   clearInterval(_opBotCountdownId);
+  _opBotMult=parseInt(document.getElementById('op-bot-mult')?.value)||20;
   _opBotEndTime=Date.now()+mins*60000;
   updateOpBotDisplay();
   _opBotCountdownId=setInterval(updateOpBotDisplay,1000);
-  logToast(`⚡ OP BOTS active for ${mins} min!`,'#ff6600');
+  logToast(`⚡ OP BOTS ${_opBotMult}× active for ${mins} min!`,'#ff4400');
 }
 function stopOpBotTimer(){
   _opBotEndTime=0;clearInterval(_opBotCountdownId);
@@ -2315,7 +2319,7 @@ function makeBotStats(){
   const dm=_botDifficulty==='easy'?0.7:_botDifficulty==='hard'?1.4:1;
   const hm=_botDifficulty==='easy'?0.75:_botDifficulty==='hard'?1.3:1;
   const gm=_gauntletActive?1+_gauntletRound*0.18:1; // +18% per gauntlet round
-  const opm=isOpBotActive()?4:1; // 4× when OP mode active
+  const opm=isOpBotActive()?(_opBotMult||20):1;
   const suffix=_botDifficulty==='easy'?' [EASY]':_botDifficulty==='hard'?' [HARD]':'';
   const rLabel=_gauntletActive&&_botCount>1?` #${_gauntletRound+1}`:'';
   return {
