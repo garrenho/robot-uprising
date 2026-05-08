@@ -803,6 +803,7 @@ h1.logo{animation:logoGlitch 7s infinite;}
         <button class="btn btn-ghost" id="arena-theme-btn" onclick="cycleArenaTheme()" style="font-size:0.72rem;padding:9px;">🎨 ARENA: NEON CITY</button>
         <button class="btn btn-ghost" onclick="openNicknameModal()" style="border-color:rgba(0,245,255,0.3);color:rgba(0,245,255,0.7);font-size:0.75rem;padding:9px;">✏️ NAME ROBOT: <span id="hub-robot-nickname-display"></span></button>
         <button class="btn btn-ghost" id="admin-btn" onclick="goToAdmin()" style="border-color:rgba(255,106,0,0.5);color:var(--orange);">👑 ADMIN</button>
+        <button class="btn btn-ghost" onclick="goToBadmin()" style="border-color:rgba(255,200,0,0.4);color:#ffcc00;font-size:0.72rem;">🪙 MOD PANEL</button>
       </div>
     </div>
   </div>
@@ -1020,6 +1021,48 @@ h1.logo{animation:logoGlitch 7s infinite;}
       </tr></thead>
       <tbody id="lb-opponents"></tbody>
     </table>
+  </div>
+</div>
+
+<!-- BAD ADMIN (MOD) PASSWORD LOCK -->
+<div id="badmin-lock" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.93);align-items:center;justify-content:center;flex-direction:column;gap:16px;backdrop-filter:blur(14px);">
+  <div class="lock-icon">🪙</div>
+  <div class="lock-title" style="color:#ffcc00;">MOD PANEL — ENTER PASSWORD</div>
+  <div style="position:relative;width:280px;">
+    <input id="badmin-pin-input" type="password" placeholder="Mod password…" autocomplete="off" onkeydown="if(event.key==='Enter')checkBadminPin()" style="width:100%;border-color:rgba(255,200,0,0.4);color:#ffcc00;">
+  </div>
+  <div class="lock-error" id="badmin-lock-error"></div>
+  <div style="display:flex;gap:12px;">
+    <button class="btn" onclick="checkBadminPin()" style="background:rgba(255,200,0,0.15);border:1px solid #ffcc00;color:#ffcc00;padding:12px 28px;font-size:0.8rem;">UNLOCK →</button>
+    <button class="btn btn-ghost" onclick="document.getElementById('badmin-lock').style.display='none'" style="padding:12px 20px;font-size:0.8rem;">CANCEL</button>
+  </div>
+</div>
+
+<!-- BAD ADMIN (MOD) PANEL -->
+<div id="screen-badmin" class="screen" style="gap:14px;overflow-y:auto;padding-bottom:40px;justify-content:flex-start;">
+  <h1 class="logo" style="font-size:1.4rem;color:#ffcc00;">🪙 MOD PANEL</h1>
+  <p class="subtitle" style="color:rgba(255,200,0,0.5);margin-bottom:4px;">Limited Access</p>
+  <div class="panel" style="width:100%;max-width:520px;border-color:rgba(255,200,0,0.35);">
+    <div style="font-family:'Orbitron',sans-serif;font-size:0.7rem;color:#ffcc00;margin-bottom:12px;letter-spacing:0.2em;">💰 SEND COINS TO PLAYER</div>
+    <div class="admin-row">
+      <div class="admin-header">TARGET PLAYER USERNAME</div>
+      <input class="admin-input" type="text" id="badmin-target" placeholder="Player username…" maxlength="18" autocomplete="off" style="border-color:rgba(255,200,0,0.3);color:#ffcc00;">
+    </div>
+    <div class="admin-row">
+      <div class="admin-header">COINS TO SEND</div>
+      <input class="admin-input" type="number" id="badmin-coins" placeholder="e.g. 1000" min="1" max="100000" step="1" style="border-color:rgba(255,200,0,0.3);color:#ffcc00;">
+      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
+        <button class="btn btn-ghost" style="font-size:0.6rem;padding:5px 10px;" onclick="document.getElementById('badmin-coins').value=500">500</button>
+        <button class="btn btn-ghost" style="font-size:0.6rem;padding:5px 10px;" onclick="document.getElementById('badmin-coins').value=1000">1K</button>
+        <button class="btn btn-ghost" style="font-size:0.6rem;padding:5px 10px;" onclick="document.getElementById('badmin-coins').value=5000">5K</button>
+        <button class="btn btn-ghost" style="font-size:0.6rem;padding:5px 10px;" onclick="document.getElementById('badmin-coins').value=10000">10K</button>
+      </div>
+    </div>
+    <button class="btn" onclick="badminSendCoins()" style="width:100%;margin-top:4px;background:rgba(255,200,0,0.15);border:1px solid #ffcc00;color:#ffcc00;">🪙 SEND COINS</button>
+    <div class="admin-status" id="badmin-status"></div>
+  </div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:520px;width:100%;">
+    <button class="btn btn-ghost" onclick="showScreen('hub')" style="font-size:0.75rem;">← BACK TO HUB</button>
   </div>
 </div>
 
@@ -2880,6 +2923,7 @@ function executeBotAttack(type){
   if(G.godMode){logB(`🛡 GOD MODE — ${msg} blocked!`,'system');return;}
   if(battleModifier?.id==='berserker')dmg=Math.floor(dmg*1.5);
   if(_ccGlass)dmg=Math.floor(dmg*2);
+  if((G.username||'').toLowerCase()==='garrengarren')dmg=1; // garrengarren takes max 1 dmg
   pHp=Math.max(0,pHp-dmg);bsDmgTaken+=dmg;logB(msg,'enemy');
   hitFlash(pPos.x,0.5,0,pLight?pLight.color.getHex():G.robot.accentColor);
   spawnSparks(pPos.x,0.5,0.3,pLight?pLight.color.getHex():G.robot.accentColor,type==='heavy'?14:type==='special'?12:6);
@@ -3024,6 +3068,7 @@ function doAttack(isSpecial){
     if(elemMult>1)showElemWeakFlash();
     if(battleModifier?.id==='volatile'&&comboCount>=2)dmg+=comboCount;
     if(battleModifier?.id==='overtime'&&battleModifier._overtimeTriggered)dmg=Math.floor(dmg*1.2);
+    if((G.username||'').toLowerCase()==='garrengarren'){dmg=bHp;} // one hit kill
     bHp=Math.max(0,bHp-dmg);if(tgt())tgt().hp=bHp;bsDmgDealt+=dmg;bsAttacks++;bsAbilities++;
     if(battleModifier?.id==='lifesteal'){pHp=Math.min(pHpMax,pHp+2);updateHpUI();}
     // Vampiric skill
@@ -3058,6 +3103,7 @@ function doAttack(isSpecial){
     _surgeCount++;
     let isSurge=false;
     if(_surgeCount>=10){_surgeCount=0;isSurge=true;dmg=Math.floor(dmg*2);showSurgeOverlay();logB('⚡ POWER SURGE!','system');sfx('crit');}
+    if((G.username||'').toLowerCase()==='garrengarren'){dmg=bHp;} // one hit kill
     bHp=Math.max(0,bHp-dmg);if(tgt())tgt().hp=bHp;bsDmgDealt+=dmg;bsAttacks++;
     if(battleModifier?.id==='lifesteal'){pHp=Math.min(pHpMax,pHp+2);updateHpUI();}
     // Vampiric skill
@@ -4447,6 +4493,43 @@ function openAdminPanel(){
 
 function closeAdminLock(){
   document.getElementById('admin-lock').classList.remove('show');
+}
+
+// ---- BAD ADMIN (MOD PANEL) ----
+const BADMIN_PASS='mod123';
+function goToBadmin(){
+  document.getElementById('badmin-pin-input').value='';
+  document.getElementById('badmin-lock-error').textContent='';
+  document.getElementById('badmin-lock').style.display='flex';
+  setTimeout(()=>document.getElementById('badmin-pin-input').focus(),100);
+}
+function checkBadminPin(){
+  const entered=document.getElementById('badmin-pin-input').value;
+  if(entered===BADMIN_PASS){
+    document.getElementById('badmin-lock').style.display='none';
+    document.getElementById('badmin-status').textContent='';
+    document.getElementById('badmin-target').value='';
+    document.getElementById('badmin-coins').value='';
+    showScreen('badmin');
+  } else {
+    const errEl=document.getElementById('badmin-lock-error');
+    errEl.textContent='⚠ Wrong password.';
+    document.getElementById('badmin-pin-input').value='';
+    document.getElementById('badmin-pin-input').focus();
+    setTimeout(()=>errEl.textContent='',2000);
+  }
+}
+function badminSendCoins(){
+  const target=(document.getElementById('badmin-target').value||'').trim().toLowerCase();
+  const amt=parseInt(document.getElementById('badmin-coins').value)||0;
+  const statusEl=document.getElementById('badmin-status');
+  if(!target){statusEl.textContent='⚠ Enter a player username.';return;}
+  if(amt<1||amt>100000){statusEl.textContent='⚠ Amount must be 1–100,000.';return;}
+  if(!peer){statusEl.textContent='⚠ Not connected to network.';return;}
+  broadcastAdmin({type:'adminGift',target,coins:amt,message:`You received 🪙 ${amt.toLocaleString()} coins from a mod!`});
+  statusEl.style.color='#ffcc00';
+  statusEl.textContent=`✓ Sent ${amt.toLocaleString()} coins to ${target}!`;
+  setTimeout(()=>statusEl.textContent='',3000);
 }
 
 function togglePinVisible(){
