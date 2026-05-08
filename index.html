@@ -1162,6 +1162,27 @@ h1.logo{animation:logoGlitch 7s infinite;}
     <div class="admin-status" id="admin-announce-status" style="margin-top:6px;"></div>
   </div>
 
+  <!-- OP BOT TIMER -->
+  <div class="panel" style="width:100%;max-width:520px;border-color:rgba(255,68,0,0.5);background:rgba(40,8,0,0.6);">
+    <div style="font-family:'Orbitron',sans-serif;font-size:0.7rem;color:#ff4400;margin-bottom:12px;letter-spacing:0.2em;">⚡ OP BOT TIMER</div>
+    <div style="font-size:0.65rem;color:rgba(255,200,150,0.6);margin-bottom:10px;">Bots become 4× stronger for the chosen duration. Affects all battles while active.</div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+      <input class="admin-input" type="number" id="op-bot-mins" placeholder="Minutes…" min="1" max="999" step="1" style="flex:1;border-color:rgba(255,68,0,0.5);color:#ff8844;">
+      <button class="btn" style="background:rgba(255,68,0,0.2);border:1px solid #ff4400;color:#ff4400;font-size:0.68rem;padding:9px 14px;" onclick="startOpBotTimer(parseInt(document.getElementById('op-bot-mins').value)||5)">⚡ START</button>
+      <button class="btn btn-ghost" style="font-size:0.68rem;padding:9px 14px;" onclick="stopOpBotTimer()">✕ STOP</button>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+      <button class="btn btn-ghost" style="font-size:0.6rem;padding:5px 10px;" onclick="startOpBotTimer(1)">1 min</button>
+      <button class="btn btn-ghost" style="font-size:0.6rem;padding:5px 10px;" onclick="startOpBotTimer(5)">5 min</button>
+      <button class="btn btn-ghost" style="font-size:0.6rem;padding:5px 10px;" onclick="startOpBotTimer(10)">10 min</button>
+      <button class="btn btn-ghost" style="font-size:0.6rem;padding:5px 10px;" onclick="startOpBotTimer(30)">30 min</button>
+      <button class="btn btn-ghost" style="font-size:0.6rem;padding:5px 10px;" onclick="startOpBotTimer(60)">1 hour</button>
+    </div>
+    <div style="font-family:'Orbitron',sans-serif;font-size:0.75rem;letter-spacing:0.1em;padding:8px 12px;background:rgba(0,0,0,0.4);border-radius:4px;border:1px solid rgba(255,68,0,0.3);">
+      STATUS: <span id="op-bot-countdown" style="color:rgba(255,100,0,0.4);">INACTIVE</span>
+    </div>
+  </div>
+
   <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:520px;width:100%;">
     <button class="btn btn-ghost" onclick="adminLogout()" style="font-size:0.72rem;color:rgba(255,106,0,0.6);border-color:rgba(255,106,0,0.3);">🔒 LOCK ADMIN</button>
     <button class="btn btn-ghost" onclick="goToHub()" style="font-size:0.75rem;">← BACK TO HUB</button>
@@ -2265,17 +2286,41 @@ function _goToBattleCore(customBotDef){
   startBattleLoop();
 }
 
+let _opBotEndTime=0; // epoch ms when OP mode expires (0=off)
+let _opBotCountdownId=null;
+function isOpBotActive(){return _opBotEndTime>0&&Date.now()<_opBotEndTime;}
+function startOpBotTimer(mins){
+  clearInterval(_opBotCountdownId);
+  _opBotEndTime=Date.now()+mins*60000;
+  updateOpBotDisplay();
+  _opBotCountdownId=setInterval(updateOpBotDisplay,1000);
+  logToast(`⚡ OP BOTS active for ${mins} min!`,'#ff6600');
+}
+function stopOpBotTimer(){
+  _opBotEndTime=0;clearInterval(_opBotCountdownId);
+  updateOpBotDisplay();logToast('OP Bots deactivated','#aaa');
+}
+function updateOpBotDisplay(){
+  const el=document.getElementById('op-bot-countdown');if(!el)return;
+  if(!isOpBotActive()){_opBotEndTime=0;el.textContent='INACTIVE';el.style.color='rgba(255,100,0,0.4)';return;}
+  const rem=Math.max(0,Math.ceil((_opBotEndTime-Date.now())/1000));
+  const m=Math.floor(rem/60),s=rem%60;
+  el.textContent=`ACTIVE — ${m}:${String(s).padStart(2,'0')} left`;
+  el.style.color='#ff4400';
+  if(rem===0){_opBotEndTime=0;clearInterval(_opBotCountdownId);logToast('OP Bots expired','#aaa');}
+}
 function makeBotStats(){
   const tier=Math.max(1,Math.floor(G.purchasedUpgrades.length/20));
   const b=12+tier*5;
   const dm=_botDifficulty==='easy'?0.7:_botDifficulty==='hard'?1.4:1;
   const hm=_botDifficulty==='easy'?0.75:_botDifficulty==='hard'?1.3:1;
   const gm=_gauntletActive?1+_gauntletRound*0.18:1; // +18% per gauntlet round
+  const opm=isOpBotActive()?4:1; // 4× when OP mode active
   const suffix=_botDifficulty==='easy'?' [EASY]':_botDifficulty==='hard'?' [HARD]':'';
   const rLabel=_gauntletActive&&_botCount>1?` #${_gauntletRound+1}`:'';
   return {
     name:(['Rust Unit','Scrap-7','Null-X','Dread Bot','Omega-9','Void Mk.'+tier,'APEX-'+tier,'NEMESIS','Iron Reaper','BRUTUS','Phantom X','WAR GOLEM','EXECUTIONER','TITAN Mk.II','DESTROYER','RAGNAROK','OMEGA PRIME','OBLIVION','THE RECKONING','GODBREAKER','NULL ENTITY','SOULRIPPER'][Math.min(Math.floor(Math.random()*4+Math.min(tier,18)),21)]||'NEMESIS')+suffix+rLabel,
-    hp:Math.floor((90+b*6)*hm*gm),atk:Math.floor((12+Math.floor(b*1.3))*dm*gm),def:Math.floor((6+Math.floor(b*0.7))*dm*gm),spd:Math.floor((7+Math.floor(b*0.7))*dm*gm),
+    hp:Math.floor((90+b*6)*hm*gm*opm),atk:Math.floor((12+Math.floor(b*1.3))*dm*gm*opm),def:Math.floor((6+Math.floor(b*0.7))*dm*gm*opm),spd:Math.floor((7+Math.floor(b*0.7))*dm*gm*opm),
     color:[0x994400,0x556600,0x440088,0x880044,0x226644,0x002288,0x882200,0x220066][Math.min(tier,7)],
     accentColor:[0xff6600,0xaacc00,0x8800ff,0xff0088,0x00ff88,0x0044ff,0xff3300,0xaa00ff][Math.min(tier,7)],
     id:['crusher','thunder','phantom','crusher','thunder','phantom','crusher','phantom'][Math.min(tier,7)]
