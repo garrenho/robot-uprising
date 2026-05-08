@@ -116,8 +116,9 @@ input[type="text"]::placeholder{color:rgba(0,245,255,0.3);}
 .t-separator{height:1px;background:linear-gradient(90deg,transparent,rgba(0,245,255,0.15),transparent);margin:7px 0;}
 
 /* BATTLE RESULT */
-#battle-result{display:none;position:fixed;inset:0;background:rgba(0,4,12,0.9);align-items:center;justify-content:flex-start;padding-top:6vh;flex-direction:column;gap:14px;z-index:30;backdrop-filter:blur(8px);pointer-events:none;}
+#battle-result{display:none;position:fixed;inset:0;background:rgba(0,4,12,0.9);align-items:center;justify-content:flex-start;padding-top:6vh;padding-bottom:16px;flex-direction:column;gap:14px;z-index:35;backdrop-filter:blur(8px);pointer-events:none;overflow-y:auto;}
 #battle-result.show{display:flex;animation:resultIn 0.4s ease both;pointer-events:auto;}
+#battle-result.show~.battle-bottom{display:none!important;}
 @keyframes resultIn{from{opacity:0;}to{opacity:1;}}
 @keyframes rewardPop{0%{opacity:0;transform:translateY(20px) scale(0.8);}30%{opacity:1;transform:translateY(-8px) scale(1.1);}70%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(-30px) scale(0.9);}}
 #battle-reward-pop{position:fixed;top:35%;left:50%;transform:translateX(-50%);z-index:35;font-family:'Orbitron',sans-serif;font-weight:900;font-size:1.6rem;color:var(--yellow);text-shadow:0 0 30px var(--yellow),0 0 60px rgba(255,224,0,0.4);pointer-events:none;display:none;text-align:center;white-space:nowrap;}
@@ -2298,6 +2299,8 @@ function showVsOverlay(playerName, botName, callback){
 function _goToBattleCore(customBotDef){
   showScreen('battle');
   document.getElementById('battle-result').classList.remove('show');
+  const _nb=document.querySelector('.battle-bottom');const _nt=document.querySelector('.battle-topbar');
+  if(_nb)_nb.style.display='';if(_nt)_nt.style.display='';
   document.getElementById('bs-card').style.display='none';
   document.getElementById('mvp-result-card').classList.remove('show');
   document.getElementById('battle-log').innerHTML='';
@@ -3726,6 +3729,9 @@ function endBattle(won){
   }
   const res=document.getElementById('battle-result');
   res.classList.remove('show');void res.offsetWidth;res.classList.add('show');
+  // Hide HP bars so they don't cover the result buttons
+  const bBot=document.querySelector('.battle-bottom');const bTop=document.querySelector('.battle-topbar');
+  if(bBot)bBot.style.display='none';if(bTop)bTop.style.display='none';
   showBattleStats(xpGain);
   const title=document.getElementById('result-title');
   // Show MVP result card
@@ -4005,6 +4011,9 @@ function leaveBattle(){
   bScene=null;bCam=null;pMesh=null;bMesh=null;activeSidekicks=[];
   activeParticles=[];ambientParticles=[];arenaOrbLights=[];
   hideTouchControls();
+  // Restore battle bars hidden by result screen
+  const _rBot=document.querySelector('.battle-bottom');const _rTop=document.querySelector('.battle-topbar');
+  if(_rBot)_rBot.style.display='';if(_rTop)_rTop.style.display='';
   goToHub();
 }
 
