@@ -4685,14 +4685,13 @@ function goToAdmin(){
   }
 }
 
-function isAdminUnlocked(){
-  return localStorage.getItem('ru_admin_unlocked')==='yes';
-}
+let _adminUnlocked=false;
+function isAdminUnlocked(){return _adminUnlocked;}
 
 function checkAdminPin(){
   const entered=document.getElementById('admin-pin-input').value;
   if(entered===getAdminPass()){
-    localStorage.setItem('ru_admin_unlocked','yes');
+    _adminUnlocked=true;
     openAdminPanel();
   } else {
     const errEl=document.getElementById('lock-error');
@@ -4915,7 +4914,7 @@ function adminHardReset(){
   if(!confirm('Are you absolutely sure? This cannot be undone.'))return;
   localStorage.removeItem('robotUprising_save');
   localStorage.removeItem('robotUprising_names');
-  localStorage.removeItem('ru_admin_unlocked');
+  _adminUnlocked=false;
   location.reload();
 }
 
@@ -4984,7 +4983,7 @@ function adminClearCustomPass(){
 }
 
 function adminLogout(){
-  localStorage.removeItem('ru_admin_unlocked');
+  _adminUnlocked=false;
   goToHub();
 }
 
