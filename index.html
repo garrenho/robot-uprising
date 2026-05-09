@@ -1620,16 +1620,19 @@ let G = {...G_DEFAULTS};
 function loadState() {
   const s = localStorage.getItem('robotUprising_save');
   if (s) {
-    G = {...G_DEFAULTS, ...JSON.parse(s)};
-    SHOP_UPGRADES.forEach(u=>{u.purchased=G.purchasedUpgrades.includes(u.id);});
-    SIDEKICK_UPGRADES.forEach(u=>{u.purchased=(G.sidekickUpgrades||[]).includes(u.id);});
-    // Recalculate level from XP (in case formula changed or save is stale)
-    if(G.xp)G.level=Math.max(G.level||1,Math.floor(1+Math.sqrt(G.xp/80)));
-    // Recalculate stats from upgrades
-    if(G.robot)G.stats=calcStats();
-    // Ensure soundEnabled is always boolean
-    if(typeof G.soundEnabled!=='boolean')G.soundEnabled=true;
-    return true;
+    try {
+      G = {...G_DEFAULTS, ...JSON.parse(s)};
+      SHOP_UPGRADES.forEach(u=>{u.purchased=G.purchasedUpgrades.includes(u.id);});
+      SIDEKICK_UPGRADES.forEach(u=>{u.purchased=(G.sidekickUpgrades||[]).includes(u.id);});
+      if(G.xp)G.level=Math.max(G.level||1,Math.floor(1+Math.sqrt(G.xp/80)));
+      if(G.robot)G.stats=calcStats();
+      if(typeof G.soundEnabled!=='boolean')G.soundEnabled=true;
+      return true;
+    } catch(e) {
+      // Save data corrupted — keep it so we can try again, don't wipe profile
+      console.warn('Save load failed, keeping defaults:', e);
+      return false;
+    }
   }
   return false;
 }
@@ -6262,15 +6265,10 @@ function showUpdateBanner(){
   if(document.getElementById('update-banner'))return;
   const el=document.createElement('div');
   el.id='update-banner';
-  el.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9999;background:linear-gradient(90deg,#00aa55,#00ff88);color:#001810;font-family:Orbitron,sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:0.1em;text-align:center;padding:13px;box-shadow:0 0 30px rgba(0,255,136,0.6);';
-  el.textContent='🔄 GAME UPDATED — Refreshing in 5…';
+  el.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9999;background:linear-gradient(90deg,#00aa55,#00ff88);color:#001810;font-family:Orbitron,sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:0.1em;text-align:center;padding:13px;box-shadow:0 0 30px rgba(0,255,136,0.6);cursor:pointer;';
+  el.textContent='🔄 GAME UPDATED — Tap here to refresh (your profile is safe)';
+  el.onclick=()=>location.reload(true);
   document.body.appendChild(el);
-  let n=5;
-  const t=setInterval(()=>{
-    n--;
-    if(n<=0){clearInterval(t);location.reload(true);}
-    else el.textContent=`🔄 GAME UPDATED — Refreshing in ${n}…`;
-  },1000);
 }
 
 // ══════════════════════════════════════════════
