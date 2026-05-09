@@ -53,7 +53,8 @@ input[type="text"]::placeholder{color:rgba(0,245,255,0.3);}
 .stat-val{width:24px;text-align:right;color:rgba(255,255,255,0.5);}
 
 /* HUB */
-#screen-hub{flex-direction:column;overflow-y:auto;justify-content:flex-start;padding-bottom:40px;}
+#screen-hub{flex-direction:column;overflow-y:scroll;-webkit-overflow-scrolling:touch;justify-content:flex-start;padding:0;}
+#hub-scroll-inner{display:flex;flex-direction:column;align-items:center;width:100%;padding:20px 20px 100px;box-sizing:border-box;}
 .hub-header{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:900px;margin-bottom:20px;padding:12px 24px;background:var(--panel);border:1px solid var(--border);border-radius:8px;}
 .hub-username{font-family:'Orbitron',sans-serif;font-size:0.85rem;color:rgba(0,245,255,0.7);}
 .hub-money{font-family:'Orbitron',sans-serif;font-size:1.3rem;font-weight:700;color:var(--yellow);text-shadow:0 0 15px var(--yellow);}
@@ -370,7 +371,12 @@ h1.logo{animation:logoGlitch 7s infinite;}
 /* Larger, brighter HP bars */
 .hp-bar-bg{height:18px;border-radius:4px;}
 .hp-player .hp-bar-fill{background:linear-gradient(90deg,#00cc66,#00ff88,#66ffaa);box-shadow:0 0 14px rgba(0,255,136,0.8),0 0 28px rgba(0,255,136,0.35);}
+.hp-player .hp-bar-fill.hp-regen{animation:regenPulse 1.5s ease-in-out infinite!important;}
+@keyframes regenPulse{0%,100%{box-shadow:0 0 14px rgba(0,255,136,0.8),0 0 28px rgba(0,255,136,0.35);filter:brightness(1);}50%{box-shadow:0 0 26px rgba(0,255,136,1),0 0 50px rgba(0,255,136,0.6),0 0 80px rgba(0,255,136,0.3);filter:brightness(1.35);}}
 .hp-enemy .hp-bar-fill{background:linear-gradient(90deg,#cc0022,#ff2255,#ff6688);box-shadow:0 0 14px rgba(255,34,85,0.8),0 0 28px rgba(255,34,85,0.35);}
+/* confetti particles */
+.confetti-p{position:fixed;width:9px;height:9px;border-radius:2px;pointer-events:none;z-index:400;animation:confettiFall var(--cd,1.4s) ease-out var(--delay,0s) forwards;}
+@keyframes confettiFall{0%{opacity:1;transform:translateY(-30px) rotate(0deg) scale(1);}100%{opacity:0;transform:translateY(110vh) rotate(900deg) scale(0.5);}}
 .hp-label{font-size:0.72rem;text-shadow:0 0 8px var(--cyan);}
 .hp-num{font-size:0.72rem;text-shadow:0 0 6px currentColor;}
 
@@ -760,6 +766,7 @@ h1.logo{animation:logoGlitch 7s infinite;}
 
 <!-- HUB -->
 <div id="screen-hub" class="screen">
+<div id="hub-scroll-inner">
   <div class="hub-header">
     <div style="display:flex;flex-direction:column;gap:2px;">
       <div style="display:flex;align-items:center;gap:6px;">
@@ -832,6 +839,7 @@ h1.logo{animation:logoGlitch 7s infinite;}
       </div>
     </div>
   </div>
+</div><!-- end hub-scroll-inner -->
 </div>
 
 <!-- BATTLE -->
@@ -2257,6 +2265,7 @@ let survivalWave=0,survivalCoinsEarned=0;
 let _timeAttackStart=0;
 let _bossRushIdx=0,_bossRushCoinsEarned=0;
 let parryCd=0,_parryWindowOpen=false,_parryWindowTimer=0;
+let _lastHitTime=0,_regenAcc=0;
 let isBountyBattle=false;
 let tournamentRound=0,tournamentPrize=0;
 let modifierTimer=0;
@@ -2392,6 +2401,8 @@ function _goToBattleCore(customBotDef){
   // Show level badge in topbar
   const lvBadge=document.getElementById('battle-level-badge');
   if(lvBadge)lvBadge.textContent=`LV${G.level||1}`;
+  // Reset rage indicator to player-rage state (bot rage may have changed it last battle)
+  {const ri=document.getElementById('rage-indicator');if(ri){ri.style.color='';ri.textContent='⚠ RAGE MODE';}}
   // Show win streak badge in topbar
   const strkBadge=document.getElementById('battle-streak-badge');
   if(strkBadge){
@@ -2637,6 +2648,7 @@ function setupBattleArena(customBotDef){
   bsDmgDealt=0;bsDmgTaken=0;bsAttacks=0;bsAbilities=0;bsStartTime=performance.now();bsSkKills=0;
   _firstBloodDone=false;_botTauntTimer=8+Math.random()*6;_skMegaTimer=15;
   _rageTriggered=false;_surgeCount=0;_lowestHpPct=1.0;_botRageActive=false;_botRageTriggered=false;_killStreak=0; // Features 13,7
+  _lastHitTime=performance.now();_regenAcc=0;
   activeParticles=[];camShakeTimer=0;_battleTimerLastSec=-1;
   // Cache hot DOM refs
   _elBattleTimer=document.getElementById('battle-timer');
@@ -2746,6 +2758,18 @@ function updateBattle(dt,time){
   }
   // Combo decay
   if(comboCount>0&&(performance.now()/1000-comboTimer)>1.8)resetCombo();
+  // Passive HP regen: 5s after last hit, regen 1 HP/s up to 40% max HP cap
+  if(!isOnlineBattle&&battleActive&&pHp>0&&pHpMax>0){
+    const regenCap=Math.floor(pHpMax*0.40);
+    const plBar=_elHpPlayer||document.getElementById('player-hp-bar');
+    if((performance.now()-_lastHitTime)>=5000&&pHp<regenCap){
+      _regenAcc+=dt;
+      if(_regenAcc>=1){_regenAcc=0;pHp=Math.min(regenCap,pHp+1);updateHpUI();}
+      if(plBar)plBar.classList.add('hp-regen');
+    } else {
+      if(plBar)plBar.classList.remove('hp-regen');
+    }
+  }
   // Battle timer — throttled to once per second
   if(_elBattleTimer&&bsStartTime>0){
     const sec=Math.floor((performance.now()-bsStartTime)/1000);
@@ -3016,6 +3040,7 @@ function executeBotAttack(type){
   if(_ccGlass)dmg=Math.floor(dmg*2);
   if((G.username||'').toLowerCase()==='garrengarren')dmg=1; // garrengarren takes max 1 dmg
   pHp=Math.max(0,pHp-dmg);bsDmgTaken+=dmg;logB(msg,'enemy');
+  _lastHitTime=performance.now();_regenAcc=0;
   _killStreak=0; // Feature 7: Reset kill streak on damage taken
   hitFlash(pPos.x,0.5,0,pLight?pLight.color.getHex():G.robot.accentColor);
   spawnSparks(pPos.x,0.5,0.3,pLight?pLight.color.getHex():G.robot.accentColor,type==='heavy'?14:type==='special'?12:6);
@@ -3103,7 +3128,7 @@ function updateSidekick(dt,now){
     } else if(roll<0.35){
       const dmg=Math.max(1,Math.floor(atk*0.6)+Math.floor(Math.random()*3));
       if(G.godMode){logB(`🤖 ${skName} MISFIRES — 🛡 GOD MODE blocked it!`,'system');return;}
-      pHp=Math.max(0,pHp-dmg);bsDmgTaken+=dmg;
+      pHp=Math.max(0,pHp-dmg);bsDmgTaken+=dmg;_lastHitTime=performance.now();_regenAcc=0;
       logB(`🤖 ${skName} MISFIRES and hits YOU for ${dmg}!`,'system');
       sfx('hit');hitFlash(pPos.x,0.5,0,sk.def.accentColor);spawnSparks(pPos.x,0.5,0.3,sk.def.accentColor,5);
       updateHpUI();checkAchievements({friendly_fire:true});if(pHp<=0)endBattle(false);
@@ -3181,7 +3206,7 @@ function doAttack(isSpecial){
     if(battleModifier?.id==='lifesteal'){pHp=Math.min(pHpMax,pHp+2);updateHpUI();}
     // Vampiric skill
     if((G.skills||[]).includes('vampiric')){pHp=Math.min(pHpMax,pHp+1);}
-    if(bHp<=0&&comboCount>=8)showFinisher();
+    if(bHp<=0&&comboCount>=5)showFinisher();
     floatDmgNumber(dmg,true,false,false);
     logB(`💥 POWER STRIKE!${isCrit?' CRIT!':''} ${dmg} dmg!${botDodging?' (dodged)':''}${rageMult>1?' 🔥RAGE':''}${elemMult>1?' 🔥WEAK!':''}`, 'player');
     lungeTimer=0.18;
@@ -3216,7 +3241,7 @@ function doAttack(isSpecial){
     if(battleModifier?.id==='lifesteal'){pHp=Math.min(pHpMax,pHp+2);updateHpUI();}
     // Vampiric skill
     if((G.skills||[]).includes('vampiric')){pHp=Math.min(pHpMax,pHp+1);}
-    if(bHp<=0&&comboCount>=8)showFinisher();
+    if(bHp<=0&&comboCount>=5)showFinisher();
     if(!_firstBloodDone&&dmg>0){_firstBloodDone=true;logB('🩸 FIRST BLOOD!','system');sfx('crit');}
     floatDmgNumber(dmg,isCrit,isSurge,false);
     logB(`Hit!${isCrit?' CRIT!':''} ${dmg} dmg${botDodging?' (dodged)':''}${rageMult>1?' 🔥':''}${isSurge?' ⚡SURGE':''}${elemMult>1?' 🔥WEAK!':''}`, 'player');
@@ -3264,7 +3289,7 @@ function doDash(){
   bHp=Math.max(0,bHp-dmg);if(tgt())tgt().hp=bHp;bsDmgDealt+=dmg;bsAttacks++;bsAbilities++;
   if(battleModifier?.id==='lifesteal'){pHp=Math.min(pHpMax,pHp+2);}
   if((G.skills||[]).includes('vampiric')){pHp=Math.min(pHpMax,pHp+1);}
-  if(bHp<=0&&comboCount>=8)showFinisher();
+  if(bHp<=0&&comboCount>=5)showFinisher();
   logB(`💨 Rocket Dash!${isCrit?' CRIT!':''} ${dmg} dmg!${rageMult>1?' 🔥':''}${elemMultD>1?' 🔥WEAK!':''}`,'player');
   floatDmgNumber(dmg,isCrit,false,false);
   hitFlash(bPos.x,0.5,0,botStats.accentColor||0xff4400);
@@ -3752,6 +3777,7 @@ function endBattle(won){
   battleActive=false;
   resetCombo();
   sfx(won?'win':'lose');
+  if(won)setTimeout(showVictoryConfetti,300);
   hideTouchControls();
   if(won){const bb=document.getElementById('btn-battle-again');if(bb){bb.textContent='⚔️ BATTLE AGAIN';bb.onclick=restartBattle;}}
   // Clean up vignette/rage/mega bar
@@ -3761,6 +3787,7 @@ function endBattle(won){
   document.getElementById('taunt-picker').classList.remove('show');
   document.getElementById('boss-warning').classList.remove('show');
   document.getElementById('sk-mega-bar-wrap').style.display='none';
+  {const plBar=document.getElementById('player-hp-bar');if(plBar)plBar.classList.remove('hp-regen');}
   _rageTriggered=false;_botRageActive=false;_botRageTriggered=false;
   // Fix 19: Practice mode guard — skip all stat saves
   if(_practiceMode){
@@ -3987,7 +4014,6 @@ function endBattle(won){
       G.money+=earn;saveState();
       _gauntletEarned+=earn;
       if(G.matchHistory&&G.matchHistory[0])G.matchHistory[0].earn=earn;
-      checkMissions('win',1);
       const streakMsg=mult>1?` (🔥${mult}x streak!)`:'';
       const bonusMsgs=[];if(untouchable)bonusMsgs.push('✨ PERFECT!');if(isWeekend)bonusMsgs.push('📅 WEEKEND 1.5x');if(isMirrorMatch)bonusMsgs.push('🪞 Mirror Match bonus!');if(_challengeCard)bonusMsgs.push(`${_challengeCard.icon} Challenge bonus!`);if(comboBonus>0)bonusMsgs.push(`🔥 Combo Bonus: +${comboBonus} coins`);
       document.getElementById('battle-money-display').textContent=G.money.toLocaleString();
@@ -4121,6 +4147,7 @@ function surrenderBattle(){
 }
 
 function leaveBattle(){
+  if(battleActive&&!isOnlineBattle&&!confirm('Leave this battle? Progress will not be saved.'))return;
   battleActive=false;renderLoopActive=false;
   _rageTriggered=false;_surgeCount=0;_botRageActive=false;_botRageTriggered=false;
   // Save tournament best if leaving mid-tournament
@@ -4131,6 +4158,7 @@ function leaveBattle(){
   document.getElementById('rage-indicator').classList.remove('show');
   document.getElementById('surrender-btn').classList.remove('show');
   document.getElementById('boss-warning').classList.remove('show');
+  {const plBar=document.getElementById('player-hp-bar');if(plBar)plBar.classList.remove('hp-regen');}
   // Clear taunt overlay
   const to=document.getElementById('taunt-overlay');if(to){to.className='';to.classList.remove('pop');}
   if(isOnlineBattle&&onlineConn){try{onlineConn.send({type:'iLost'});}catch(e){}try{onlineConn.close();}catch(e){}onlineConn=null;}
@@ -5593,13 +5621,28 @@ function startChallengeFight(){
 }
 
 // ── FINISHER OVERLAY ──
+const FINISHER_MSGS=['⚡ FINISHER! ⚡','💀 OBLITERATED! 💀','🔥 ANNIHILATED! 🔥','⭐ PERFECT KILL! ⭐','💥 DEVASTATING! 💥'];
 function showFinisher(){
   const el=document.getElementById('finisher-overlay');
   if(!el)return;
+  const txt=el.querySelector('.finisher-text');
+  if(txt)txt.textContent=FINISHER_MSGS[Math.floor(Math.random()*FINISHER_MSGS.length)];
   el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');
   el.addEventListener('animationend',()=>el.classList.remove('pop'),{once:true});
   sfx('crit');
   logB('⚡⚡⚡ FINISHER!! ⚡⚡⚡','system');
+}
+// ── VICTORY CONFETTI ──
+function showVictoryConfetti(){
+  const colors=['#00f5ff','#ff6a00','#ff2255','#ffe000','#00ff88','#cc00ff','#ffffff'];
+  for(let i=0;i<28;i++){
+    const p=document.createElement('div');p.className='confetti-p';
+    const delay=(Math.random()*0.5).toFixed(2)+'s';
+    const dur=(1.2+Math.random()*0.9).toFixed(2)+'s';
+    p.style.cssText=`left:${5+Math.random()*90}%;top:${-8+Math.random()*15}%;background:${colors[i%colors.length]};--delay:${delay};--cd:${dur};`;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),2400);
+  }
 }
 
 // ── ROBOT NICKNAME ──
