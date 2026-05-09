@@ -3655,6 +3655,7 @@ function endBattle(won){
   resetCombo();
   sfx(won?'win':'lose');
   hideTouchControls();
+  if(won){const bb=document.getElementById('btn-battle-again');if(bb){bb.textContent='⚔️ BATTLE AGAIN';bb.onclick=restartBattle;}}
   // Clean up vignette/rage/mega bar
   document.getElementById('hp-danger-vignette').classList.remove('show');
   document.getElementById('rage-indicator').classList.remove('show');
