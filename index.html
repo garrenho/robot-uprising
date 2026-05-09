@@ -3951,6 +3951,8 @@ function restartBattle(){
   document.getElementById('bs-card').style.display='none';
   document.getElementById('mvp-result-card').classList.remove('show');
   document.getElementById('battle-log').innerHTML='';
+  const _rb=document.querySelector('.battle-bottom');const _rt=document.querySelector('.battle-topbar');
+  if(_rb)_rb.style.display='';if(_rt)_rt.style.display='';
   resetCombo();
   resetChallengeCards();parryGauge=0;clearStatus();
   const pgW2=document.getElementById('parry-gauge-wrap');if(pgW2)pgW2.classList.remove('show');
